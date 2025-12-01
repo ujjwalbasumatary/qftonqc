@@ -1,7 +1,7 @@
 # Quantum Field Theory on Quantum Computers
 Implementation of algorithms for HE381: QFT on QCs taught by Prof. Aninda Sinha @ IISc during the fall 2025 semester.
 
-# To run the Julia scripts and notebooks
+## To run the Julia scripts and notebooks
 - Go to <https://julialang.org/downloads/> to install Julia.  
   - The basic distribution does not come with all the packages that are needed.  
   - `LinearAlgebra.jl` is available by default.
