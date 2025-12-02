@@ -1,4 +1,4 @@
-# Quantum Field Theory on Quantum Computers
+# Quantum Field Theory on a Quantum Computer
 Implementation of algorithms for HE381: Quantum Field Theory on a Quantum Computer taught by Prof. Aninda Sinha @ IISc during the fall 2025 semester.
 
 ## To run the Julia scripts and notebooks
