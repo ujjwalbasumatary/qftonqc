@@ -1,6 +1,79 @@
 using MPSKit, TensorKit, Plots, LaTeXStrings, LinearAlgebra, Plots.PlotMeasures, JLD2, ArgParse
 BLAS.set_num_threads(1)
 
+"""
+You can run this program either by typing julia ./schwinger_string_breaking.jl and it will run with the default set of parameters.
+Or you can supply your own parameters with flags. For example
+julia ./schwinger_string_breaking.jl -L 200 -j 1.0 -J 0.5 -r 15 -D 30 -d 3000 -b 0.5 -u 0.3 -k 0.3 -m 1.5 -t 0
+You can remind yourself about the flags that can be used with julia ./schwinger_string_breaking.jl --help or (-h).
+"""
+
+function parse_cmdline()
+    """
+    These are the parameters for the simulation.
+    """
+    s = ArgParseSettings()
+
+    @add_arg_table! s begin
+        "--lattice", "-L"
+        help = "Number of lattice sites"
+        arg_type = Int
+        default = 100
+
+        "--J0", "-j"
+        help = "Nearest-neighbour coupling J₀"
+        arg_type = Float64
+        default = 1.0
+
+        "--J1", "-J"
+        help = "Next-nearest-neighbour coupling J₁"
+        arg_type = Float64
+        default = 0.2
+
+        "--d_trunc", "-r"
+        help = "Truncation dimension d_trunc"
+        arg_type = Int
+        default = 12
+
+        "--D", "-D"
+        help = "Maximum bond dimension D"
+        arg_type = Int
+        default = 20
+
+        "--d", "-d"
+        help = "Local Hilbert-space dimension / Fock cutoff d BEFORE diagonalization"
+        arg_type = Int
+        default = 2000
+
+        "--beta", "-b"
+        help = "β appearing in cos(β ϕ - θ)"
+        arg_type = Float64
+        default = 1.0
+
+        "--mu", "-u"
+        help = "Coefficient in front of the cos term"
+        arg_type = Float64
+        default = 0.5
+
+        "--kappa", "-k"
+        help = "Gradient / hopping coefficient κ"
+        arg_type = Float64
+        default = 0.1
+
+        "--m", "-m"
+        help = "Mass m"
+        arg_type = Float64
+        default = 1.0
+
+        "--theta", "-t"
+        help = "Angle θ appearing inside the cosine"
+        arg_type = Float64
+        default = 3.14159
+    end
+
+    return parse_args(s)
+end
+
 function matrix_elems(d)
     phi = zeros(ComplexF64, (d, d))
     phi_sq = zeros(ComplexF64, (d, d))
@@ -108,19 +181,19 @@ end
 
 
 function main()
-    L = 100 # number of lattice sites
+    args = parse_cmdline()
 
-    J₀ = 1.0
-    J₁ = 0.2
-
-    d_trunc = 12
-    D = 20
-    d = 2000
-    β = 1.0
-    μ = 0.5
-    κ = 0.1
-    m = 1.0
-    θ = 3.14159
+    L = args["lattice"]
+    J₀ = args["J0"]
+    J₁ = args["J1"]
+    d_trunc = args["d_trunc"]
+    D = args["D"]
+    d = args["d"]
+    β = args["beta"]
+    μ = args["mu"]
+    κ = args["kappa"]
+    m = args["m"]
+    θ = args["theta"]
 
     ϕ, ϕ2, π2, ϕ4, H0 = get_elems(d_trunc; d=d, β=β, μ=μ, κ=κ, m=m, θ=θ)
     ham = build_hamiltonian(L, d_trunc, J=J₀, d=d, β=β, μ=μ, κ=κ, m=m, θ=θ)
