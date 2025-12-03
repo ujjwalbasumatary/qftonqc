@@ -26,4 +26,8 @@ Implementation of algorithms for HE381: Quantum Field Theory on a Quantum Comput
   - `ArgParse.jl` for argument parsing from the command line.
   - `IJulia.jl` for interactive Julia via Jupyter Lab or Notebook.
 
-All of these can be installed (globally) by opening the Julia REPL (Read-Evaluate-Print-Loop) by typing `Julia` in your shell. Hit `]` to enter the package manager and then type `add("PackageNameWithoutTheJl")` to install the package.
+All of these can be installed (globally) by opening the Julia REPL (Read-Evaluate-Print-Loop) by typing `Julia` in your shell. Hit `]` to enter the package manager and then type `add("PackageNameWithoutTheJl")` to install the package. Alternatively from the REPL (or a Jupyter instance once you have `IJulia` installed)
+```julia
+using Pkg
+Pkg.add("PackageNameWithoutTheJl")
+```k
