@@ -37,6 +37,10 @@ function parse_cmdline()
         help = "Spread of the momentum space wavepacket"
         arg_type = Float64
         default = 0.1
+        "--momentum", "-p"
+        help = "Momentum about which the wavepackets are centered"
+        arg_type = Float64
+        default = 0.3
     end
 
     return parse_args(ARGS, s)
@@ -55,14 +59,10 @@ function matrix_elems(d)
         if i < d - 1
             phi_sq[i, i+2] = sqrt(i * (i + 1)) / 2
             phi_sq[i+2, i] = sqrt(i * (i + 1)) / 2
-        end
-        phi_sq[i, i] = (2 * i - 1) / 2
-    end
-    for i in 1:d
-        if i < d - 1
             pi_sq[i, i+2] = -sqrt(i * (i + 1)) / 2
             pi_sq[i+2, i] = -sqrt(i * (i + 1)) / 2
         end
+        phi_sq[i, i] = (2 * i - 1) / 2
         pi_sq[i, i] = (2 * i - 1) / 2
     end
     for i in 1:d
@@ -94,14 +94,14 @@ function matrix_elems(d)
     return ϕ, ϕ2, π2, ϕ4
 end
 
-function get_ham(d, μ0, λ0)
+function get_ham(d, μ0_sq, λ0)
     """
     Prepares the infinte MPO Hamiltonian from μ0, λ0 and
     the local Hilbert space dimension d as inputs
     """
     ϕ, ϕ2, π2, ϕ4 = matrix_elems(d)
     chain = PeriodicVector([ℂ^d])
-    single_site_term = (μ0 * ϕ2 + π2) / 2 + λ0 * ϕ4 / 24 + ϕ2
+    single_site_term = (μ0_sq * ϕ2 + π2) / 2 + λ0 * ϕ4 / 24 + ϕ2
     two_site_term = -ϕ ⊗ ϕ
     ham = InfiniteMPOHamiltonian(chain, 1 => single_site_term, (1, 2) => two_site_term)
     return ham
@@ -230,6 +230,7 @@ function main()
     dt = parsed_args["time_step"]
     Δp = parsed_args["delta_p"]
     σ = parsed_args["sigma"]
+    mom = parsed_args["momentum"]
 
     L_sites = floor(Int, 2 * π / Δp) # number of sites spanning the states   
 
@@ -245,8 +246,6 @@ function main()
     offset_right = L_sites ÷ 2
 
     # now I also need the momentum about which the packets are centered, index to be specific
-    # this is the momentum about which the packets will be centered
-    mom = π / 2
     mom_idx_left = 1 + floor(Int, (mom + π) / Δp)
     mom_idx_right = 1 + floor(Int, (-mom + π) / Δp)
     B_tensor_list = get_B_tensor_list(states)
@@ -276,11 +275,10 @@ function main()
         phi_sq_exp[1, i] = real(expectation_value(ψ_window, i => ϕ2)) - gs_value_phi_sq[i]
     end
     phi_sq_exp[1, L] = real(expectation_value(ψ_window, L => ϕ2)) - gs_value_phi_sq[L]
-    dt = 0.1 # time step for evolution
     # time evolution loop starts here
     for t_step in 2:T
         println("\rCurrently at step $t_step")
-        ψ_window, _ = timestep(ψ_window, ham, t_step - 1, dt, TDVP())
+        ψ_window, _ = timestep(ψ_window, ham, (t_step - 2) * dt, dt, TDVP())
         for i in 1:L-1
             energy_exp[t_step, i] = real(expectation_value(ψ_window, (i, i + 1) => ham_density)) - gs_value_energy[i]
             phi_sq_exp[t_step, i] = real(expectation_value(ψ_window, i => ϕ2)) - gs_value_phi_sq[i]
