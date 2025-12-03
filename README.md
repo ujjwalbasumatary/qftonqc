@@ -30,4 +30,4 @@ All of these can be installed (globally) by opening the Julia REPL (Read-Evaluat
 ```julia
 using Pkg
 Pkg.add("PackageNameWithoutTheJl")
-```k
+```
