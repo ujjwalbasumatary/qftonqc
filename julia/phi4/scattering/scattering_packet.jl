@@ -142,8 +142,6 @@ function get_B_tensor_list(states)
 
         θ = angle(B_array_new[1, 1, 1])
         B_array_new .*= exp(-im * θ)
-        # ------------------------------
-
         B_list[i] = B_array_new
     end
 
@@ -197,10 +195,6 @@ function create_stacked_tensor(ψ_gs, B_packet_list_left, B_packet_list_right, L
     AR_array = convert(Array, AR)
     D, d, _ = size(AL_array)
 
-    # the piece with C^{-1} 'glued in'
-    c = ψ_gs.C[]
-    c_inv = c \ id(domain(c))
-    @tensor AR_glue[a, b; c] := AR[a, b; d] * c_inv[d; c]
     # create a window of the same type as AL i.e. TensorMap
     window = eltype(ψ_gs.AL)[]
     """
@@ -210,23 +204,13 @@ function create_stacked_tensor(ψ_gs, B_packet_list_left, B_packet_list_right, L
     mat = cat(AL_array, B_packet_list_left[1]; dims=3)
     tensor = TensorMap(mat, ℂ^(D) ⊗ ℂ^d ← ℂ^(2D))
     push!(window, tensor)
-    for i in 2:L-1
+    for i in 2:L
         mat = block_upper(AL_array, AR_array, B_packet_list_left[i])
         tensor = TensorMap(mat, ℂ^(2D) ⊗ ℂ^d ← ℂ^(2D))
         push!(window, tensor)
     end
-    mat = cat(B_packet_list_left[L], AR_array; dims=1)
-    tensor = TensorMap(mat, ℂ^(2D) ⊗ ℂ^d ← ℂ^(D))
-    push!(window, tensor)
-    push!(window, AR_glue)
-
-
     ### Start next window ###
-    push!(window, AL) # since the next window starts from here
-    mat = cat(AL_array, B_packet_list_right[1]; dims=3)
-    tensor = TensorMap(mat, ℂ^(D) ⊗ ℂ^d ← ℂ^(2D))
-    push!(window, tensor)
-    for i in 2:L-1
+    for i in 1:L-1
         mat = block_upper(AL_array, AR_array, B_packet_list_right[i])
         tensor = TensorMap(mat, ℂ^(2D) ⊗ ℂ^d ← ℂ^(2D))
         push!(window, tensor)
