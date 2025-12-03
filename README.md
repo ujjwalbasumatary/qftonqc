@@ -6,8 +6,7 @@ Implementation of algorithms for HE381: Quantum Field Theory on a Quantum Comput
 - Create a virtual environment (see details here <https://docs.conda.io/projects/conda/en/stable/user-guide/getting-started.html>) and install the relevant packages.
 
 - We will need
-    - `NumPy` for linear algebra.
-    - `SciPy` for numerical linear algebra.
+    - `NumPy` and `SciPy` for numerical linear algebra.
     - `Qiskit` to build and simulate quantum circuits.
 - All the above can be installed by typing (in your environment) `pip install package-name-in-lowercase`. In addition, we will need
     - Qiskit-aer (`qiskit_aer`) to build noise models.
