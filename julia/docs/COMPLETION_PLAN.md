@@ -100,7 +100,7 @@ Its main interacting parameters are `mu^2=0.1`, `lambda=0.5`, with
 `theta=pi` for the deconfined case and `theta=pi-0.04` or `pi-0.07` for the
 confined cases. The electric-field observable is `E_T/e = phi/sqrt(pi)`.
 
-The current `schwinger_string_breaking.jl` instead prepares a finite-DMRG
+The current `scripts/schwinger/source_quench.jl` instead prepares a finite-DMRG
 ground state with a linear source on five sites and quenches its strength. It
 is useful for testing onsite truncation and real-time evolution, but it cannot
 by itself meet the paper acceptance criteria.

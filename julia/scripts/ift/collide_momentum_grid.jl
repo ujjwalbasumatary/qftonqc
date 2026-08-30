@@ -46,6 +46,10 @@ function parse_cmdline()
         help = "Spread of the momentum space wavepacket"
         arg_type = Float64
         default = 0.1
+        "--output_dir", "-o"
+        help = "Root directory in which plots/ and data/ are created"
+        arg_type = String
+        default = normpath(joinpath(@__DIR__, "..", "..", "results", "ift"))
     end
 
     return parse_args(ARGS, s)
@@ -172,6 +176,7 @@ function main()
     h_x = parsed_args["h_x"]
     J = parsed_args["J"]
     mom = parsed_args["mom"]
+    output_root = abspath(parsed_args["output_dir"])
 
     D > 0 || throw(ArgumentError("bond_dimension must be positive"))
     T > 0 || throw(ArgumentError("total_time must be positive"))
@@ -262,9 +267,8 @@ function main()
         xlabel=L"Lattice site $n$", ylabel=L"Lattice time $t$"
     )
 
-    # make the folder plots if it does not exist
-    plot_dir = joinpath(@__DIR__, "plots")
-    data_dir = joinpath(@__DIR__, "data")
+    plot_dir = joinpath(output_root, "plots")
+    data_dir = joinpath(output_root, "data")
     mkpath(plot_dir)
     mkpath(data_dir)
 

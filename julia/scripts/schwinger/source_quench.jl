@@ -17,7 +17,7 @@ wave packets, and late-time particle projections.
 
 Run with the defaults using
 
-    julia --project=.. schwinger_string_breaking.jl
+    julia --project=julia julia/scripts/schwinger/source_quench.jl
 
 or inspect all parameters with `--help`.
 """
@@ -99,7 +99,7 @@ function parse_cmdline()
         "--output_dir", "-o"
         help = "Root directory in which plots/ and data/ are created"
         arg_type = String
-        default = @__DIR__
+        default = normpath(joinpath(@__DIR__, "..", "..", "results", "schwinger"))
     end
 
     return parse_args(settings)

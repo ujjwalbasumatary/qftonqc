@@ -47,6 +47,10 @@ function parse_cmdline()
         help = "Spread of the position space wavepacket"
         arg_type = Float64
         default = 10.0
+        "--output_dir", "-o"
+        help = "Root directory in which plots/ and data/ are created"
+        arg_type = String
+        default = normpath(joinpath(@__DIR__, "..", "..", "results", "ift"))
     end
 
     return parse_args(ARGS, s)
@@ -159,6 +163,7 @@ function main(parsed_args)
     κ = parsed_args["kappa"] # momentum about which packet is centered
     h_z = parsed_args["h_z"]
     h_x = parsed_args["h_x"]
+    output_root = abspath(parsed_args["output_dir"])
 
     D > 0 || throw(ArgumentError("bond_dimension must be positive"))
     T > 0 || throw(ArgumentError("total_time must be positive"))
@@ -235,9 +240,8 @@ function main(parsed_args)
         title=L"$S_z - (S_z)_{vac}$ for $h_x$ = %$(h_x)$, $h_z$ = %$(h_z)$"
     )
 
-    # make the folder plots if it does not exist
-    plot_dir = joinpath(@__DIR__, "fixed_mom", "plots")
-    data_dir = joinpath(@__DIR__, "fixed_mom", "data")
+    plot_dir = joinpath(output_root, "plots")
+    data_dir = joinpath(output_root, "data")
     mkpath(plot_dir)
     mkpath(data_dir)
 
