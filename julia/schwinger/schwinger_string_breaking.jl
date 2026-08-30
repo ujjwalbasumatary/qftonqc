@@ -1,239 +1,320 @@
-using MPSKit, TensorKit, Plots, LaTeXStrings, LinearAlgebra, Plots.PlotMeasures, JLD2, ArgParse
-BLAS.set_num_threads(1)
+using MPSKit
+using TensorKit
+using Plots
+using LaTeXStrings
+using LinearAlgebra
+using Plots.PlotMeasures
+using JLD2
+using ArgParse
 
 """
-You can run this program either by typing julia ./schwinger_string_breaking.jl and it will run with the default set of parameters.
-Or you can supply your own parameters with flags. For example
-julia ./schwinger_string_breaking.jl -L 200 -j 1.0 -J 0.5 -r 15 -D 30 -d 3000 -b 0.5 -u 0.3 -k 0.3 -m 1.5 -t 0
-You can remind yourself about the flags that can be used with julia ./schwinger_string_breaking.jl --help or (-h).
+Exploratory finite-chain source-quench simulation for a truncated bosonic lattice.
+
+This script is a useful numerical baseline, but it is not the asymptotic wave-packet
+scattering calculation of arXiv:2307.02522. In particular, it uses finite-chain DMRG
+and a local five-site source quench rather than uniform-MPS quasiparticles, glued
+wave packets, and late-time particle projections.
+
+Run with the defaults using
+
+    julia --project=.. schwinger_string_breaking.jl
+
+or inspect all parameters with `--help`.
 """
 
 function parse_cmdline()
-    """
-    These are the parameters for the simulation.
-    """
-    s = ArgParseSettings()
+    settings = ArgParseSettings()
 
-    @add_arg_table! s begin
+    @add_arg_table! settings begin
         "--lattice", "-L"
         help = "Number of lattice sites"
         arg_type = Int
         default = 100
 
         "--J0", "-j"
-        help = "Nearest-neighbour coupling J₀"
+        help = "Five-site source strength used to prepare the ground state"
         arg_type = Float64
         default = 1.0
 
         "--J1", "-J"
-        help = "Next-nearest-neighbour coupling J₁"
+        help = "Five-site source strength after the quench"
         arg_type = Float64
         default = 0.2
 
         "--d_trunc", "-r"
-        help = "Truncation dimension d_trunc"
+        help = "Number of low-energy onsite eigenstates retained"
         arg_type = Int
         default = 12
 
         "--D", "-D"
-        help = "Maximum bond dimension D"
+        help = "MPS bond dimension"
         arg_type = Int
         default = 20
 
         "--d", "-d"
-        help = "Local Hilbert-space dimension / Fock cutoff d BEFORE diagonalization"
+        help = "Harmonic-oscillator cutoff before onsite diagonalization"
         arg_type = Int
         default = 2000
 
         "--beta", "-b"
-        help = "β appearing in cos(β ϕ - θ)"
+        help = "beta in cos(beta*phi - theta); the paper uses sqrt(4*pi)"
         arg_type = Float64
         default = 1.0
 
         "--mu", "-u"
-        help = "Coefficient in front of the cos term"
+        help = "mu in the onsite coefficient mu^2*(1-cos(beta*phi-theta))"
         arg_type = Float64
         default = 0.5
 
         "--kappa", "-k"
-        help = "Gradient / hopping coefficient κ"
+        help = "Nearest-neighbour gradient coefficient kappa"
         arg_type = Float64
         default = 0.1
 
         "--m", "-m"
-        help = "Mass m"
+        help = "Bare onsite mass m"
         arg_type = Float64
         default = 1.0
 
         "--theta", "-t"
-        help = "Angle θ appearing inside the cosine"
+        help = "theta in cos(beta*phi - theta)"
         arg_type = Float64
-        default = 3.14159
+        default = pi
+
+        "--total_time", "-T"
+        help = "Final lattice time; a shorter final step is used when needed"
+        arg_type = Float64
+        default = 100.0
+
+        "--time_step", "-s"
+        help = "Maximum real-time evolution step"
+        arg_type = Float64
+        default = 0.05
+
+        "--progress_every", "-p"
+        help = "Print progress every this many steps (0 disables progress output)"
+        arg_type = Int
+        default = 10
+
+        "--output_dir", "-o"
+        help = "Root directory in which plots/ and data/ are created"
+        arg_type = String
+        default = @__DIR__
     end
 
-    return parse_args(s)
+    return parse_args(settings)
 end
 
-function matrix_elems(d)
-    phi = zeros(ComplexF64, (d, d))
-    phi_sq = zeros(ComplexF64, (d, d))
-    pi_sq = zeros(ComplexF64, (d, d))
-    phi_4 = zeros(ComplexF64, (d, d))
+function validate_parameters(args)
+    args["lattice"] >= 2 || throw(ArgumentError("--lattice must be at least 2"))
+    args["d_trunc"] >= 1 || throw(ArgumentError("--d_trunc must be positive"))
+    args["d"] >= args["d_trunc"] ||
+        throw(ArgumentError("--d must be at least --d_trunc"))
+    args["D"] >= 1 || throw(ArgumentError("--D must be positive"))
+    args["m"] >= 0 || throw(ArgumentError("--m must be nonnegative"))
+    args["mu"] >= 0 || throw(ArgumentError("--mu must be nonnegative"))
+    args["kappa"] >= 0 || throw(ArgumentError("--kappa must be nonnegative"))
+    args["total_time"] >= 0 || throw(ArgumentError("--total_time must be nonnegative"))
+    args["time_step"] > 0 || throw(ArgumentError("--time_step must be positive"))
+    args["progress_every"] >= 0 ||
+        throw(ArgumentError("--progress_every must be nonnegative"))
 
-    # phi = (a + a^\dagger)/sqrt(2)
-    for i in 2:d
-        val = sqrt((i - 1) / 2)
-        phi[i, i-1] = val
-        phi[i-1, i] = val
+    finite_keys = ("J0", "J1", "beta", "mu", "kappa", "m", "theta",
+        "total_time", "time_step")
+    all(key -> isfinite(args[key]), finite_keys) ||
+        throw(ArgumentError("all real-valued simulation parameters must be finite"))
+    return nothing
+end
+
+"""Return phi, phi^2, and pi^2 in a `d`-state oscillator basis."""
+function matrix_elems(d::Int)
+    d >= 1 || throw(ArgumentError("oscillator cutoff d must be positive"))
+
+    phi = zeros(ComplexF64, d, d)
+    phi_sq = zeros(ComplexF64, d, d)
+    pi_sq = zeros(ComplexF64, d, d)
+
+    # phi = (a + a^dagger)/sqrt(2)
+    @inbounds for i in 2:d
+        value = sqrt((i - 1) / 2)
+        phi[i, i - 1] = value
+        phi[i - 1, i] = value
     end
 
-    # helper to fill phi_sq and pi_sq (same structure, sign flip on off-diagonals)
-    function fill_quadratic!(M, sign)
+    # phi^2 and pi^2 have the same diagonal and opposite n <-> n+2 entries.
+    function fill_quadratic!(matrix, sign)
         @inbounds for i in 1:d
-            if i < d - 1
-                val = sign * sqrt(i * (i + 1)) / 2
-                M[i, i+2] = val
-                M[i+2, i] = val  # Hermitian
+            if i + 2 <= d
+                value = sign * sqrt(i * (i + 1)) / 2
+                matrix[i, i + 2] = value
+                matrix[i + 2, i] = value
             end
-            M[i, i] = (2 * i - 1) / 2
+            matrix[i, i] = (2 * i - 1) / 2
         end
+        return matrix
     end
 
     fill_quadratic!(phi_sq, +1)
     fill_quadratic!(pi_sq, -1)
-
-    # phi^4 in harmonic oscillator basis
-    @inbounds for i in 1:d
-        n = i - 1  # occupation number
-
-        # diagonal
-        phi_4[i, i] = (6 * n^2 + 6 * n + 3) / 4
-
-        # connect |n> <-> |n+2>
-        if i + 2 <= d
-            val = (4 * n + 6) * sqrt((n + 1) * (n + 2)) / 4
-            j = i + 2
-            phi_4[i, j] = val
-            phi_4[j, i] = val  # Hermitian
-        end
-
-        # connect |n> <-> |n+4>
-        if i + 4 <= d
-            val = sqrt((n + 1) * (n + 2) * (n + 3) * (n + 4)) / 4
-            j = i + 4
-            phi_4[i, j] = val
-            phi_4[j, i] = val  # Hermitian
-        end
-    end
-    return phi, phi_sq, pi_sq, phi_4
+    return phi, phi_sq, pi_sq
 end
 
-function get_elems(d_trunc; d::Int=2000, β::Float64=1.0,
-    μ::Float64=0.5, κ::Float64=0.1, m::Float64=1.0, θ::Float64=0.0)
+"""
+Diagonalize the onsite Hamiltonian once and project the operators needed below.
 
-    phi, phi_sq, pi_sq, phi_4 = matrix_elems(d)
-    iden_mat = Array(I, d, d)
+The returned residual checks that the retained vectors diagonalize the projected
+onsite Hamiltonian. It does not by itself estimate oscillator-cutoff convergence.
+"""
+function get_elems(d_trunc::Int; d::Int=2000, beta::Float64=1.0,
+        mu::Float64=0.5, m::Float64=1.0, theta::Float64=0.0)
+    1 <= d_trunc <= d || throw(ArgumentError("require 1 <= d_trunc <= d"))
 
-    ham_mat = (m^2 * phi_sq + pi_sq) / 2 + μ^2 * (iden_mat - cos(β * phi - θ * iden_mat))
+    phi, phi_sq, pi_sq = matrix_elems(d)
+    identity_matrix = Matrix{ComplexF64}(I, d, d)
+    onsite_matrix = (m^2 * phi_sq + pi_sq) / 2 +
+        mu^2 * (identity_matrix - cos(beta * phi - theta * identity_matrix))
 
-    evals, evecs = eigen(ham_mat)
+    eigensystem = eigen(Hermitian(onsite_matrix))
+    retained_vectors = eigensystem.vectors[:, 1:d_trunc]
+    retained_energies = eigensystem.values[1:d_trunc]
 
-    U = evecs[:, 1:d_trunc]
-    ε = evals[1:d_trunc]
+    projected_hamiltonian = retained_vectors' * onsite_matrix * retained_vectors
+    residual = opnorm(projected_hamiltonian - Diagonal(retained_energies), Inf)
+    isfinite(residual) || error("onsite eigensolve produced a non-finite residual")
 
-    norm(U' * ham_mat * U - Diagonal(ε))
+    phi_projected = retained_vectors' * phi * retained_vectors
+    phi_sq_projected = retained_vectors' * phi_sq * retained_vectors
+    local_space = ℂ^d_trunc
 
-    ϕ_mat = U' * phi * U
-    ϕ_sq_mat = U' * phi_sq * U
-    π_sq_mat = U' * pi_sq * U
-    ϕ_4_mat = U' * phi_4 * U
+    phi_tensor = TensorMap(phi_projected, local_space ← local_space)
+    phi_sq_tensor = TensorMap(phi_sq_projected, local_space ← local_space)
+    onsite_tensor = TensorMap(Matrix(Diagonal(retained_energies)),
+        local_space ← local_space)
 
-    ϕ = TensorMap(ϕ_mat, ℂ^d_trunc ← ℂ^d_trunc)
-    H0 = TensorMap(Diagonal(ε), ℂ^d_trunc ← ℂ^d_trunc)
-    # don't actually need these.
-    ϕ2 = TensorMap(ϕ_sq_mat, ℂ^d_trunc ← ℂ^d_trunc)
-    π2 = TensorMap(π_sq_mat, ℂ^d_trunc ← ℂ^d_trunc)
-    ϕ4 = TensorMap(ϕ_4_mat, ℂ^d_trunc ← ℂ^d_trunc)
-    return ϕ, ϕ2, π2, ϕ4, H0
+    return (phi=phi_tensor, phi_sq=phi_sq_tensor, onsite=onsite_tensor,
+        energies=retained_energies, residual=residual)
 end
 
-function build_hamiltonian(L::Int, d_trunc::Int;
-    J::Float64=1.0, κ::Float64=0.1, d::Int=2000, β::Float64=1.0,
-    μ::Float64=0.5, m::Float64=1.0, θ::Float64=0.0)
+"""Construct a finite-chain Hamiltonian from an already projected onsite basis."""
+function build_hamiltonian(L::Int, d_trunc::Int, phi, phi_sq, onsite;
+        source_strength::Float64=1.0, kappa::Float64=0.1)
+    L >= 2 || throw(ArgumentError("L must be at least 2"))
 
-    ϕ, ϕ2, π2, ϕ4, H0 = get_elems(d_trunc; d=d, β=β, μ=μ, κ=κ, m=m, θ=θ)
+    onsite_terms = [i => onsite for i in 1:L]
+    gradient_left = [i => kappa * phi_sq / 2 for i in 1:(L - 1)]
+    gradient_right = [i => kappa * phi_sq / 2 for i in 2:L]
+    gradient_bonds = [(i, i + 1) => -kappa * phi ⊗ phi for i in 1:(L - 1)]
 
-    single_site_terms_ham = [i => H0 for i in 1:L]
-    # these two terms come from the gradient
-    single_site_terms_grad1 = [i => κ * ϕ2 / 2 for i in 1:L-1]
-    single_site_terms_grad2 = [i => κ * ϕ2 / 2 for i in 2:L]
-    # final term comes from the two site coupling in the gradient
-    two_site_terms_grad = [(i, i + 1) => -κ * ϕ ⊗ ϕ for i in 1:L-1]
-    # source terms
-    source_terms = [i => J * ϕ for i in L÷2-2:L÷2+2]
+    center = L ÷ 2
+    source_sites = max(1, center - 2):min(L, center + 2)
+    source_terms = [i => source_strength * phi for i in source_sites]
 
     chain = fill(ℂ^d_trunc, L)
-    ham = FiniteMPOHamiltonian(chain, single_site_terms_grad1...,
-        single_site_terms_grad2..., single_site_terms_ham...,
-        two_site_terms_grad..., source_terms...)
-    return ham
+    return FiniteMPOHamiltonian(chain, gradient_left..., gradient_right...,
+        onsite_terms..., gradient_bonds..., source_terms...)
 end
 
+"""Return a grid from zero through exactly `total_time` with steps no larger than `dt`."""
+function simulation_times(total_time::Float64, dt::Float64)
+    total_time >= 0 || throw(ArgumentError("total_time must be nonnegative"))
+    dt > 0 || throw(ArgumentError("dt must be positive"))
+
+    times = collect(0.0:dt:total_time)
+    tolerance = 16 * eps(max(total_time, dt, 1.0))
+    if isapprox(times[end], total_time; atol=tolerance, rtol=1.0e-12)
+        times[end] = total_time
+    elseif times[end] < total_time
+        push!(times, total_time)
+    end
+    return times
+end
 
 function main()
     args = parse_cmdline()
+    validate_parameters(args)
+    BLAS.set_num_threads(1)
 
     L = args["lattice"]
-    J₀ = args["J0"]
-    J₁ = args["J1"]
+    J0 = args["J0"]
+    J1 = args["J1"]
     d_trunc = args["d_trunc"]
-    D = args["D"]
-    d = args["d"]
-    β = args["beta"]
-    μ = args["mu"]
-    κ = args["kappa"]
-    m = args["m"]
-    θ = args["theta"]
+    bond_dimension = args["D"]
+    oscillator_cutoff = args["d"]
+    beta = args["beta"]
+    mu = args["mu"]
+    kappa = args["kappa"]
+    mass = args["m"]
+    theta = args["theta"]
+    total_time = args["total_time"]
+    dt = args["time_step"]
+    progress_every = args["progress_every"]
 
-    ϕ, ϕ2, π2, ϕ4, H0 = get_elems(d_trunc; d=d, β=β, μ=μ, κ=κ, m=m, θ=θ)
-    ham = build_hamiltonian(L, d_trunc, J=J₀, d=d, β=β, μ=μ, κ=κ, m=m, θ=θ)
+    @info "Building the shared truncated onsite basis" oscillator_cutoff d_trunc
+    basis = get_elems(d_trunc; d=oscillator_cutoff, beta=beta, mu=mu,
+        m=mass, theta=theta)
+    @info "Onsite basis ready" projection_residual=basis.residual
 
-    ψ_gs = FiniteMPS(L, ℂ^d_trunc, ℂ^D)
-    ψ_gs, _, _ = find_groundstate(ψ_gs, ham, DMRG())
+    preparation_hamiltonian = build_hamiltonian(
+        L, d_trunc, basis.phi, basis.phi_sq, basis.onsite;
+        source_strength=J0, kappa=kappa)
+    quench_hamiltonian = build_hamiltonian(
+        L, d_trunc, basis.phi, basis.phi_sq, basis.onsite;
+        source_strength=J1, kappa=kappa)
 
-    ham_quench = build_hamiltonian(L, d_trunc, J=J₁, d=d, β=β, μ=μ, κ=κ, m=m, θ=θ)
+    state = FiniteMPS(L, ℂ^d_trunc, ℂ^bond_dimension)
+    state, _, dmrg_residual = find_groundstate(state, preparation_hamiltonian, DMRG())
+    isfinite(dmrg_residual) || error("DMRG produced a non-finite residual")
+    @info "Ground-state preparation finished" dmrg_residual
 
-    T = 2000 # total time for evolution
-    dt = 0.05 # time step of evolution
-
-    flux = zeros(Float64, T, L)
-
-    for i in 1:L
-        flux[1, i] = real(expectation_value(ψ_gs, i => ϕ))
+    times = simulation_times(total_time, dt)
+    field = zeros(Float64, length(times), L)
+    for site in 1:L
+        field[1, site] = real(expectation_value(state, site => basis.phi))
     end
 
-    plt = heatmap(L÷2-10:L÷2+10, dt * [1:T], flux[:, L÷2-10:L÷2+10], dpi=600, ylabel=L"Lattice time $t$", xlabel=L"Lattice site $n$",
-        right_margin=15mm)
+    # Reuse the quench environments across TDVP steps instead of rebuilding them.
+    tdvp = TDVP()
+    quench_environments = environments(state, quench_hamiltonian)
+    for step in 2:length(times)
+        start_time = times[step - 1]
+        step_size = times[step] - start_time
+        state, quench_environments = timestep(state, quench_hamiltonian,
+            start_time, step_size, tdvp, quench_environments)
 
-    for step in 2:T
-        println("Currently at step $step")
-        ψ_gs, _ = timestep(ψ_gs, ham_quench, (step - 2) * dt, dt, TDVP())
-        for i in 1:L
-            flux[step, i] = real(expectation_value(ψ_gs, i => ϕ))
+        for site in 1:L
+            field[step, site] = real(expectation_value(state, site => basis.phi))
         end
-        heatmap!(plt, L÷2-10:L÷2+10, dt * [1:T], flux[:, L÷2-10:L÷2+10], dpi=600, ylabel="Lattice time", xlabel="Lattice site",
-            right_margin=15mm)
-        display(plt) # display progress with the plot
+        if progress_every > 0 && (step == 2 || step == length(times) ||
+                (step - 1) % progress_every == 0)
+            println("Evolution step $(step - 1)/$(length(times) - 1), t=$(times[step])")
+        end
     end
 
-    filename = "quench_dynamics_dtrunc_d_$(d_trunc)_D_$(D)_T_$(T)_J0_$(J₀)_J1_$(J₁)_kappa_$(κ)_m_$(m)_theta_$(θ)_mu_$(μ)"
-    mkpath("./plots")
-    mkpath("./data")
-    savefig("./plots/$(filename).png")
+    center = L ÷ 2
+    displayed_sites = max(1, center - 10):min(L, center + 10)
+    plot = heatmap(displayed_sites, times, field[:, displayed_sites];
+        dpi=600, ylabel=L"Lattice time $t$", xlabel=L"Lattice site $n$",
+        colorbar_title=L"\langle\phi_n\rangle", right_margin=15mm)
 
-    # save data
-    @save "./data/$(filename).jld2" flux
+    filename = "source_quench_L_$(L)_d_$(oscillator_cutoff)_dtrunc_$(d_trunc)" *
+        "_D_$(bond_dimension)_tmax_$(total_time)_dt_$(dt)_J0_$(J0)_J1_$(J1)" *
+        "_beta_$(beta)_kappa_$(kappa)_m_$(mass)_theta_$(theta)_mu_$(mu)"
+    plot_directory = joinpath(args["output_dir"], "plots")
+    data_directory = joinpath(args["output_dir"], "data")
+    mkpath(plot_directory)
+    mkpath(data_directory)
+    plot_path = joinpath(plot_directory, filename * ".png")
+    data_path = joinpath(data_directory, filename * ".jld2")
 
+    savefig(plot, plot_path)
+    jldsave(data_path; field, flux=field, times, parameters=args,
+        onsite_energies=basis.energies, onsite_projection_residual=basis.residual,
+        dmrg_residual)
+    @info "Saved exploratory source-quench outputs" plot_path data_path
+
+    return (field=field, times=times, plot_path=plot_path, data_path=data_path)
 end
 
-main()
+if abspath(PROGRAM_FILE) == @__FILE__
+    main()
+end

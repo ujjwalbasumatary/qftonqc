@@ -21,7 +21,7 @@ h = 1.1
 two_site_couplings = [(i, i+1) => - J * σ_z ⊗ σ_z for i in 1:L - 1]
 single_site_terms = [i => - h * σ_x for i in 1:L]
 chain = fill(ℂ^2, L)
-model = FiniteMPOHamiltonian(chain, two_site_couplings...)
+model = FiniteMPOHamiltonian(chain, two_site_couplings..., single_site_terms...)
 
 ψ, env, eps = find_groundstate(ψ0, model, DMRG())
 
@@ -40,6 +40,7 @@ offset = 30
 ψ.AC[mid - offset + 5] = S_m_left
 ψ.AC[mid + offset + 5] = S_p_right
 ψ.AC[mid + offset - 5] = S_m_right
+normalize!(ψ)
 
 T = 200
 mag = Array{Float64, 2}(undef, L, T)
@@ -55,7 +56,7 @@ for i in 2:T
     print("\rCurrently at step $i")
     ψ, env = timestep(ψ, model, (i - 1) * dt, dt, TDVP())
     for j in 1:L
-        mag[j, i] = real(expectation_value(ψ, j => S_z))
+        mag[j, i] = real(expectation_value(ψ, j => σ_z))
     end
 end
 

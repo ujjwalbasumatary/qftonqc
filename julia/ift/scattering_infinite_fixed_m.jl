@@ -1,4 +1,5 @@
 using MPSKit, TensorKit, Plots, JLD2, LaTeXStrings, ArgParse, LinearAlgebra
+using QFTSimulations: two_particle_packet_tensors
 
 BLAS.set_num_threads(1)
 
@@ -7,9 +8,13 @@ function parse_cmdline()
 
     @add_arg_table! s begin
         "--bond_dimension", "-D"
-        help = "Maximum bond dimension"
+        help = "Ground-state bond dimension"
         arg_type = Int
         default = 10
+        "--evolution_bond_dimension"
+        help = "Maximum bond dimension during two-site TDVP (0 uses 2D)"
+        arg_type = Int
+        default = 0
         "--length", "-L"
         help = "Length of the window"
         arg_type = Int
@@ -23,7 +28,7 @@ function parse_cmdline()
         arg_type = Float64
         default = 0.3
         "--total_time", "-T"
-        help = "Total time for the evolution"
+        help = "Number of saved time samples, including t = 0"
         arg_type = Int
         default = 800
         "--time_step", "-t"
@@ -41,7 +46,7 @@ function parse_cmdline()
         "--sigma", "-s"
         help = "Spread of the position space wavepacket"
         arg_type = Float64
-        default = 0.1
+        default = 10.0
     end
 
     return parse_args(ARGS, s)
@@ -105,27 +110,6 @@ function get_B_tensor_list(states)
     return B_list
 end
 
-function block_upper(AL, AR, B)
-    D, d, D2 = size(AL)
-    @assert size(B) == (D, d, D2)
-    @assert D == D2 "A must be D x d x D"
-
-    T = zeros(eltype(AL), 2D, d, 2D)
-
-    # top-left block = AL
-    T[1:D, :, 1:D] .= AL
-
-    # top-right block = B
-    T[1:D, :, D+1:2D] .= B
-
-    # bottom-left block = 0  (already zero)
-
-    # bottom-right block = AR
-    T[D+1:2D, :, D+1:2D] .= AR
-
-    return T
-end
-
 function create_stacked_tensor(ψ_gs, B_list, L, n_center, κ, σ)
     """
     Takes the ground state left and right environments and constructs
@@ -137,35 +121,36 @@ function create_stacked_tensor(ψ_gs, B_list, L, n_center, κ, σ)
     AR_array = convert(Array, AR)
     D, d, _ = size(AL_array)
 
-    # create a window of the same type as AL i.e. TensorMap
-    window = eltype(ψ_gs.AL)[]
-    """
-    B_list[1] is right moving and
-    B_list[2] is left moving
-    """
-    mat = cat(AL_array, B_list[1] * exp(im * (1 - n_center) * κ - (1 - n_center)^2 / σ^2); dims=3)
-    tensor = TensorMap(mat, ℂ^(D) ⊗ ℂ^d ← ℂ^(2D))
-    push!(window, tensor)
     Lhalf = L ÷ 2
-    for i in 2:Lhalf
-        mat = block_upper(AL_array, AR_array, B_list[1] * exp(im * (i - n_center) * κ - (i - n_center)^2 / σ^2))
-        tensor = TensorMap(mat, ℂ^(2D) ⊗ ℂ^d ← ℂ^(2D))
-        push!(window, tensor)
-    end
-    for i in Lhalf+1:L-1
-        mat = block_upper(AL_array, AR_array, B_list[2] * exp(-im * (i - L + n_center) * κ - (i - (L - n_center))^2 / σ^2))
-        tensor = TensorMap(mat, ℂ^(2D) ⊗ ℂ^d ← ℂ^(2D))
-        push!(window, tensor)
-    end
-    mat = cat(B_list[2] * exp(-im * (L - (L - n_center)) * κ - (L - (L - n_center))^2 / σ^2), AR_array; dims=1)
-    tensor = TensorMap(mat, ℂ^(2D) ⊗ ℂ^d ← ℂ^(D))
-    push!(window, tensor)
-    return window
+    1 < n_center < Lhalf ||
+        throw(ArgumentError("n_center must lie strictly inside the left half-window"))
+    σ > 0 || throw(ArgumentError("sigma must be positive"))
+
+    left_packet = [
+        B_list[1] * exp(im * (i - n_center) * κ - (i - n_center)^2 / σ^2)
+        for i in 1:Lhalf
+    ]
+    right_center = L - n_center
+    right_packet = [
+        B_list[2] * exp(-im * (i - right_center) * κ - (i - right_center)^2 / σ^2)
+        for i in (Lhalf + 1):L
+    ]
+
+    C = ψ_gs.C[]
+    Cinv = convert(Array, C \ id(domain(C)))
+    dense_window = two_particle_packet_tensors(
+        AL_array, AR_array, Cinv, left_packet, right_packet
+    )
+    return [
+        TensorMap(mat, ℂ^(size(mat, 1)) ⊗ ℂ^d ← ℂ^(size(mat, 3)))
+        for mat in dense_window
+    ]
 end
 
 function main(parsed_args)
     # Parse arguments for the simulation.
-    D = parsed_args["bond_dimension"] # max bond dimension
+    D = parsed_args["bond_dimension"]
+    D_evolution_arg = parsed_args["evolution_bond_dimension"]
     T = parsed_args["total_time"]
     dt = parsed_args["time_step"]
     σ = parsed_args["sigma"] # position space spread
@@ -175,10 +160,20 @@ function main(parsed_args)
     h_z = parsed_args["h_z"]
     h_x = parsed_args["h_x"]
 
+    D > 0 || throw(ArgumentError("bond_dimension must be positive"))
+    T > 0 || throw(ArgumentError("total_time must be positive"))
+    dt > 0 || throw(ArgumentError("time_step must be positive"))
+    iseven(L) || throw(ArgumentError("length must be even"))
+    D_evolution = iszero(D_evolution_arg) ? 2D : D_evolution_arg
+    D_evolution >= 2D || throw(ArgumentError(
+        "evolution_bond_dimension must be at least 2 * bond_dimension = $(2D)"
+    ))
+
     println("Running simulation for the following set of parameters: ")
     for (arg, val) in parsed_args
         println("$arg = $val")
     end
+    println("effective evolution_bond_dimension = $D_evolution")
 
     ham = get_ham(h_x, h_z)
     ψ_gs = prep_gs(D, ham)
@@ -216,30 +211,48 @@ function main(parsed_args)
     end
     s_z_exp[1, L] = real(expectation_value(ψ_window, L => σ_z)) - gs_value_s_z[L]
     # time evolution loop starts here
+    evolution_alg = TDVP2(; trscheme=truncrank(D_evolution))
     for t_step in 2:T
         println("\rCurrently at step $t_step")
-        ψ_window, _ = timestep(ψ_window, ham, t_step - 1, dt, TDVP())
+        t = (t_step - 2) * dt
+        ψ_window, _ = timestep(ψ_window, ham, t, dt, evolution_alg)
         for i in 1:L-1
             energy_exp[t_step, i] = real(expectation_value(ψ_window, (i, i + 1) => ham_density)) - gs_value_energy[i]
             s_z_exp[t_step, i] = real(expectation_value(ψ_window, i => σ_z)) - gs_value_s_z[i]
         end
         s_z_exp[t_step, L] = real(expectation_value(ψ_window, L => σ_z)) - gs_value_s_z[L]
     end
-    heatmap(energy_exp, dpi=600)
+
+    times = (0:(T - 1)) .* dt
+    energy_plot = heatmap(
+        1:(L - 1), times, energy_exp[:, 1:(L - 1)]; dpi=600,
+        xlabel=L"Lattice bond $n$", ylabel=L"Lattice time $t$",
+        title=L"$E - E_{vac}$ for $h_x$ = %$(h_x)$, $h_z$ = %$(h_z)$"
+    )
+    sz_plot = heatmap(
+        1:L, times, s_z_exp; dpi=600,
+        xlabel=L"Lattice site $n$", ylabel=L"Lattice time $t$",
+        title=L"$S_z - (S_z)_{vac}$ for $h_x$ = %$(h_x)$, $h_z$ = %$(h_z)$"
+    )
 
     # make the folder plots if it does not exist
-    mkpath("./fixed_mom/plots")
+    plot_dir = joinpath(@__DIR__, "fixed_mom", "plots")
+    data_dir = joinpath(@__DIR__, "fixed_mom", "data")
+    mkpath(plot_dir)
+    mkpath(data_dir)
 
-    filename = replace("scattering_infinite_mom_$(κ)_hx_$(h_x)_hz_$(h_z)_sigma_$(σ)_L_$(L)_n_$(n_center)_T_$(T)_D_$(D)_dt_$(dt)", '.' => 'p', '-' => 'm')
-    full_path_image = "./fixed_mom/plots/" * filename * ".png"
+    filename = replace("scattering_infinite_mom_$(κ)_hx_$(h_x)_hz_$(h_z)_sigma_$(σ)_L_$(L)_n_$(n_center)_T_$(T)_D_$(D)_Dmax_$(D_evolution)_dt_$(dt)", '.' => 'p', '-' => 'm')
+    energy_image_path = joinpath(plot_dir, "$(filename)_energy.png")
+    sz_image_path = joinpath(plot_dir, "$(filename)_sz.png")
 
-    savefig(full_path_image)
+    savefig(energy_plot, energy_image_path)
+    savefig(sz_plot, sz_image_path)
     println("Plot saved.")
 
-    mkpath("./fixed_mom/data")
-
-    @save "./fixed_mom/data/energy_" * filename * ".jld2" energy_exp
-    @save "./fixed_mom/data/sz_value_" * filename * ".jld2" s_z_exp
+    energy_path = joinpath(data_dir, "energy_$(filename).jld2")
+    sz_path = joinpath(data_dir, "sz_value_$(filename).jld2")
+    @save energy_path energy_exp times
+    @save sz_path s_z_exp times
     println("Data saved.")
 end
 

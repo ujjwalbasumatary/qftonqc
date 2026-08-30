@@ -1,4 +1,5 @@
 using MPSKit, TensorKit, Plots, JLD2, LaTeXStrings, ArgParse, LinearAlgebra
+using QFTSimulations: commensurate_momentum_grid, two_particle_packet_tensors
 BLAS.set_num_threads(1)
 
 function parse_cmdline()
@@ -10,11 +11,15 @@ function parse_cmdline()
         arg_type = Float64
         default = 0.1
         "--bond_dimension", "-D"
-        help = "Maximum bond dimension"
+        help = "Ground-state bond dimension"
         arg_type = Int
         default = 10
+        "--evolution_bond_dimension"
+        help = "Maximum bond dimension during two-site TDVP (0 uses 2D)"
+        arg_type = Int
+        default = 0
         "--total_time", "-T"
-        help = "Maximum time step for the evolution"
+        help = "Number of saved time samples, including t = 0"
         arg_type = Int
         default = 800
         "--mom", "-m"
@@ -32,11 +37,11 @@ function parse_cmdline()
         "--h_x", "-x"
         help = "X field strength"
         arg_type = Float64
-        default = 0.0
+        default = 1.06
         "--h_z", "-z"
         help = "Z field strength"
         arg_type = Float64
-        default = 0.0
+        default = 0.01
         "--sigma", "-s"
         help = "Spread of the momentum space wavepacket"
         arg_type = Float64
@@ -71,8 +76,8 @@ function prep_gs(D, ham)
     return ψ
 end
 
-function get_QPstate(ψ_gs, ham, Δp)
-    energies, states = excitations(ham, QuasiparticleAnsatz(), -π:Δp:π-Δp, ψ_gs)
+function get_QPstate(ψ_gs, ham, momenta)
+    energies, states = excitations(ham, QuasiparticleAnsatz(), momenta, ψ_gs)
     return energies, states
 end
 
@@ -113,32 +118,17 @@ function create_B_packet(B_tensor_list, n, offset, mom_idx, Δp, sigma)
     shape_tensor = size(B_tensor_list[1])
     B_packet = zeros(ComplexF64, shape_tensor)
     for i in 1:p_max
-        B_packet += exp(-((i - mom_idx) * Δp)^2 / sigma^2) * exp(im * (-π + (i - 1) * Δp) * (n - offset)) * B_tensor_list[i]
+        δp = mod((i - mom_idx) * Δp + π, 2π) - π
+        p = -π + (i - 1) * Δp
+        B_packet += exp(-δp^2 / sigma^2) * exp(im * p * (n - offset)) * B_tensor_list[i]
     end
     return B_packet
 end
 
-function block_upper(AL, AR, B)
-    D, d, D2 = size(AL)
-    @assert size(B) == (D, d, D2)
-    @assert D == D2 "A must be D x d x D"
-
-    T = zeros(eltype(AL), 2D, d, 2D)
-
-    # top-left block = AL
-    T[1:D, :, 1:D] .= AL
-
-    # top-right block = B
-    T[1:D, :, D+1:2D] .= B
-
-    # bottom-left block = 0  (already zero)
-
-    # bottom-right block = AR
-    T[D+1:2D, :, D+1:2D] .= AR
-
-    return T
+function nearest_momentum_index(momentum, Δp, n_momenta)
+    wrapped_momentum = mod(momentum + π, 2π) - π
+    return mod(round(Int, (wrapped_momentum + π) / Δp), n_momenta) + 1
 end
-
 
 function create_stacked_tensor(ψ_gs, B_packet_list_left, B_packet_list_right, L)
     """
@@ -151,58 +141,60 @@ function create_stacked_tensor(ψ_gs, B_packet_list_left, B_packet_list_right, L
     AR_array = convert(Array, AR)
     D, d, _ = size(AL_array)
 
-    # the piece with C^{-1} 'glued in'
-    # c = ψ_gs.C[]
-    # c_inv = c \ id(domain(c))
-    # @tensor AR_glue_TM[a, b; c] := AR[a, b; d] * c_inv[d; c]
-    # AR_glue = convert(Array, AR_glue_TM)
+    length(B_packet_list_left) == L == length(B_packet_list_right) ||
+        throw(DimensionMismatch("both packet supports must have length L"))
 
-    # create a window of the same type as AL i.e. TensorMap
-    window = eltype(ψ_gs.AL)[]
-    """
-    B_1 is left moving and B_2 is right moving.
-    So B_2 spans 1:mid and B_1 spans mid + 1 : L
-    """
-    mat = cat(AL_array, B_packet_list_left[1]; dims=3)
-    tensor = TensorMap(mat, ℂ^(D) ⊗ ℂ^d ← ℂ^(2D))
-    push!(window, tensor)
-    for i in 2:L
-        mat = block_upper(AL_array, AR_array, B_packet_list_left[i])
-        tensor = TensorMap(mat, ℂ^(2D) ⊗ ℂ^d ← ℂ^(2D))
-        push!(window, tensor)
-    end
+    C = ψ_gs.C[]
+    Cinv = convert(Array, C \ id(domain(C)))
+    dense_window = two_particle_packet_tensors(
+        AL_array, AR_array, Cinv, B_packet_list_left, B_packet_list_right
+    )
 
-    # start next window
-    for i in 1:L-1
-        mat = block_upper(AL_array, AR_array, B_packet_list_right[i])
-        tensor = TensorMap(mat, ℂ^(2D) ⊗ ℂ^d ← ℂ^(2D))
-        push!(window, tensor)
-    end
-    mat = cat(B_packet_list_right[L], AR_array; dims=1)
-    tensor = TensorMap(mat, ℂ^(2D) ⊗ ℂ^d ← ℂ^(D))
-    push!(window, tensor)
-    return window
+    # Each packet is closed before the next is reopened. This guarantees one B
+    # insertion in each region; one block-upper chain across both regions would
+    # instead encode a single particle in a superposition of two locations.
+    return [
+        TensorMap(mat, ℂ^(size(mat, 1)) ⊗ ℂ^d ← ℂ^(size(mat, 3)))
+        for mat in dense_window
+    ]
 end
 
 function main()
     # Parse arguments for the simulation.
     parsed_args = parse_cmdline()
     D = parsed_args["bond_dimension"] # max bond dimension
+    D_evolution_arg = parsed_args["evolution_bond_dimension"]
     T = parsed_args["total_time"]
     dt = parsed_args["time_step"]
-    Δp = parsed_args["delta_p"]
+    requested_Δp = parsed_args["delta_p"]
     σ = parsed_args["sigma"]
     h_z = parsed_args["h_z"]
     h_x = parsed_args["h_x"]
     J = parsed_args["J"]
     mom = parsed_args["mom"]
 
+    D > 0 || throw(ArgumentError("bond_dimension must be positive"))
+    T > 0 || throw(ArgumentError("total_time must be positive"))
+    dt > 0 || throw(ArgumentError("time_step must be positive"))
+    requested_Δp > 0 || throw(ArgumentError("delta_p must be positive"))
+    isfinite(mom) || throw(ArgumentError("mom must be finite"))
+    D_evolution = iszero(D_evolution_arg) ? 2D : D_evolution_arg
+    D_evolution >= 2D || throw(ArgumentError(
+        "evolution_bond_dimension must be at least 2 * bond_dimension = $(2D)"
+    ))
+
     println("Running simulation for the following set of parameters: ")
     for (arg, val) in parsed_args
         println("$arg = $val")
     end
+    println("effective evolution_bond_dimension = $D_evolution")
 
-    L_sites = floor(Int, 2 * π / Δp) # number of sites spanning the states   
+    n_momenta = round(Int, 2π / requested_Δp)
+    n_momenta >= 2 || throw(ArgumentError("delta_p must produce at least two momentum points"))
+    momenta = commensurate_momentum_grid(n_momenta)
+    Δp = step(momenta)
+    L_sites = length(momenta)
+    println("commensurate momentum grid: n = $n_momenta, delta_p = $Δp")
 
     ham = get_ham(J, h_x, h_z)
     ψ_gs = prep_gs(D, ham)
@@ -210,12 +202,12 @@ function main()
     println("Correlation length: $ξ")
     println("Ground state energy: $(expectation_value(ψ_gs, ham))")
 
-    energies, states = get_QPstate(ψ_gs, ham, Δp)
+    energies, states = get_QPstate(ψ_gs, ham, momenta)
     offset_left = L_sites ÷ 2 # where in the window I want the packet to appear?
     offset_right = L_sites ÷ 2
 
-    mom_idx_left = 1 + floor(Int, (mom + π) / Δp)
-    mom_idx_right = 1 + floor(Int, (-mom + π) / Δp)
+    mom_idx_left = nearest_momentum_index(mom, Δp, n_momenta)
+    mom_idx_right = nearest_momentum_index(-mom, Δp, n_momenta)
     B_tensor_list = get_B_tensor_list(states)
     B_packet_list_left = [create_B_packet(B_tensor_list, n, offset_left, mom_idx_left, Δp, σ) for n in 1:L_sites]
     B_packet_list_right = [create_B_packet(B_tensor_list, n, offset_right, mom_idx_right, Δp, σ) for n in 1:L_sites]
@@ -244,40 +236,53 @@ function main()
     end
     s_z_exp[1, L] = real(expectation_value(ψ_window, L => σ_z)) - gs_value_s_z[L]
 
-    # create the plots for energy and s_z
-    energy_plot = heatmap(1:L, dt * [1:T], energy_exp, dpi=600, title=L"$E - E_{vac}$ for $h_x$ = %$(h_x)$, $h_z$ = %$(h_z)$", xlabel=L"Lattice site $n$", ylabel=L"Lattice time $t$")
-    sz_plot = heatmap(1:L, dt * [1:T], s_z_exp, dpi=600, title=L"$S_z$ for $h_x$ = %$(h_x)$, $h_z$ = %$(h_z)$", xlabel=L"Lattice site $n$", ylabel=L"Lattice time $t$")
-
     # time evolution loop starts here
+    evolution_alg = TDVP2(; trscheme=truncrank(D_evolution))
     for t_step in 2:T
         println("\rCurrently at step $t_step")
-        ψ_window, _ = timestep(ψ_window, ham, t_step - 2, dt, TDVP())
+        t = (t_step - 2) * dt
+        ψ_window, _ = timestep(ψ_window, ham, t, dt, evolution_alg)
         for i in 1:L-1
             energy_exp[t_step, i] = real(expectation_value(ψ_window, (i, i + 1) => ham_density)) - gs_value_energy[i]
             s_z_exp[t_step, i] = real(expectation_value(ψ_window, i => σ_z)) - gs_value_s_z[i]
         end
         s_z_exp[t_step, L] = real(expectation_value(ψ_window, L => σ_z)) - gs_value_s_z[L]
 
-        heatmap!(energy_plot, 1:L, dt * [1:T], energy_exp, dpi=600, xlabel=L"Lattice site $n$", ylabel=L"Lattice time $t$", overwrite=true)
-        heatmap!(sz_plot, 1:L, dt * [1:T], s_z_exp, dpi=600, xlabel=L"Lattice site $n$", ylabel=L"Lattice time $t$", overwrite=true)
-        display(energy_plot)
     end
 
+    times = (0:(T - 1)) .* dt
+    energy_plot = heatmap(
+        1:(L - 1), times, energy_exp[:, 1:(L - 1)]; dpi=600,
+        title=L"$E - E_{vac}$ for $h_x$ = %$(h_x)$, $h_z$ = %$(h_z)$",
+        xlabel=L"Lattice bond $n$", ylabel=L"Lattice time $t$"
+    )
+    sz_plot = heatmap(
+        1:L, times, s_z_exp; dpi=600,
+        title=L"$S_z - (S_z)_{vac}$ for $h_x$ = %$(h_x)$, $h_z$ = %$(h_z)$",
+        xlabel=L"Lattice site $n$", ylabel=L"Lattice time $t$"
+    )
+
     # make the folder plots if it does not exist
-    mkpath("./plots")
-    mkpath("./data")
+    plot_dir = joinpath(@__DIR__, "plots")
+    data_dir = joinpath(@__DIR__, "data")
+    mkpath(plot_dir)
+    mkpath(data_dir)
 
-    filename = replace("scattering_infinite_J_mom_$(mom)_$(J)_hx_$(h_x)_hz_$(h_z)_dp_$(Δp)_sigma_$(σ)_T_$(T)_D_$(D)_dt_$(dt)", '.' => 'p', '-' => 'm')
-    full_path_sz_image = "./plots/$(filename)_sz.png"
-    full_path_energy_image = "./plots/$(filename)_energy.png"
+    filename = replace("scattering_infinite_J_mom_$(mom)_$(J)_hx_$(h_x)_hz_$(h_z)_dp_$(Δp)_sigma_$(σ)_T_$(T)_D_$(D)_Dmax_$(D_evolution)_dt_$(dt)", '.' => 'p', '-' => 'm')
+    full_path_sz_image = joinpath(plot_dir, "$(filename)_sz.png")
+    full_path_energy_image = joinpath(plot_dir, "$(filename)_energy.png")
 
-    savefig(full_path_sz_image)
-    savefig(full_path_energy_image)
+    savefig(sz_plot, full_path_sz_image)
+    savefig(energy_plot, full_path_energy_image)
     println("Plot saved.")
 
-    @save "./data/$(filename)_energy.jld2" energy_exp
-    @save "./data/$(filename)_sz.jld2" s_z_exp
+    energy_path = joinpath(data_dir, "$(filename)_energy.jld2")
+    sz_path = joinpath(data_dir, "$(filename)_sz.jld2")
+    @save energy_path energy_exp times
+    @save sz_path s_z_exp times
     println("Data saved.")
 end
 
-main()
+if abspath(PROGRAM_FILE) == @__FILE__
+    main()
+end
