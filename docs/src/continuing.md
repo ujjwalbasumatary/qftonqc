@@ -157,12 +157,14 @@ julia --startup-file=no --project=simulations -e 'using Pkg; Pkg.test()'
 These tests compare oscillator matrix elements, dispersion formulas,
 momentum grids, Gaussian weights, and particle numbers in a product-vacuum
 packet construction. They do not run the model scripts. After changing a
-script, use its `--help` command to check the arguments and run a short
-evolution into a separate `--output_dir`. Load the resulting JLD2 file to
-check the saved keys, array dimensions, and initial and final times. For a
-new observable, compare the first saved row with a direct expectation value
-in the prepared state. Comparisons between time steps, bond dimensions,
-basis sizes, and window lengths are described in
+script, use its `--help` command to check the arguments. For an evolution
+script, run a short evolution into a separate `--output_dir` and load the
+resulting JLD2 file to check the saved keys, array dimensions, and initial
+and final times. The spectrum program prints its energy table to the
+terminal; compare those values after an edit. For a new observable, compare
+the first saved row with a direct expectation value in the prepared state,
+using the same vacuum subtraction. Comparisons between time steps, bond
+dimensions, basis sizes, and window lengths are described in
 [Numerical comparisons](comparisons.md).
 
 ## Calculating outgoing probabilities

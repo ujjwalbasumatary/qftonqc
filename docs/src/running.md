@@ -89,9 +89,16 @@ the conversion from the saved field to electric flux.
 
 ## Lattice phi-four theory
 
+The following command keeps the default couplings and packet parameters,
+and evolves from ``t=0`` to ``t=1`` in steps of ``0.05``.
+
 ```bash
 julia --startup-file=no --project=simulations \
-  simulations/models/phi4/scripts/collide_wavepackets.jl --help
+  simulations/models/phi4/scripts/collide_wavepackets.jl \
+  --local_dim 5 --bond_dimension 10 --evolution_bond_dimension 20 \
+  --mu_sq 0.5 --lambda 2.0 --momentum 0.3 --delta_p 0.1 --sigma 0.1 \
+  --total_time 21 --time_step 0.05 \
+  --output_dir results/phi4/mu0p5_lambda2_k0p3
 ```
 
 The argument `--local_dim` sets the number of oscillator states retained at
@@ -101,6 +108,12 @@ grid. As in the Ising momentum-grid program, `--total_time` counts saved
 samples and the window has twice as many sites as momentum points. The
 program saves the bond energy and ``\phi^2`` expectation value after
 subtracting their values in the vacuum.
+
+Here the grid has 63 momenta, so the window has 126 sites. The 21 saved rows
+include the initial state. Increase `--total_time` to follow the packets for
+longer, keeping the last time before an outgoing packet reaches a window
+boundary. The [wave-packet page](physics/wave-packets.md) describes the
+momentum weights and their effect on the initial packet shape.
 
 ## Workstation runs
 
