@@ -9,6 +9,7 @@ include(joinpath(@__DIR__, "..", "models", "ift", "scripts", "spectrum.jl"))
 end
 
 include("spectrum.jl")
+include("ift_state_io.jl")
 
 @testset "Projected harmonic-oscillator operators" begin
     d = 10

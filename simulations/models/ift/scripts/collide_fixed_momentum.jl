@@ -1,5 +1,7 @@
 using MPSKit, TensorKit, Plots, JLD2, LaTeXStrings, ArgParse, LinearAlgebra
 using QFTSimulations: two_particle_packet_tensors
+include(joinpath(@__DIR__, "state_io.jl"))
+using .IFTStateIO
 
 BLAS.set_num_threads(1)
 
@@ -7,8 +9,8 @@ BLAS.set_num_threads(1)
     DEFAULT_OUTPUT_DIRECTORY
 
 Directory used when `--output_dir` is omitted. Figures are saved in
-`results/ift/plots/`, and the arrays used to make them are saved in
-`results/ift/data/`.
+`results/ift/plots/`, arrays in `results/ift/data/`, and MPS states in a
+separate directory for each run beneath `results/ift/states/`.
 """
 const DEFAULT_OUTPUT_DIRECTORY = normpath(
     joinpath(@__DIR__, "..", "..", "..", "..", "results", "ift")
@@ -27,6 +29,11 @@ must be even when passed to `main`. `n_center` locates the left packet; the
 right packet is centred at `length - n_center`. The position-space amplitude
 is proportional to `exp(-x^2/sigma^2)`. `evolution_bond_dimension = 0` asks
 `main` to use twice the vacuum bond dimension.
+
+`save_every` counts completed evolution steps, not stored rows. Its default
+is 50. The initial and final states are always saved; zero omits intermediate
+states. With `T=126`, `dt=0.1`, and `save_every=50`, states are saved at times
+0, 5, 10, and 12.5.
 
 Calling this function with `--help` prints the option list and exits through
 ArgParse.
@@ -79,6 +86,10 @@ function parse_cmdline()
         help = "Root directory in which plots/ and data/ are created"
         arg_type = String
         default = DEFAULT_OUTPUT_DIRECTORY
+        "--save_every"
+        help = "Save the MPS every this many completed steps (0 saves only initial and final states)"
+        arg_type = Int
+        default = 50
     end
 
     return parse_args(ARGS, s)
@@ -265,8 +276,7 @@ weight threshold.
 
 `D`, `T`, and `dt` must be positive, `L` must be even, and an explicitly
 supplied `D_evolution` must be at least `2D`. `create_stacked_tensor` also
-checks the packet centre and Gaussian width. The two excitation energies
-calculated at ``+\kappa`` and ``-\kappa`` are not saved.
+checks the packet centre and Gaussian width. `save_every` must be nonnegative.
 
 For every stored time, the program evaluates the vacuum-subtracted symmetric
 bond-energy density
@@ -289,12 +299,21 @@ The program saves two 600-dpi PNG heatmaps in `plots/` and two JLD2 files in
 `s_z_exp` and `times`. File names contain the fields, packet parameters, window
 length, bond dimensions, sample count, and time step. The program also prints
 the input parameters, vacuum correlation length, vacuum energy, and the current
-time-step index.
+time-step index. Progress is flushed to the terminal or redirected log after
+each completed step.
+
+The initial MPS, each requested intermediate MPS, and the final MPS are
+written before plotting to a new directory beneath `states/`. Each file
+contains the physical time, norm, run parameters, current local observables,
+vacuum, Hamiltonian, excitation energies and tensors used in preparation,
+and source and package information. The step-zero state supplies the
+incoming reference for later sector overlaps. See `IFTStateIO.save_ift_state`
+for the file contents and step convention. The returned named tuple gives
+`state_directory`, `energy_path`, and `spin_path`.
 
 The saved heatmaps are local expectation values. They contain no projection
-onto outgoing particle sectors. The program writes no separate series for the
-state norm, summed-energy drift, discarded weight, or estimated arrival at a
-window boundary.
+onto outgoing particle sectors. Norms are stored at the MPS saving times;
+discarded weights and distances to a window boundary are not recorded.
 """
 function main(parsed_args)
     D = parsed_args["bond_dimension"]
@@ -308,10 +327,12 @@ function main(parsed_args)
     h_z = parsed_args["h_z"]
     h_x = parsed_args["h_x"]
     output_root = abspath(parsed_args["output_dir"])
+    save_every = get(parsed_args, "save_every", 50)
 
     D > 0 || throw(ArgumentError("bond_dimension must be positive"))
     T > 0 || throw(ArgumentError("total_time must be positive"))
-    dt > 0 || throw(ArgumentError("time_step must be positive"))
+    isfinite(dt) && dt > 0 || throw(ArgumentError("time_step must be finite and positive"))
+    save_every >= 0 || throw(ArgumentError("save_every must be nonnegative"))
     iseven(L) || throw(ArgumentError("length must be even"))
     D_evolution = iszero(D_evolution_arg) ? 2D : D_evolution_arg
     D_evolution >= 2D || throw(ArgumentError(
@@ -323,12 +344,21 @@ function main(parsed_args)
         println("$arg = $val")
     end
     println("effective evolution_bond_dimension = $D_evolution")
+    flush(stdout)
+
+    filename = replace("scattering_infinite_mom_$(κ)_hx_$(h_x)_hz_$(h_z)_sigma_$(σ)_L_$(L)_n_$(n_center)_T_$(T)_D_$(D)_Dmax_$(D_evolution)_dt_$(dt)", '.' => 'p', '-' => 'm')
+    state_root = joinpath(output_root, "states")
+    mkpath(state_root)
+    state_directory = mktempdir(state_root; prefix=filename * "_", cleanup=false)
+    println("MPS states will be saved in $state_directory")
+    flush(stdout)
 
     ham = get_ham(h_x, h_z)
     ψ_gs = prep_gs(D, ham)
     ξ = correlation_length(ψ_gs)
     println("Correlation length: $ξ")
     println("Ground state energy: $(expectation_value(ψ_gs, ham))")
+    flush(stdout)
 
     energies, states = get_QPstate(ψ_gs, ham, [κ, -κ])
 
@@ -347,14 +377,39 @@ function main(parsed_args)
     gs_value_energy = [real(expectation_value(ψ_gs, (i, i + 1) => ham_density)) for i in 1:L-1]
     gs_value_s_z = [real(expectation_value(ψ_gs, i => σ_z)) for i in 1:L]
 
+    parameters = copy(parsed_args)
+    parameters["evolution_bond_dimension"] = D_evolution
+    parameters["save_every"] = save_every
+    parameters["output_dir"] = output_root
+    reference = Dict{String, Any}(
+        "vacuum" => deepcopy(ψ_gs),
+        "hamiltonian" => ham,
+        "momenta" => [κ, -κ],
+        "excitation_energies" => energies,
+        "excitation_tensors" => B_list,
+        "correlation_length" => ξ,
+        "vacuum_energy_density" => gs_value_energy,
+        "vacuum_spin_density" => gs_value_s_z,
+    )
+    project_directory = normpath(joinpath(@__DIR__, "..", "..", ".."))
+    provenance = state_provenance(project_directory, [
+        @__FILE__, joinpath(@__DIR__, "state_io.jl"),
+        joinpath(project_directory, "src", "QFTSimulations.jl"),
+    ])
+
     for i in 1:L-1
         energy_exp[1, i] = real(expectation_value(ψ_window, (i, i + 1) => ham_density)) - gs_value_energy[i]
         s_z_exp[1, i] = real(expectation_value(ψ_window, i => σ_z)) - gs_value_s_z[i]
     end
     s_z_exp[1, L] = real(expectation_value(ψ_window, L => σ_z)) - gs_value_s_z[L]
+    save_ift_state(joinpath(state_directory, "step_000000.jld2"), ψ_window;
+        step=0, dt, parameters, reference, provenance,
+        energy_density=energy_exp[1, 1:L-1], spin_density=s_z_exp[1, :])
+    println("Saved initial MPS at t = 0")
+    flush(stdout)
     evolution_alg = TDVP2(; trscheme=truncrank(D_evolution))
+    evolution_start = time_ns()
     for t_step in 2:T
-        println("\rCurrently at step $t_step")
         t = (t_step - 2) * dt
         ψ_window, _ = timestep(ψ_window, ham, t, dt, evolution_alg)
         for i in 1:L-1
@@ -362,6 +417,16 @@ function main(parsed_args)
             s_z_exp[t_step, i] = real(expectation_value(ψ_window, i => σ_z)) - gs_value_s_z[i]
         end
         s_z_exp[t_step, L] = real(expectation_value(ψ_window, L => σ_z)) - gs_value_s_z[L]
+        completed_steps = t_step - 1
+        if should_save_state(completed_steps, T - 1, save_every)
+            state_path = joinpath(state_directory, "step_$(lpad(string(completed_steps), 6, '0')).jld2")
+            save_ift_state(state_path, ψ_window;
+                step=completed_steps, dt, parameters, reference, provenance,
+                energy_density=energy_exp[t_step, 1:L-1], spin_density=s_z_exp[t_step, :])
+        end
+        elapsed = (time_ns() - evolution_start) / 1e9
+        println("Completed step $completed_steps/$(T - 1), t = $(completed_steps * dt), elapsed = $(round(elapsed; digits=2)) s")
+        flush(stdout)
     end
 
     times = (0:(T - 1)) .* dt
@@ -381,7 +446,6 @@ function main(parsed_args)
     mkpath(plot_dir)
     mkpath(data_dir)
 
-    filename = replace("scattering_infinite_mom_$(κ)_hx_$(h_x)_hz_$(h_z)_sigma_$(σ)_L_$(L)_n_$(n_center)_T_$(T)_D_$(D)_Dmax_$(D_evolution)_dt_$(dt)", '.' => 'p', '-' => 'm')
     energy_image_path = joinpath(plot_dir, "$(filename)_energy.png")
     sz_image_path = joinpath(plot_dir, "$(filename)_sz.png")
 
@@ -394,6 +458,8 @@ function main(parsed_args)
     @save energy_path energy_exp times
     @save sz_path s_z_exp times
     println("Data saved.")
+    flush(stdout)
+    return (; state_directory, energy_path, spin_path=sz_path)
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__
