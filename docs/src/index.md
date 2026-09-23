@@ -6,7 +6,7 @@ the course notebooks and student projects, together with Julia calculations
 of quantum fields in one spatial dimension.
 
 The Julia programs use matrix product states to describe the vacuum and its
-excitations. In the Ising and lattice phi-four calculations, two localized
+excitations. In the Ising and lattice ``\phi^4`` calculations, two localized
 wave packets approach each other and evolve under the interacting
 Hamiltonian. The saved energy and field expectation values follow their
 motion through the lattice. The Schwinger program prepares a finite chain

@@ -23,7 +23,7 @@ makedocs(
         "Physics" => [
             "Ising field theory" => "physics/ising.md",
             "Bosonized Schwinger model" => "physics/schwinger.md",
-            "Lattice phi-four theory" => "physics/phi4.md",
+            "Lattice ``\\phi^4`` theory" => "physics/phi4.md",
             "Vacua and wave packets" => "physics/wave-packets.md",
             "Particle production" => "physics/particle-production.md",
         ],

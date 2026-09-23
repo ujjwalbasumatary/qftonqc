@@ -4,7 +4,7 @@ using QFTSimulations: commensurate_momentum_grid, two_particle_packet_tensors
 BLAS.set_num_threads(1)
 
 """
-Directory used for lattice phi-four output when `--output_dir` is not given.
+Directory used for lattice ``\\phi^4`` output when `--output_dir` is not given.
 
 The path resolves to `results/phi4/` at the repository root. `main` creates
 `plots/` and `data/` below it when those directories do not already exist.
@@ -16,7 +16,7 @@ const DEFAULT_OUTPUT_DIRECTORY = normpath(
 """
     parse_cmdline()
 
-Read the command-line arguments for the lattice phi-four collision.
+Read the command-line arguments for the lattice ``\\phi^4`` collision.
 
 The lattice spacing is one. `--mu_sq` and `--lambda` are the bare couplings
 `mu0_sq` and `lambda0` in
@@ -333,7 +333,7 @@ end
 """
     main()
 
-Find the uniform-MPS ground state of the lattice phi-four Hamiltonian, solve
+Find the uniform-MPS ground state of the lattice ``\\phi^4`` Hamiltonian, solve
 for one tangent-space excitation on a commensurate momentum grid, and assemble
 two packet supports. The first support contains a packet centred at `+momentum`;
 the second contains one centred at `-momentum`. Each support has

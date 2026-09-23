@@ -15,7 +15,7 @@ species and multiplicity.
 ## Additional information to save during evolution
 
 The JLD2 files contain local observables and sampling times. The Ising and
-phi-four programs put parameters in the filenames, while the Schwinger
+$\phi^4$ programs put parameters in the filenames, while the Schwinger
 program also saves the parsed argument dictionary. The output still needs
 the following additions.
 

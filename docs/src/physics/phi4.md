@@ -1,4 +1,4 @@
-# Lattice phi-four theory
+# Lattice ``\phi^4`` theory
 
 [`collide_wavepackets.jl`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/simulations/models/phi4/scripts/collide_wavepackets.jl)
 evolves two scalar-particle wave packets on an infinite vacuum. The lattice

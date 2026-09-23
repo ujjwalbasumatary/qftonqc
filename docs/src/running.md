@@ -87,7 +87,7 @@ exactly. Outputs go into `results/schwinger/`. The
 [Schwinger page](physics/schwinger.md) gives the coupling conventions and
 the conversion from the saved field to electric flux.
 
-## Lattice phi-four theory
+## Lattice ``\phi^4`` theory
 
 The following command keeps the default couplings and packet parameters,
 and evolves from ``t=0`` to ``t=1`` in steps of ``0.05``.

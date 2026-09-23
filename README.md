@@ -24,7 +24,7 @@ field expectation value at each site.
 simulations/             Julia environment and model calculations
   models/ift/            Ising spectrum and collisions
   models/schwinger/      Schwinger source quench
-  models/phi4/           lattice phi-four calculation
+  models/phi4/           lattice φ⁴ calculation
 course/tutorials/        notebooks used in class
 course/examples/         longer numerical examples
 course/projects/         student reports, notebooks, and presentations
