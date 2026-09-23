@@ -1,15 +1,17 @@
 # Shared Julia functions
 
-`QFTSimulations` contains the oscillator matrix elements, free dispersions,
-momentum grids, and packet tensor constructions used by the model programs.
-You can load it from the repository root with
+The model programs use `QFTSimulations` to construct oscillator matrices,
+evaluate the free dispersion relations, and assemble wave packets as MPS
+tensors. Start Julia from the repository root with `--project=simulations`,
+then load the package with
 
 ```julia
 using QFTSimulations
 ```
 
-when Julia has been started with `--project=simulations`. In the Julia REPL,
-`?two_particle_packet_tensors` opens the same docstring shown below.
+In the Julia REPL, `?two_particle_packet_tensors` opens the same docstring
+shown below. Each function description includes its arguments, the returned
+arrays or values, and the conventions used in the calculation.
 
 ```@docs
 QFTSimulations

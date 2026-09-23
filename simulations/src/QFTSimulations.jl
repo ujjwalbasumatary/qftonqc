@@ -1,16 +1,15 @@
 """
     QFTSimulations
 
-Matrices and lattice formulas shared by the Ising-field-theory, Schwinger-model,
-and scalar-field calculations in this repository.
+The Ising, Schwinger, and scalar-field programs use this module to construct
+onsite operators, evaluate lattice dispersion relations, and assemble MPS
+wave packets.
 
-The module contains four groups of definitions:
-
-- projected harmonic-oscillator operators for a finite onsite bosonic basis;
-- the Ising scaling variable and the free Ising-fermion dispersion;
-- the free bosonized-Schwinger lattice dispersion;
-- momentum grids, Gaussian packet amplitudes, and dense MPS tensors containing
-  one excitation in each specified spatial region.
+The oscillator functions give operator matrices in a finite set of number
+states. The lattice formulas give the Ising scaling variable and the free
+Ising-fermion and bosonized-Schwinger dispersions. For wave packets, the
+module supplies momentum grids, Gaussian amplitudes, and MPS tensors with
+one excitation insertion in each specified spatial region.
 
 Momenta are dimensionless lattice momenta. Energies are expressed in the units
 used by the Hamiltonian accompanying each function. MPS arrays are ordered as
@@ -59,18 +58,16 @@ Construct the onsite field operators in the truncated oscillator basis
 \\pi = \\frac{i(a^\\dagger-a)}{\\sqrt{2}}, \\qquad [\\phi,\\pi]=i.
 ```
 
-The result is the named tuple
-`(; phi, phi2, pi2, phi4)`. Every entry is a `d × d` `Matrix{ComplexF64}`:
+The result is the named tuple `(; phi, phi2, pi2, phi4)`. Each entry is a
+`d × d` `Matrix{ComplexF64}`. With
+`P_d = sum_{n=0}^{d-1} |n⟩⟨n|`, the four entries contain `P_d phi P_d`,
+`P_d phi^2 P_d`, `P_d pi^2 P_d`, and `P_d phi^4 P_d`, respectively.
 
-- `phi` contains `P_d phi P_d`;
-- `phi2` contains `P_d phi^2 P_d`;
-- `pi2` contains `P_d pi^2 P_d`;
-- `phi4` contains `P_d phi^4 P_d`;
-
-where `P_d = sum_{n=0}^{d-1} |n⟩⟨n|`. Thus `phi2` and `phi4` are projections
-of the infinite-dimensional powers, not powers of the truncated `phi` matrix.
-The distinction affects matrix elements near `|d-1⟩`, because an intermediate
-oscillator state can lie above the cutoff.
+The powers of the field are formed in the infinite oscillator space before
+projection. An intermediate application of the field can reach a state above
+the cutoff and then return to a retained state. Taking powers of the
+truncated `phi` matrix would omit that contribution, which affects matrix
+elements near `|d-1⟩`.
 
 The nonzero matrix elements have `Δn = ±1` for `phi`, `Δn = 0, ±2` for
 `phi2` and `pi2`, and `Δn = 0, ±2, ±4` for `phi4`.
@@ -174,9 +171,9 @@ end
 """
     ift_free_fermion_dispersion(k, gx)
 
-Return the exact one-fermion lattice energy at `gz = 0` for the Ising
-Hamiltonian used in arXiv:2411.13645, with the nearest-neighbour coupling set
-to one:
+Return the exact one-fermion energy at `gz = 0` for the Ising lattice
+Hamiltonian used in arXiv:2411.13645. With the nearest-neighbour coupling set
+to one, the dispersion is
 
 ```math
 \\epsilon(k)=2\\sqrt{1+g_x^2-2g_x\\cos k}.
@@ -286,8 +283,8 @@ w_j=\\exp\\!\\left[-\\frac{\\delta(p_j,p_0)^2}{2\\sigma^2}\\right]
 ```
 
 at the points `p_j = grid[j]`, with `p_0 = center`. For a numeric `period = P`,
-the displacement is the representative in the half-open interval
-`[-P/2, P/2)`,
+momentum differences are wrapped into `[-P/2, P/2)`. The displacement used
+in the Gaussian is therefore
 
 ```math
 \\delta(p,p_0)=\\operatorname{mod}(p-p_0+P/2,P)-P/2.
@@ -300,7 +297,8 @@ of arXiv:2307.02522; the squared amplitudes have standard deviation
 `sigma/sqrt(2)` in the continuous, unbounded Gaussian. The variance of the
 sampled weights also depends on the grid spacing, range, and centre.
 
-The returned real vector has one entry for each point in `grid`:
+The returned real vector has one entry for each point in `grid`. The
+`normalization` keyword determines how these weights are rescaled.
 
 - `normalization=:l2` divides by `sqrt(sum(abs2, w))`, so
   `sum(abs2, weights) == 1` up to floating-point rounding;
@@ -308,9 +306,10 @@ The returned real vector has one entry for each point in `grid`:
   floating-point rounding;
 - `normalization=:none` returns the formula above without rescaling.
 
-The `:l1` and `:l2` branches subtract the largest exponent before taking the
-exponential. This common factor cancels during normalization and keeps at least
-one sampled weight nonzero for a narrow packet.
+For `:l1` and `:l2`, the function first subtracts the largest exponent from
+every exponent, then evaluates the exponentials. The common rescaling
+cancels during normalization. This keeps at least one sampled weight
+nonzero for a narrow packet.
 
 Throw `ArgumentError` if `grid` is empty or if `normalization` is not `:none`,
 `:l1`, or `:l2`. Throw `DomainError` if `center`, `sigma`, a grid point, or a
@@ -361,11 +360,11 @@ end
 """
     _check_packet_inputs(AL, AR, packet)
 
-Check the dimensions used by the packet-tensor constructors. `AL` and `AR`
-must have the same shape `(D, d, D)`, and every element of `packet` must have
-that shape. `D` is the vacuum MPS bond dimension and `d` is the local Hilbert
-space dimension. The arrays follow `(left bond, physical index, right bond)`
-ordering.
+Check that the vacuum and excitation tensors can be combined into a packet.
+`AL` and `AR` must have the same shape `(D, d, D)`, and every tensor in
+`packet` must have that shape as well. Here `D` is the vacuum MPS bond
+dimension and `d` is the local Hilbert-space dimension. The three array
+indices specify the left bond, physical state, and right bond, in that order.
 
 Return `nothing` when the dimensions agree. Throw `ArgumentError` when
 `packet` is empty. Throw `DimensionMismatch` when `AL` and `AR` have different
@@ -395,9 +394,11 @@ Form the upper-triangular MPS tensor
 M^s=\\begin{pmatrix}A_L^s & B^s\\\\ 0 & A_R^s\\end{pmatrix}
 ```
 
-from arrays `AL`, `AR`, and `B` of shape `(D, d, D)`. For each physical index
-`s`, the two block rows and columns label whether the single `B` insertion has
-occurred. The returned dense array has shape `(2D, d, 2D)` and element type
+from arrays `AL`, `AR`, and `B` of shape `(D, d, D)`. The upper and lower
+blocks keep track of whether the `B` tensor has been inserted. A product can
+pass from the upper block to the lower block through `B`; the zero block
+prevents it from returning. The returned dense array has shape `(2D, d, 2D)`
+and element type
 `promote_type(eltype(AL), eltype(AR), eltype(B))`. None of the inputs is
 modified.
 
@@ -419,11 +420,11 @@ end
 """
     single_particle_packet_tensors(AL, AR, packet)
 
-Construct the dense MPS tensors for a single tangent-space excitation supported
-on `N = length(packet)` sites. `AL` and `AR` are the left- and right-canonical
-vacuum tensors of shape `(D, d, D)`. `packet[n]` is the complete excitation
-tensor at site `n`, including its spatial envelope and phase, and has the same
-shape.
+Construct the dense MPS tensors for a single tangent-space excitation that
+can be inserted on any of `N = length(packet)` sites. `AL` and `AR` are the
+left- and right-canonical vacuum tensors of shape `(D, d, D)`. At site `n`,
+`packet[n]` gives the excitation tensor with its envelope and phase already
+included. It has the same shape as the vacuum tensors.
 
 Contracting the returned tensors gives the sum
 
