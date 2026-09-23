@@ -6,7 +6,7 @@ include(joinpath(@__DIR__, "..", "simulations", "src", "QFTSimulations.jl"))
 using .QFTSimulations
 
 makedocs(
-    sitename = "Quantum field theory on a quantum computer",
+    sitename = "QFT on a QC",
     authors = "Ujjwal Basumatary and contributors",
     modules = [QFTSimulations],
     checkdocs = :all,

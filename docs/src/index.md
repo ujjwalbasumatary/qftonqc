@@ -1,4 +1,4 @@
-# Quantum field theory on a quantum computer
+# QFT on a QC
 
 This repository grew out of HE381, *Quantum Field Theory on a Quantum
 Computer*, taught by Prof. Aninda Sinha at IISc in the fall of 2025. It contains
