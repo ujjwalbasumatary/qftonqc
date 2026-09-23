@@ -2,8 +2,8 @@
 
 This repository grew out of HE381, *Quantum Field Theory on a Quantum
 Computer*, taught by Prof. Aninda Sinha at IISc in the fall of 2025, with
-Ujjwal Basumatary as the teaching assistant. Ujjwal implemented the scripts
-and maintains the repository.
+me (Ujjwal Basumatary) as the teaching assistant responsible for implementing the algorithms.
+I currently maintain the repository.
 
 It contains the course notebooks and student projects, together with Julia
 calculations of quantum fields in one spatial dimension.
