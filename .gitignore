@@ -8,6 +8,11 @@ Thumbs.db
 # Local scratch space
 /tmp/
 
+# Documentation builds and local Wiki drafts
+/docs/build/
+/docs/Manifest.toml
+/docs/wiki/
+
 # Python caches and environments
 **/__pycache__/
 .pytest_cache/
