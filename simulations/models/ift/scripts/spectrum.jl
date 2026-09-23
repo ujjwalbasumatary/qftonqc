@@ -7,6 +7,17 @@ using QFTSimulations: ift_eta_latt, ift_free_fermion_dispersion
 
 BLAS.set_num_threads(1)
 
+"""
+    parse_cmdline()
+
+Read the spectrum parameters from `ARGS` and return the dictionary produced by
+`ArgParse.parse_args`. The momentum grid contains `points` equally spaced
+values from zero through `k-max`, including both endpoints. `target-cm-ratio`
+is the desired value of `2E(k)/E(0)` for two equal and opposite momenta.
+
+Calling this function with `--help` prints the option list and exits through
+ArgParse.
+"""
 function parse_cmdline()
     settings = ArgParseSettings()
     @add_arg_table! settings begin
@@ -48,6 +59,43 @@ function parse_cmdline()
     return parse_args(ARGS, settings)
 end
 
+@doc raw"""
+    main(args)
+
+Calculate a uniform matrix product state for the vacuum and one tangent-space
+excitation energy for each momentum in the requested interval. The spin-chain
+Hamiltonian is
+
+```math
+H=-\sum_j\left(\sigma_j^z\sigma_{j+1}^z
+  +g_x\sigma_j^x+g_z\sigma_j^z\right),
+```
+
+with the nearest-neighbour coupling and lattice spacing set to one. The vacuum
+has a one-site unit cell and bond dimension `args["bond-dimension"]`. VUMPS is
+run with the requested gradient tolerance and at most 250 iterations.
+
+`MPSKit.excitations` is called with the default `QuasiparticleAnsatz` at every
+momentum. The program uses the single branch returned by that call; it does not
+match particle species between momenta. If ``E(k)`` denotes this branch, the
+reported mass is ``m_1=E(0)`` and the centre-of-mass estimate is
+``E_{\rm cm}/m_1=2E(k)/m_1``. The selected momentum is the grid point nearest
+the requested ratio.
+
+The function prints the fields, lattice scaling variable, vacuum correlation
+length, ``m_1``, the selected momentum, and a comma-separated table with
+columns `k`, `E(k)`, and `E(k)/m_1`. It writes no files. For `g_z == 0`, the
+scaling-variable line prints the text `signed infinity` without evaluating
+its sign. In this case the program also prints the largest absolute
+difference from
+
+```math
+E_{\rm exact}(k)=2\sqrt{1+g_x^2-2g_x\cos k}.
+```
+
+At the critical point `(g_x, g_z) == (1, 0)`, ``E(0)=0`` and the mass ratios
+used for target selection are undefined.
+"""
 function main(args)
     gx = args["gx"]
     gz = args["gz"]
