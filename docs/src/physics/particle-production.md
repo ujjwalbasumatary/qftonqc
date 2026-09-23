@@ -4,15 +4,16 @@ A collision begins with two separated incoming particles. After they meet,
 the state can contain a superposition of outgoing channels, distinguished by
 their particle species, momenta, and multiplicities. For example, ``11\to12``
 creates a heavier species while keeping two outgoing particles, whereas
-``11\to111`` increases the particle number from two to three. Specifying the
-channel removes the ambiguity in the phrase “particle production.”
+``11\to111`` increases the particle number from two to three. The phrase
+“particle production” can refer to either process, so the outgoing species
+and multiplicity distinguish the two.
 
 The current collision programs save local energy and field expectation
-values. They do not yet project the outgoing MPS onto particle states.
+values. Extracting scattering probabilities also requires projecting the
+outgoing MPS onto particle states; these projections remain to be implemented.
 The Schwinger program prepares a ground state with a central source and changes
 that source; its initial state is described on the
-[Schwinger-model page](schwinger.md). This page explains the additional
-calculation needed to obtain scattering probabilities.
+[Schwinger-model page](schwinger.md).
 
 ## Energy carried away from a collision
 
@@ -33,15 +34,20 @@ v_a(p)=\frac{dE_a(p)}{dp}.
 ```
 
 The sign of ``v_a`` determines its direction and its magnitude determines the
-change in position per unit time. A broad momentum distribution also gives
-a spread of group velocities and hence a spreading packet.
+change in position per unit time. Each momentum component evolves with a
+phase ``e^{-iE_a(p)t}``. Over a narrow range of momenta, the linear variation
+of ``E_a(p)`` translates the envelope at velocity ``v_a``. If this velocity
+varies appreciably across the packet's momentum distribution, different
+components move apart and the packet spreads. Broadening can therefore occur
+even during the propagation of a single particle.
 
 A local expectation value includes contributions from every channel in the
-quantum state. Several visible bands can belong to different possible
-outcomes. Thus counting bands does not determine the multiplicity in a single
-outcome, and their heights combine channel probabilities with particle
-energies, widths, and matrix elements of the chosen observable. Section III
-of the [Ising scattering paper](https://arxiv.org/abs/2411.13645) discusses
+quantum state, so several visible bands can belong to different possible
+outcomes. The number of bands therefore need not equal the number of particles
+in any one outcome. Their heights depend on the channel probabilities as well
+as particle energies, packet widths, and matrix elements of the chosen
+observable. Section III of the
+[Ising scattering paper](https://arxiv.org/abs/2411.13645) discusses
 this distinction using outgoing states containing different species.
 
 Two-point energy correlations retain information about which regions carry
@@ -73,14 +79,21 @@ channel must satisfy
 These equations use excitation energies above the same vacuum. Internal
 symmetries can further restrict the channel. Near a continuum limit with
 dispersion minima at zero momentum, the sum of outgoing rest masses gives
-the threshold at zero total momentum. Away from that limit, minimize the
-sum of lattice dispersions subject to the momentum constraint.
+the threshold at zero total momentum. In this limit, the example channels
+``11\to12`` and ``11\to111`` have thresholds ``m_1+m_2`` and ``3m_1``,
+respectively. Away from that limit, minimize the sum of lattice dispersions
+subject to the momentum constraint.
+
+Energy and momentum conservation determine which outgoing configurations are
+allowed. The interactions determine the amplitude for reaching each one.
+Enough incoming energy to cross a threshold therefore permits a channel to
+open, while its probability still depends on the scattering dynamics.
 
 Finite packets have an energy distribution, so a packet centred near a
-threshold can contain components on both sides of it. Measuring that
-distribution is part of interpreting an onset of inelastic scattering.
-The [Ising page](ising.md) gives the lattice Hamiltonian and units used by
-the spectrum calculation.
+threshold can contain components on both sides of it. The distribution
+determines how much of the incoming packet has enough energy to enter the
+channel. The [Ising page](ising.md) gives the lattice Hamiltonian and units
+used by the spectrum calculation.
 
 ## Projections onto outgoing particles
 
@@ -110,23 +123,27 @@ P_{\rm span}=\frac{b^\dagger G^+b}{\langle\psi|\psi\rangle},
 
 where ``G^+`` is the Moore–Penrose inverse on the retained independent
 directions. Simply summing ``|b_r|^2`` would count overlap between the basis
-states more than once. Eigenvalues discarded when forming ``G^+`` must be
-reported and varied when comparing probabilities.
+states more than once. Forming ``G^+`` requires deciding which eigenvalues of
+``G`` to discard. Repeating the projection with different cutoffs shows how
+much that choice changes the probability. Save the discarded eigenvalues
+alongside the probability to record which part of the spectrum was omitted
+from the inverse.
 
-The outgoing particles need time to separate. A minimum separation between
-their insertion positions excludes configurations that still interact
-appreciably. Increase that separation and compare several late times while
-all outgoing packets remain inside the window. Section II.4 of the
-[Ising paper](https://arxiv.org/abs/2411.13645) constructs probabilities from
+The outgoing particles need time to separate. Restricting their insertion
+positions to a minimum separation excludes configurations that still interact
+appreciably. Compare the channel probabilities at larger minimum separations
+and at several late times, keeping all outgoing packets inside the window.
+Section II.4 of the [Ising paper](https://arxiv.org/abs/2411.13645) constructs probabilities from
 such overlaps and normalizes its Fourier sums against the incoming sector.
 
 Mutually orthogonal, exhaustive channels have probabilities summing to one.
 In a finite calculation, the missing weight
 ``1-\sum_\alpha P_\alpha`` can include omitted species or multiplicities,
-overlapping particles, basis truncation, and evolution error. Increasing the
-outgoing basis and comparing time step, bond dimension, and window size helps
-separate these contributions. The missing weight alone cannot identify a
-particular channel.
+overlapping particles, basis truncation, and evolution error. To distinguish
+these contributions, compare the channel probabilities after enlarging the
+outgoing basis, reducing the time step, increasing the bond dimension, and
+enlarging the window. Assigning the missing weight to a particular channel
+requires an explicit projection onto that channel.
 
 For the Julia programs, the remaining work is to retain the evolved MPS,
 construct the separated outgoing basis from identified excitation branches,

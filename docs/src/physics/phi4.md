@@ -16,6 +16,15 @@ The lattice spacing and ``\hbar`` are one. `--mu_sq` sets the bare coefficient
 from the excitation gap of the interacting chain; it need not equal
 ``\sqrt{\mu_0^2}``.
 
+The ``\pi_n^2/2`` term is the field's kinetic energy, and the gradient term
+penalizes differences between neighbouring field values. When
+``\lambda_0=0`` and ``\mu_0^2>0``, the chain consists of coupled harmonic
+oscillators whose normal modes evolve independently. The quartic interaction
+makes the oscillators anharmonic and couples those modes, allowing particle
+excitations to scatter. For positive ``\lambda_0``, it also makes large field
+values costly in energy. The Hamiltonian is unchanged when both ``\phi`` and
+``\pi`` change sign, giving a ``\mathbb Z_2`` field-reflection symmetry.
+
 ## Oscillator states and the vacuum
 
 Each site is represented by the first ``d`` harmonic-oscillator states. The
@@ -29,16 +38,22 @@ field and its conjugate momentum are expressed as
 `--local_dim` selects ``d``. The program fills the matrix elements of
 ``\phi``, ``\phi^2``, ``\pi^2``, and ``\phi^4`` directly. If ``P_d`` projects
 onto the retained states, these are matrices of ``P_dOP_d`` for each
-operator ``O``. In particular, the quadratic and quartic matrices include
-contributions from intermediate oscillator levels above the cutoff that
-would be lost by taking powers of ``P_d\phi P_d``.
+operator ``O``. Taking powers of the truncated field matrix ``P_d\phi P_d``
+would omit contributions from intermediate oscillator levels above the
+cutoff. The directly evaluated quadratic and quartic matrices retain those
+contributions.
 
 The vacuum is a uniform matrix product state with one tensor repeated along
-the chain. VUMPS minimizes its energy per site with a requested tolerance
-of ``10^{-12}``. `--bond_dimension` selects the vacuum bond dimension.
-This variational tolerance concerns the tensor optimization at the chosen
-``d`` and bond dimension. Their effect on the vacuum and its excitation gap
-is assessed by repeating the calculation with larger values.
+the chain. `--bond_dimension` selects its bond dimension. At the chosen
+``d`` and bond dimension, VUMPS varies the tensor to minimize the energy per
+site, with a requested tolerance of ``10^{-12}``. Compare the vacuum and its
+excitation gap after increasing ``d`` and the bond dimension separately.
+
+The oscillator levels label states on a single site. A particle of the
+interacting chain is a collective excitation above the correlated MPS
+vacuum. Its energy depends on the coupling between sites and the quartic
+interaction, which is why the particle gap must be calculated together with
+the vacuum.
 
 ## Momentum-space packets
 
@@ -80,6 +95,12 @@ change the packet's position and shape. The resulting spatial profile and
 its dependence on momentum spacing are part of the comparisons described
 in [Wave packets](wave-packets.md).
 
+The Hamiltonian remains fixed throughout this calculation. Time dependence
+comes from the localized initial state, whose momentum components have
+different energies and acquire different phases. The packets propagate
+according to the excitation dispersion, and their overlap brings the two
+excitations into the region where they interact.
+
 Two-site TDVP evolves the window while its exterior remains the uniform
 vacuum. `--evolution_bond_dimension` sets the largest bond rank retained
 during evolution. A value of zero, the default, selects twice the vacuum
@@ -89,7 +110,7 @@ last saved time is ``(T-1)\mathtt{time\_step}``.
 ## Local observables
 
 The energy density used by the program assigns the onsite term to the left
-site of each bond:
+site of each bond and has the form
 
 ```math
 h_{n,n+1}=\frac{\pi_n^2}{2}+\frac{\mu_0^2\phi_n^2}{2}
@@ -112,11 +133,19 @@ The arrays stored after each time step are
 \end{aligned}
 ```
 
-Both have shape ``(T,L)`` with ``L=2N``. The energy array uses columns
-`1:L-1`; the last column remains zero. All columns of `phi_sq_exp` are
-measured. The arrays show the spatial distribution of excess energy and
-field fluctuations. Particle probabilities require overlaps with separated
-outgoing states, as described in [Particle production](particle-production.md).
+Both arrays have one row for each of the ``T`` saved times and one column
+for each of the ``L=2N`` sites, giving shape ``(T,L)``. The measured bonds
+occupy columns `1:L-1` of the energy array, and its last column remains zero.
+All columns of `phi_sq_exp` are measured. The arrays show the spatial
+distribution of excess energy and the change in the mean-square field.
+The quantity ``\langle\phi_n^2\rangle`` includes both fluctuations and the
+square of the mean field; it equals the variance when
+``\langle\phi_n\rangle=0``. Because ``\phi_n^2`` is even under field
+reflection, it can reveal a localized excitation even when the state has
+this symmetry and its mean field vanishes. Subtracting the vacuum value
+removes the vacuum's contribution to this second moment. Particle probabilities
+require overlaps with separated outgoing states, as described in
+[Particle production](particle-production.md).
 
 Each observable has a PNG figure and a JLD2 file under `results/phi4/`.
 The filenames omit the central momentum, so use different `--output_dir`
