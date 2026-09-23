@@ -7,25 +7,47 @@ using Plots.PlotMeasures
 using JLD2
 using ArgParse
 
+"""
+Directory used for Schwinger output when `--output_dir` is not given.
+
+The path resolves to `results/schwinger/` at the repository root. `main` creates
+`plots/` and `data/` below it when those directories do not already exist.
+"""
 const DEFAULT_OUTPUT_DIRECTORY = normpath(
     joinpath(@__DIR__, "..", "..", "..", "..", "results", "schwinger")
 )
 
 """
-Exploratory finite-chain source-quench simulation for a truncated bosonic lattice.
+    parse_cmdline()
 
-This script is a useful numerical baseline, but it is not the asymptotic wave-packet
-scattering calculation of arXiv:2307.02522. In particular, it uses finite-chain DMRG
-and a local five-site source quench rather than uniform-MPS quasiparticles, glued
-wave packets, and late-time particle projections.
+Read the command-line arguments for the finite-chain source quench.
 
-Run with the defaults using
+The code evolves the open-chain Hamiltonian
 
-    julia --project=julia julia/scripts/schwinger/source_quench.jl
+    H(J) = sum_i [(pi_i^2 + m^2 phi_i^2)/2
+                  + mu^2 (1 - cos(beta phi_i - theta))]
+           + (kappa/2) sum_i (phi_i - phi_(i+1))^2
+           + J sum_(i in S) phi_i,
 
-or inspect all parameters with `--help`.
+where `S = max(1,L÷2-2):min(L,L÷2+2)`. The ground state is found with
+`J = J0` and the real-time evolution uses `J = J1`.
+
+The names `m` and `mu` belong to this program. At `chi = 1`, comparison with
+the Hamiltonian in arXiv:2307.02522 requires
+
+  * code `m^2` = paper `mu^2`, the coefficient of `phi^2`;
+  * code `mu^2` = paper `lambda`, the cosine strength;
+  * code `kappa = 1`; and
+  * code `beta = sqrt(4pi)`.
+
+There is no overall `chi` parameter in this Hamiltonian. `--d` is the number
+of oscillator states used to diagonalize the onsite term, whereas `--d_trunc`
+is the number of its lowest eigenstates kept on each lattice site. `--D` is the
+finite-MPS bond dimension. `--total_time` is the requested final time and
+`--time_step` is the largest interval passed to TDVP.
+
+Returns the dictionary produced by `ArgParse.parse_args`.
 """
-
 function parse_cmdline()
     settings = ArgParseSettings()
 
@@ -109,6 +131,18 @@ function parse_cmdline()
     return parse_args(settings)
 end
 
+"""
+    validate_parameters(args)
+
+Check the command-line values before any tensor-network calculation begins.
+
+The lattice must contain at least two sites, `1 <= d_trunc <= d`, the MPS bond
+dimension must be positive, and the mass, cosine strength, and gradient
+coefficient must be nonnegative. Times and couplings must be finite;
+`time_step` must be positive. The source strengths may have either sign.
+
+Returns `nothing`. Invalid values raise `ArgumentError`.
+"""
 function validate_parameters(args)
     args["lattice"] >= 2 || throw(ArgumentError("--lattice must be at least 2"))
     args["d_trunc"] >= 1 || throw(ArgumentError("--d_trunc must be positive"))
@@ -130,7 +164,21 @@ function validate_parameters(args)
     return nothing
 end
 
-"""Return phi, phi^2, and pi^2 in a `d`-state oscillator basis."""
+"""
+    matrix_elems(d)
+
+Construct `phi`, `phi^2`, and `pi^2` in the first `d` harmonic-oscillator
+states `|n>`, with `n = 0,...,d-1` and
+
+    phi = (a + a†)/sqrt(2),    pi = (a - a†)/(i sqrt(2)).
+
+Each returned object is a dense `d × d` `ComplexF64` matrix. The matrix
+elements of the quadratic operators are filled directly, so they represent
+`P_d phi^2 P_d` and `P_d pi^2 P_d`; they are not obtained by squaring the
+truncated `phi` matrix.
+
+`d` must be positive. The return value is `(phi, phi_sq, pi_sq)`.
+"""
 function matrix_elems(d::Int)
     d >= 1 || throw(ArgumentError("oscillator cutoff d must be positive"))
 
@@ -145,7 +193,7 @@ function matrix_elems(d::Int)
         phi[i - 1, i] = value
     end
 
-    # phi^2 and pi^2 have the same diagonal and opposite n <-> n+2 entries.
+    # Fill P_d phi^2 P_d for sign=+1 or P_d pi^2 P_d for sign=-1.
     function fill_quadratic!(matrix, sign)
         @inbounds for i in 1:d
             if i + 2 <= d
@@ -164,10 +212,27 @@ function matrix_elems(d::Int)
 end
 
 """
-Diagonalize the onsite Hamiltonian once and project the operators needed below.
+    get_elems(d_trunc; d=2000, beta=1.0, mu=0.5, m=1.0, theta=0.0)
 
-The returned residual checks that the retained vectors diagonalize the projected
-onsite Hamiltonian. It does not by itself estimate oscillator-cutoff convergence.
+Diagonalize the single-site Hamiltonian
+
+    h = (pi^2 + m^2 phi^2)/2 + mu^2 [1 - cos(beta phi - theta)]
+
+in `d` oscillator states and retain its `d_trunc` lowest eigenvectors. The
+columns of `W` are the retained eigenvectors, and the return value is a named
+tuple with
+
+  * `phi`: `W† phi W` as a map on `ℂ^d_trunc`;
+  * `phi_sq`: `W† phi^2 W`, projected before truncation and therefore generally
+    different from `phi * phi` in the retained space;
+  * `onsite`: the diagonal retained onsite Hamiltonian;
+  * `energies`: all `d_trunc` retained eigenvalues; and
+  * `residual`: the infinity norm of
+    `W† h W - Diagonal(energies)`.
+
+The residual checks the eigendecomposition inside the chosen `d`-state
+oscillator space. It does not measure the change in the retained eigenvalues
+or operators when `d` or `d_trunc` is increased.
 """
 function get_elems(d_trunc::Int; d::Int=2000, beta::Float64=1.0,
         mu::Float64=0.5, m::Float64=1.0, theta::Float64=0.0)
@@ -199,7 +264,27 @@ function get_elems(d_trunc::Int; d::Int=2000, beta::Float64=1.0,
         energies=retained_energies, residual=residual)
 end
 
-"""Construct a finite-chain Hamiltonian from an already projected onsite basis."""
+"""
+    build_hamiltonian(L, d_trunc, phi, phi_sq, onsite;
+                      source_strength=1.0, kappa=0.1)
+
+Construct the open-chain MPO
+
+    H = sum_i onsite_i
+        + (kappa/2) sum_(i=1)^(L-1) (phi_i - phi_(i+1))^2
+        + source_strength sum_(i in S) phi_i
+
+on `L` copies of `ℂ^d_trunc`. `phi`, `phi_sq`, and `onsite` must already be
+expressed in that retained onsite basis.
+
+The source region is
+`S = max(1,L÷2-2):min(L,L÷2+2)`. It contains five sites when the chain is
+long enough, is clipped at an end for short chains, and is one site to the left
+of the geometric centre when `L` is odd because Julia integer division is used.
+No overall factor `chi` multiplies the MPO.
+
+Returns a `FiniteMPOHamiltonian`. `L < 2` raises `ArgumentError`.
+"""
 function build_hamiltonian(L::Int, d_trunc::Int, phi, phi_sq, onsite;
         source_strength::Float64=1.0, kappa::Float64=0.1)
     L >= 2 || throw(ArgumentError("L must be at least 2"))
@@ -218,7 +303,16 @@ function build_hamiltonian(L::Int, d_trunc::Int, phi, phi_sq, onsite;
         onsite_terms..., gradient_bonds..., source_terms...)
 end
 
-"""Return a grid from zero through exactly `total_time` with steps no larger than `dt`."""
+"""
+    simulation_times(total_time, dt)
+
+Return the saved times from zero through exactly `total_time`. Intervals have
+length `dt`, except for a shorter final interval when `total_time/dt` is not an
+integer. The result is `[0.0]` when `total_time == 0`.
+
+Both arguments are `Float64`; `total_time` must be nonnegative and `dt` must be
+positive.
+"""
 function simulation_times(total_time::Float64, dt::Float64)
     total_time >= 0 || throw(ArgumentError("total_time must be nonnegative"))
     dt > 0 || throw(ArgumentError("dt must be positive"))
@@ -233,6 +327,39 @@ function simulation_times(total_time::Float64, dt::Float64)
     return times
 end
 
+"""
+    main()
+
+Prepare the DMRG ground state of `H(J0)`, change the central source to `J1`,
+and evolve the finite MPS with TDVP. The same TDVP environments are passed from
+one time interval to the next. BLAS is restricted to one thread before the
+onsite diagonalization and MPS calculations.
+
+At every saved time the program measures the raw field expectation value
+`field[t_index, site] = real(<phi_site>)`. Thus `field` has shape
+`(length(times), L)`. The PNG heatmap shows at most 21 sites, from ten sites
+left of `L÷2` through ten sites right of it; the JLD2 file contains all `L`
+sites.
+
+The output directory receives
+
+  * `plots/<parameter-dependent name>.png`; and
+  * `data/<parameter-dependent name>.jld2`.
+
+The JLD2 file stores `field`, `times`, the parsed parameters, the retained
+onsite energies, the onsite eigensolver residual, and the DMRG residual. It
+also stores `flux` as another name for the unrescaled `field` array. In the
+shifted-field convention of arXiv:2307.02522, `E_T/e = beta*phi/(2pi)`.
+At the Schwinger coupling `beta = sqrt(4pi)`, this becomes
+`E_T/e = phi/sqrt(pi)`. The saved `flux` values have not been rescaled.
+
+This calculation changes a source on a finite open chain. It does not build
+incoming quark or meson wave packets and does not project the late-time state
+onto outgoing particle states.
+
+Returns `(field, times, plot_path, data_path)` as a named tuple. It also prints
+progress, creates the output directories, and writes the PNG and JLD2 files.
+"""
 function main()
     args = parse_cmdline()
     validate_parameters(args)

@@ -1,11 +1,47 @@
 using MPSKit, TensorKit, Plots, LaTeXStrings, LinearAlgebra, JLD2, ArgParse
 using QFTSimulations: commensurate_momentum_grid, two_particle_packet_tensors
+# Dense onsite diagonalization and tensor contractions share one BLAS thread.
 BLAS.set_num_threads(1)
 
+"""
+Directory used for lattice phi-four output when `--output_dir` is not given.
+
+The path resolves to `results/phi4/` at the repository root. `main` creates
+`plots/` and `data/` below it when those directories do not already exist.
+"""
 const DEFAULT_OUTPUT_DIRECTORY = normpath(
     joinpath(@__DIR__, "..", "..", "..", "..", "results", "phi4")
 )
 
+"""
+    parse_cmdline()
+
+Read the command-line arguments for the lattice phi-four collision.
+
+The lattice spacing is one. `--mu_sq` and `--lambda` are the bare couplings
+`mu0_sq` and `lambda0` in
+
+    H = sum_n [pi_n^2/2 + mu0_sq phi_n^2/2 + lambda0 phi_n^4/24
+               + (phi_n - phi_(n+1))^2/2].
+
+`--local_dim` is the number of oscillator states on each site, and
+`--bond_dimension` is the bond dimension of the uniform ground-state MPS.
+`--evolution_bond_dimension` sets the two-site TDVP rank cutoff; zero selects
+twice the ground-state bond dimension.
+
+`--delta_p` requests a momentum spacing. `main` rounds `2pi/delta_p` to an
+integer number of points and then uses the spacing `2pi/n_momenta`.
+`--momentum` supplies the centres `+k` and `-k` of the two packets. The packet
+amplitudes use `exp[-delta_p^2/sigma^2]`. The corresponding continuous Gaussian
+has amplitude standard deviation `sigma/sqrt(2)` and squared-amplitude
+standard deviation `sigma/2`. The sampled packet also depends on the grid
+spacing and periodic wrapping.
+
+Despite its name, `--total_time` is the integer number `T` of saved samples.
+The final saved time is `(T-1) * time_step`.
+
+Returns the dictionary produced by `ArgParse.parse_args`.
+"""
 function parse_cmdline()
     s = ArgParseSettings()
 
@@ -59,6 +95,21 @@ function parse_cmdline()
     return parse_args(ARGS, s)
 end
 
+"""
+    matrix_elems(d)
+
+Construct the onsite operators in the first `d` harmonic-oscillator states
+`|n>`, with `n = 0,...,d-1` and
+
+    phi = (a + a†)/sqrt(2),    pi = (a - a†)/(i sqrt(2)).
+
+The function returns `(phi, phi2, pi2, phi4)` as `TensorMap`s on `ℂ^d`.
+Their dense matrices have shape `d × d`. The matrix elements of `phi^2`,
+`pi^2`, and `phi^4` are written directly as
+`P_d phi^2 P_d`, `P_d pi^2 P_d`, and `P_d phi^4 P_d`. They are not powers of
+the truncated `phi` matrix, which would omit excursions through oscillator
+states above the cutoff.
+"""
 function matrix_elems(d)
     phi_sq = zeros(ComplexF64, (d, d))
     pi_sq = zeros(ComplexF64, (d, d))
@@ -107,11 +158,24 @@ function matrix_elems(d)
     return ϕ, ϕ2, π2, ϕ4
 end
 
+"""
+    get_ham(d, mu0_sq, lambda0)
+
+Return the one-site-periodic infinite MPO for
+
+    H = sum_n [pi_n^2/2 + mu0_sq phi_n^2/2 + lambda0 phi_n^4/24
+               + (phi_n - phi_(n+1))^2/2].
+
+The MPO writes the local density as
+
+    h_(n,n+1) = pi_n^2/2 + mu0_sq phi_n^2/2
+                + lambda0 phi_n^4/24 + phi_n^2 - phi_n phi_(n+1).
+
+Thus the full `phi_n^2` part of the gradient term is assigned to the left end
+of each bond. The local Hilbert space is the `d`-state oscillator space from
+`matrix_elems`.
+"""
 function get_ham(d, μ0_sq, λ0)
-    """
-    Prepares the infinte MPO Hamiltonian from μ0, λ0 and
-    the local Hilbert space dimension d as inputs
-    """
     ϕ, ϕ2, π2, ϕ4 = matrix_elems(d)
     chain = PeriodicVector([ℂ^d])
     single_site_term = (μ0_sq * ϕ2 + π2) / 2 + λ0 * ϕ4 / 24 + ϕ2
@@ -120,25 +184,54 @@ function get_ham(d, μ0_sq, λ0)
     return ham
 end
 
+"""
+    prep_gs(d, D, ham)
+
+Start from a one-site uniform MPS with physical dimension `d` and bond
+dimension `D`, and pass it to VUMPS with `tol=1e-12` for the Hamiltonian
+`ham`.
+
+Returns the MPS supplied by `find_groundstate`. The energy and the other
+quantities returned by MPSKit are discarded here, so this function does not
+record a VUMPS residual or an energy history.
+"""
 function prep_gs(d, D, ham)
-    """
-    Returns the converged ground state of the uMPS
-    """
     ψ0 = InfiniteMPS(ℂ^d, ℂ^D)
     ψ, _, _ = find_groundstate(ψ0, ham, VUMPS(; tol=1e-12))
     return ψ
 end
 
+"""
+    get_QPstate(psi_gs, ham, momenta)
+
+Solve the MPSKit tangent-space quasiparticle problem over `psi_gs` at every
+point in `momenta`. The calculation uses `QuasiparticleAnsatz()` with its
+default particle sector.
+
+Returns `(energies, states)` exactly as returned by `MPSKit.excitations`.
+The collision below uses `states` to form packets; it does not save
+`energies`.
+"""
 function get_QPstate(ψ_gs, ham, momenta)
     energies, states = excitations(ham, QuasiparticleAnsatz(), momenta, ψ_gs)
     return energies, states
 end
 
+"""
+    get_B_tensor_list(states)
+
+Convert the tangent tensor at each momentum to a dense three-index array.
+For a one-site uniform MPS of bond dimension `D` and local dimension `d`, each
+element of the result has shape `(D, d, D)`. The singleton sector index in the
+MPSKit tensor is removed with `[:, :, 1, :]`.
+
+At each momentum the tensor is multiplied by a phase that makes its
+`[1,1,1]` component real. This phase is chosen independently at every momentum
+point. It does not impose a smooth phase as momentum changes; jumps between
+neighbouring points can therefore shift, broaden, or split the Fourier-summed
+packet.
+"""
 function get_B_tensor_list(states)
-    """
-    Returns a Vector of gauge-fixed B tensors (as dense arrays)
-    for each state in `states`.
-    """
     n = length(states)
     B_list = Vector{Array{ComplexF64,3}}(undef, n)
 
@@ -160,11 +253,26 @@ function get_B_tensor_list(states)
     return B_list
 end
 
+"""
+    create_B_packet(B_tensor_list, n, offset, mom_idx, delta_p, sigma)
+
+Form the tangent tensor inserted at lattice coordinate `n`:
+
+    B_packet(n) = sum_i exp[-delta_p_i^2/sigma^2]
+                         exp[i p_i (n-offset)] B(p_i),
+
+where `p_i = -pi + (i-1) delta_p` and `delta_p_i` is the shortest periodic
+distance from grid point `i` to `mom_idx` on the Brillouin zone.
+
+The returned dense tensor has the same three-index shape as one element of
+`B_tensor_list`. The sum contains neither a momentum-spacing factor nor a
+normalization factor. For the corresponding continuous, unbounded Gaussian,
+the amplitude standard deviation is `sigma/sqrt(2)` and the
+squared-amplitude standard deviation is `sigma/2`. The grid spacing and
+periodic wrapping affect the sampled variance. `main` normalizes the complete
+two-packet window after both packet supports have been joined.
+"""
 function create_B_packet(B_tensor_list, n, offset, mom_idx, Δp, sigma)
-    r"""
-    Returns the wavepacket at n
-    \sum_p c_p e^{i p n} B(p)
-    """
     p_max = length(B_tensor_list)
     shape_tensor = size(B_tensor_list[1])
     B_packet = zeros(ComplexF64, shape_tensor)
@@ -176,16 +284,32 @@ function create_B_packet(B_tensor_list, n, offset, mom_idx, Δp, sigma)
     return B_packet
 end
 
+"""
+    nearest_momentum_index(momentum, delta_p, n_momenta)
+
+Wrap `momentum` into `[-pi, pi)` and return the one-based index of its nearest
+point on the `n_momenta`-point grid with spacing `delta_p`. The result is
+periodic at the Brillouin-zone boundary.
+"""
 function nearest_momentum_index(momentum, Δp, n_momenta)
     wrapped_momentum = mod(momentum + π, 2π) - π
     return mod(round(Int, (wrapped_momentum + π) / Δp), n_momenta) + 1
 end
 
+"""
+    create_stacked_tensor(psi_gs, left_packet, right_packet, L)
+
+Join two ordered, nonoverlapping packet supports to make the finite window of
+a `WindowMPS`. Both packet lists must contain `L` dense tangent tensors. The
+first occupies sites `1:L` of the window and the second occupies sites
+`L+1:2L`, so the returned vector contains `2L` `TensorMap`s.
+
+Each support is closed separately, placing one tangent insertion in each
+support. Between the two supports the first closed packet is multiplied by
+the inverse uniform-MPS centre matrix `C^-1`; this joins it to the second
+packet in the vacuum gauge. A length mismatch raises `DimensionMismatch`.
+"""
 function create_stacked_tensor(ψ_gs, B_packet_list_left, B_packet_list_right, L)
-    """
-    Takes the ground state left and right environments and constructs
-    the stacked tensors.
-    """
     AL = ψ_gs.AL[]
     AR = ψ_gs.AR[]
     AL_array = convert(Array, AL)
@@ -206,6 +330,48 @@ function create_stacked_tensor(ψ_gs, B_packet_list_left, B_packet_list_right, L
     ]
 end
 
+"""
+    main()
+
+Find the uniform-MPS ground state of the lattice phi-four Hamiltonian, solve
+for one tangent-space excitation on a commensurate momentum grid, and assemble
+two packet supports. The first support contains a packet centred at `+momentum`;
+the second contains one centred at `-momentum`. Each support has
+`n_momenta` sites and its local packet centre is `n_momenta÷2`, so the joined
+window has `2n_momenta` sites. The state is normalized before time evolution.
+
+The requested spacing is replaced by
+`delta_p = 2pi / round(2pi/requested_delta_p)`. Packet amplitudes are summed
+without a `delta_p` factor or a separate normalization. The tangent tensors
+also carry the independent momentum-by-momentum phase choice made by
+`get_B_tensor_list`.
+
+Two-site TDVP advances the state by `dt` for `T-1` steps and truncates bonds
+with `truncrank(D_evolution)`. Row `j` of each saved array belongs to time
+`(j-1)dt`; `T` is a sample count, not a final time.
+
+For a window length `L = 2n_momenta`, the program records
+
+  * `energy_exp`, with shape `(T, L)`. Columns `1:L-1` contain the vacuum-
+    subtracted bond density `h_(n,n+1)` defined in `get_ham`; its complete
+    onsite term is assigned to site `n`. Column `L` is not filled and remains
+    zero. The heatmap displays only columns `1:L-1`;
+  * `phi_sq_exp`, with shape `(T, L)`, containing
+    `<phi_n^2> - <phi^2>_vac`; and
+  * `times = (0:T-1) * dt`.
+
+The program creates `plots/` and `data/` below the output directory, writes
+one PNG and one JLD2 file for each observable, and prints the parameters and
+step number. The energy file stores `energy_exp` and `times`; the field file
+stores `phi_sq_exp` and `times`. The filename does not contain `momentum`, so
+two runs that differ only in `--momentum` write to the same paths.
+
+Neither saved observable counts outgoing particles. The code does not project
+the late-time MPS onto separated one- or multi-particle states, so the two
+heatmaps do not give scattering-channel probabilities.
+
+Returns `nothing` after writing the files.
+"""
 function main()
     parsed_args = parse_cmdline()
     D = parsed_args["bond_dimension"]
