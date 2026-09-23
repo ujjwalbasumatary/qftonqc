@@ -4,21 +4,24 @@ This repository contains material from HE381, *Quantum Field Theory on a
 Quantum Computer*, taught by Prof. Aninda Sinha at IISc in the fall of 2025,
 and the tensor-network calculations that grew out of the course.
 
-The Julia calculations follow two references:
+The Julia calculations follow the methods described in these two papers.
 
 - [Real-Time Scattering in Ising Field Theory using Matrix Product States](https://arxiv.org/abs/2411.13645),
 - [High-Energy Collision of Quarks and Mesons in the Schwinger Model](https://arxiv.org/abs/2307.02522).
 
-The Ising calculation constructs two incoming tangent-space excitations and
-evolves them with TDVP. It saves local energy and spin expectation values.
+The Ising program prepares two localized excitations above a matrix product
+state (MPS) vacuum and follows their collision. It saves the energy on each
+bond and the spin expectation value at each site, with the vacuum values
+subtracted.
 
-The Schwinger calculation evolves a finite-chain ground state after a local
-source quench and saves the field expectation value at each site.
+The Schwinger program finds the ground state of a finite chain with a source
+on its central sites. It then changes the source strength and follows the
+field expectation value at each site.
 
 ## Files
 
 ```text
-simulations/             Julia package and current calculations
+simulations/             Julia environment and model calculations
   models/ift/            Ising spectrum and collisions
   models/schwinger/      Schwinger source quench
   models/phi4/           lattice phi-four calculation

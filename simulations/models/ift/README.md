@@ -11,12 +11,13 @@ $$
 
 Near $(g_x,g_z)=(1,0)$, its low-energy spectrum approaches Ising field
 theory. The scattering construction follows
-[arXiv:2411.13645](https://arxiv.org/abs/2411.13645): a uniform MPS represents
-the vacuum, a tangent tensor represents a one-particle excitation, and two
-localized packets are evolved in a finite window.
+[arXiv:2411.13645](https://arxiv.org/abs/2411.13645). A uniform matrix product
+state (MPS) represents the vacuum, and a tangent tensor represents a
+one-particle excitation. Two localized packets built from these excitations
+are evolved in a finite window.
 
 [`scripts/spectrum.jl`](scripts/spectrum.jl) calculates the lowest
-tangent-space branch over a chosen momentum interval.
+tangent-space excitation energy over a chosen interval of momenta.
 
 [`scripts/collide_fixed_momentum.jl`](scripts/collide_fixed_momentum.jl) uses
 one excitation tensor for each packet, evaluated at momenta $+k$ and $-k$.
@@ -29,10 +30,11 @@ into a packet. Each tensor currently receives an independent phase choice. If
 neighboring momenta receive incompatible phases, their Fourier sum can shift,
 distort, or delocalize the packet.
 
-The two collision programs save local expectation values, not outgoing
-particle probabilities. The latter require overlaps with separated
-multi-particle states after the collision and a sum over all resolved final
-sectors.
+The two collision programs save local expectation values. To obtain the
+probability of an outgoing channel, project the evolved state onto separated
+multi-particle states in that channel. Summing the probabilities over the
+channels included in the calculation then checks how much of the final
+state those channels account for.
 
 [`notebooks/exact_diagonalization_and_qiskit.ipynb`](notebooks/exact_diagonalization_and_qiskit.ipynb)
 builds the open-chain Ising Hamiltonian by exact diagonalization and uses its

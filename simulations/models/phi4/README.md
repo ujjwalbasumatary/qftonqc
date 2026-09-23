@@ -12,18 +12,24 @@ H=\sum_n\left[
 $$
 
 [`scripts/collide_wavepackets.jl`](scripts/collide_wavepackets.jl) finds a
-uniform-MPS vacuum, calculates tangent-space excitations on a commensurate
-momentum grid, constructs two packet supports, and evolves the resulting
-window with two-site TDVP.
+vacuum represented by a uniform matrix product state (MPS). It calculates
+tangent-space excitations on an evenly spaced momentum grid. The number
+of grid points sets the number of sites in each packet interval. The
+excitation tensors are summed to form two localized packets in separate
+intervals. The two intervals are then joined into a window and evolved using
+two-site TDVP, the time-dependent variational principle applied to adjacent
+MPS tensors.
 
-The saved arrays contain a local assignment of the bond energy and
-$\langle\phi_n^2\rangle-\langle\phi^2\rangle_{\rm vac}$. Neither array
-counts particles. Particle probabilities would require overlaps of the
-late-time MPS with separated one- and multi-particle states. The oscillator
-cutoff, time step, bond dimension, window length, and packet width must then be
-varied independently when quoting those overlaps.
+The program saves the energy density assigned to each bond, along with
+$\langle\phi_n^2\rangle-\langle\phi^2\rangle_{\rm vac}$ at each site. These local
+expectation values describe the energy and the change in the second moment
+of the field along the chain. Particle probabilities would require overlaps
+of the late-time MPS with separated one- and multi-particle states. Those
+overlaps must be compared across calculations in which the oscillator cutoff, time step,
+bond dimension, window length, and packet width are varied one at a time.
 
-The notebooks contain the following calculations:
+The notebooks contain calculations of the ground state and its entanglement,
+as well as the evolution of local excitations and wave packets.
 
 | Notebook | Calculation |
 | --- | --- |
