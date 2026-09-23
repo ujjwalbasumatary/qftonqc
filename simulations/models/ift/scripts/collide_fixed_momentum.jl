@@ -3,6 +3,10 @@ using QFTSimulations: two_particle_packet_tensors
 
 BLAS.set_num_threads(1)
 
+const DEFAULT_OUTPUT_DIRECTORY = normpath(
+    joinpath(@__DIR__, "..", "..", "..", "..", "results", "ift")
+)
+
 function parse_cmdline()
     s = ArgParseSettings()
 
@@ -50,7 +54,7 @@ function parse_cmdline()
         "--output_dir", "-o"
         help = "Root directory in which plots/ and data/ are created"
         arg_type = String
-        default = normpath(joinpath(@__DIR__, "..", "..", "results", "ift"))
+        default = DEFAULT_OUTPUT_DIRECTORY
     end
 
     return parse_args(ARGS, s)

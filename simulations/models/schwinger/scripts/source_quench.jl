@@ -7,6 +7,10 @@ using Plots.PlotMeasures
 using JLD2
 using ArgParse
 
+const DEFAULT_OUTPUT_DIRECTORY = normpath(
+    joinpath(@__DIR__, "..", "..", "..", "..", "results", "schwinger")
+)
+
 """
 Exploratory finite-chain source-quench simulation for a truncated bosonic lattice.
 
@@ -99,7 +103,7 @@ function parse_cmdline()
         "--output_dir", "-o"
         help = "Root directory in which plots/ and data/ are created"
         arg_type = String
-        default = normpath(joinpath(@__DIR__, "..", "..", "results", "schwinger"))
+        default = DEFAULT_OUTPUT_DIRECTORY
     end
 
     return parse_args(settings)

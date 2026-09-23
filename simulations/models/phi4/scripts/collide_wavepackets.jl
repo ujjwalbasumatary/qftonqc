@@ -2,6 +2,10 @@ using MPSKit, TensorKit, Plots, LaTeXStrings, LinearAlgebra, JLD2, ArgParse
 using QFTSimulations: commensurate_momentum_grid, two_particle_packet_tensors
 BLAS.set_num_threads(1)
 
+const DEFAULT_OUTPUT_DIRECTORY = normpath(
+    joinpath(@__DIR__, "..", "..", "..", "..", "results", "phi4")
+)
+
 function parse_cmdline()
     s = ArgParseSettings()
 
@@ -45,7 +49,7 @@ function parse_cmdline()
         "--output_dir", "-o"
         help = "Root directory in which plots/ and data/ are created"
         arg_type = String
-        default = normpath(joinpath(@__DIR__, "..", "..", "results", "phi4"))
+        default = DEFAULT_OUTPUT_DIRECTORY
         "--momentum", "-k"
         help = "Momentum about which the wavepackets are centered"
         arg_type = Float64

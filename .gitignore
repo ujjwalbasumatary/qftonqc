@@ -15,6 +15,5 @@ Thumbs.db
 
 # Julia simulation outputs
 *.jld2
-/julia/results/*
-!/julia/results/README.md
-
+/results/*
+!/results/README.md
