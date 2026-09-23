@@ -5,6 +5,9 @@ Computer*, taught by Prof. Aninda Sinha at IISc in the fall of 2025. It contains
 the course notebooks and student projects, together with Julia calculations
 of quantum fields in one spatial dimension.
 
+Ujjwal Basumatary was the teaching assistant for the course and implemented
+and maintained the code.
+
 The Julia programs use matrix product states to describe the vacuum and its
 excitations. In the Ising and lattice ``\phi^4`` calculations, two localized
 wave packets approach each other and evolve under the interacting
