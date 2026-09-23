@@ -1,3 +1,21 @@
+"""
+    QFTSimulations
+
+Matrices and lattice formulas shared by the Ising-field-theory, Schwinger-model,
+and scalar-field calculations in this repository.
+
+The module contains four groups of definitions:
+
+- projected harmonic-oscillator operators for a finite onsite bosonic basis;
+- the Ising scaling variable and the free Ising-fermion dispersion;
+- the free bosonized-Schwinger lattice dispersion;
+- momentum grids, Gaussian packet amplitudes, and dense MPS tensors containing
+  one excitation in each specified spatial region.
+
+Momenta are dimensionless lattice momenta. Energies are expressed in the units
+used by the Hamiltonian accompanying each function. MPS arrays are ordered as
+`(left virtual index, physical index, right virtual index)`.
+"""
 module QFTSimulations
 
 export harmonic_oscillator_matrices,
@@ -9,8 +27,22 @@ export harmonic_oscillator_matrices,
        single_particle_packet_tensors,
        two_particle_packet_tensors
 
+"""
+    _ISING_MAGNETIC_EXPONENT
+
+Magnetic scaling exponent `8/15` in
+`eta_latt = (g_x - 1) / abs(g_z)^(8/15)` for the Ising field theory.
+"""
 const _ISING_MAGNETIC_EXPONENT = 8 / 15
 
+"""
+    _require_finite(value, name)
+
+Return the real number `value` when it is finite. Throw
+`DomainError(value, "\$name must be finite")` when `value` is `NaN`, `Inf`, or
+`-Inf`. The dispersion and scaling-variable functions apply this check before
+testing inequalities such as `gx >= 0` or `chi > 0`.
+"""
 function _require_finite(value::Real, name::AbstractString)
     isfinite(value) || throw(DomainError(value, "$name must be finite"))
     return value
@@ -19,14 +51,33 @@ end
 """
     harmonic_oscillator_matrices(d)
 
-Return `(phi, phi2, pi2, phi4)` as `d × d` `ComplexF64` matrices in the
-number basis `|0⟩, …, |d-1⟩`, with `[phi, pi] = i` before truncation.
+Construct the onsite field operators in the truncated oscillator basis
+`|0⟩, |1⟩, ..., |d-1⟩`. Before projection,
 
-`phi2`, `pi2`, and `phi4` are the matrix elements of the corresponding
-infinite-dimensional operators projected into the truncated space.  In
-particular, they are intentionally not formed by multiplying the truncated
-`phi` matrix: such a product loses virtual transitions through states above
-the cutoff.
+```math
+\\phi = \\frac{a+a^\\dagger}{\\sqrt{2}}, \\qquad
+\\pi = \\frac{i(a^\\dagger-a)}{\\sqrt{2}}, \\qquad [\\phi,\\pi]=i.
+```
+
+The result is the named tuple
+`(; phi, phi2, pi2, phi4)`. Every entry is a `d × d` `Matrix{ComplexF64}`:
+
+- `phi` contains `P_d phi P_d`;
+- `phi2` contains `P_d phi^2 P_d`;
+- `pi2` contains `P_d pi^2 P_d`;
+- `phi4` contains `P_d phi^4 P_d`;
+
+where `P_d = sum_{n=0}^{d-1} |n⟩⟨n|`. Thus `phi2` and `phi4` are projections
+of the infinite-dimensional powers, not powers of the truncated `phi` matrix.
+The distinction affects matrix elements near `|d-1⟩`, because an intermediate
+oscillator state can lie above the cutoff.
+
+The nonzero matrix elements have `Δn = ±1` for `phi`, `Δn = 0, ±2` for
+`phi2` and `pi2`, and `Δn = 0, ±2, ±4` for `phi4`.
+
+Throw `DomainError` when `d < 1`. Since `Bool <: Integer` in Julia, `false`
+also reaches this error; `true` throws `ArgumentError` because a Boolean is not
+accepted as a Hilbert-space dimension.
 """
 function harmonic_oscillator_matrices(d::Integer)
     d >= 1 || throw(DomainError(d, "the oscillator cutoff d must be positive"))
@@ -84,15 +135,24 @@ end
 """
     ift_eta_latt(gx, gz)
 
-Compute the Ising-field-theory lattice scaling variable
+Return the Ising-field-theory lattice scaling variable
 
-```
-η_latt = (gx - 1) / |gz|^(8/15)
+```math
+\\eta_{\\mathrm{latt}} = \\frac{g_x-1}{|g_z|^{8/15}},
 ```
 
-from Eq. (4) of arXiv:2411.13645.  At `gz == 0`, the signed free-fermion
-limit is returned as an infinity.  The critical point `(gx, gz) == (1, 0)`
-is undefined and raises `DomainError`.
+using Eq. (4) of arXiv:2411.13645. Here `gx` is the transverse coupling and
+`gz` is the longitudinal coupling, with the nearest-neighbour Ising coupling
+set to one. The sign of `gz` does not enter this variable.
+
+The inputs are promoted to a common floating type. For nonzero `gz`, the
+`Float64` exponent can further promote the result; for example, `Float32`
+inputs give a `Float64` result. For `gz == 0` and `gx != 1`, return `-Inf`
+below the critical coupling and `Inf` above it in the promoted input type.
+The point `(gx, gz) == (1, 0)` has the indeterminate form `0/0` and throws
+`DomainError`.
+
+Throw `DomainError` if either argument is not finite or if `gx < 0`.
 """
 function ift_eta_latt(gx::Real, gz::Real)
     gx_float, gz_float = promote(float(gx), float(gz))
@@ -114,15 +174,27 @@ end
 """
     ift_free_fermion_dispersion(k, gx)
 
-Exact one-particle lattice dispersion at `gz = 0` for the Ising Hamiltonian
-used in arXiv:2411.13645 (nearest-neighbour coupling set to one):
+Return the exact one-fermion lattice energy at `gz = 0` for the Ising
+Hamiltonian used in arXiv:2411.13645, with the nearest-neighbour coupling set
+to one:
 
-```
-ϵ(k) = 2 sqrt(1 + gx^2 - 2 gx cos(k)).
+```math
+\\epsilon(k)=2\\sqrt{1+g_x^2-2g_x\\cos k}.
 ```
 
-The algebraically equivalent implementation below is stable close to the
-critical point `gx = 1`, `k = 0`.  Use broadcasting for a grid of momenta.
+`k` is a dimensionless lattice momentum in radians and the result is periodic
+under `k -> k + 2pi`. The implementation evaluates the identical expression
+
+```math
+2\\,\\operatorname{hypot}\\!\\left(1-g_x,\\,2\\sqrt{g_x}\\sin(k/2)\\right),
+```
+
+which does not form the subtraction `1 + gx^2 - 2gx*cos(k)` near
+`gx = 1, k = 0`. The result has the floating type obtained by promoting `k`
+and `gx`. Apply broadcasting, `ift_free_fermion_dispersion.(momenta, gx)`, to
+evaluate an array of momenta.
+
+Throw `DomainError` if either argument is not finite or if `gx < 0`.
 """
 function ift_free_fermion_dispersion(k::Real, gx::Real)
     k_float, gx_float = promote(float(k), float(gx))
@@ -137,17 +209,25 @@ end
 """
     schwinger_free_lattice_dispersion(p, mu; chi=1, kappa=1)
 
-Dispersion of the quadratic (`lambda = 0`) bosonized Schwinger lattice
-Hamiltonian
+Return the normal-mode energy of the quadratic (`lambda = 0`) bosonized
+Schwinger lattice Hamiltonian
 
-```
-H = chi/2 ∑x [pi_x^2 + kappa (phi_x - phi_(x-1))^2 + mu^2 phi_x^2],
-ω(p) = chi sqrt(mu^2 + 4 kappa sin(p/2)^2).
+```math
+H=\\frac{\\chi}{2}\\sum_x\\left[\\pi_x^2
+ +\\kappa(\\phi_x-\\phi_{x-1})^2+\\mu^2\\phi_x^2\\right],
+\\qquad
+\\omega(p)=\\chi\\sqrt{\\mu^2+4\\kappa\\sin^2(p/2)}.
 ```
 
-Equation (3) of arXiv:2307.02522 has `kappa = 1`; the keyword also covers the
-gradient convention in the repository's exploratory script.  Use broadcasting
-for a grid of momenta.
+Equation (3) of arXiv:2307.02522 has `kappa = 1`. `mu` is the dimensionless
+mass in this lattice Hamiltonian, `kappa` multiplies the nearest-neighbour
+gradient term, and the positive factor `chi` fixes the energy scale. `p` is a
+dimensionless lattice momentum in radians. The result has the floating type
+obtained by promoting all four arguments. Apply broadcasting to evaluate an
+array of momenta.
+
+Throw `DomainError` when an argument is not finite, when `mu < 0`, when
+`chi <= 0`, or when `kappa < 0`.
 """
 function schwinger_free_lattice_dispersion(p::Real, mu::Real;
                                            chi::Real=1, kappa::Real=1)
@@ -168,10 +248,22 @@ end
 """
     commensurate_momentum_grid(n; period=2π)
 
-Return `n` equally spaced momenta on the half-open Brillouin zone
-`[-period/2, period/2)`.  The spacing is exactly `period/n`, so the Fourier
-transform is periodic after `n` lattice sites.  This avoids the unmatched wrap
-spacing produced by a range such as `-π:0.1:π-0.1`.
+Return the range of `n` momenta
+
+```math
+p_j=-\\frac{P}{2}+(j-1)\\frac{P}{n}, \\qquad j=1,\\ldots,n,
+```
+
+where `P = period`. The grid covers the half-open interval
+`[-period/2, period/2)`, has spacing `period/n`, and satisfies
+`p_n + period/n = p_1 + period`. For the default `period = 2π`, these are
+commensurate momenta in the first Brillouin zone of a periodic `n`-site
+lattice.
+
+The return value is a one-dimensional Julia range of length `n`, so Julia does
+not store all `n` entries separately. Throw `DomainError` if `n < 2`, if
+`period <= 0`, or if `period` is not finite. Both Boolean values also throw
+`DomainError`, since neither represents an allowed number of grid points.
 """
 function commensurate_momentum_grid(n::Integer; period::Real=2π)
     n >= 2 || throw(DomainError(n, "a momentum grid needs at least two points"))
@@ -187,15 +279,43 @@ end
 """
     gaussian_weights(grid, center, sigma; period=2π, normalization=:l2)
 
-Construct Gaussian wave-packet amplitudes
-`exp(-(p-center)^2 / (2 sigma^2))` on `grid`.  With a numeric `period`,
-distances use the shortest periodic separation; pass `period=nothing` for an
-ordinary nonperiodic Gaussian.
+Evaluate the real Gaussian amplitudes
 
-`normalization=:l2` (the default) makes `sum(abs2, weights) == 1`, appropriate
-for quantum amplitudes.  `:l1` makes `sum(weights) == 1`, while `:none` returns
-the unnormalized Gaussian.  `sigma` is the standard deviation of the amplitude
-Gaussian, matching Eq. (S40) of arXiv:2307.02522.
+```math
+w_j=\\exp\\!\\left[-\\frac{\\delta(p_j,p_0)^2}{2\\sigma^2}\\right]
+```
+
+at the points `p_j = grid[j]`, with `p_0 = center`. For a numeric `period = P`,
+the displacement is the representative in the half-open interval
+`[-P/2, P/2)`,
+
+```math
+\\delta(p,p_0)=\\operatorname{mod}(p-p_0+P/2,P)-P/2.
+```
+
+Thus a packet centred at one edge of a Brillouin zone continues across the
+other edge. Set `period=nothing` to use `delta(p,p_0) = p-p_0`. The parameter
+`sigma` is the standard deviation of the amplitude Gaussian used in Eq. (S40)
+of arXiv:2307.02522; the squared amplitudes have standard deviation
+`sigma/sqrt(2)` in the continuous, unbounded Gaussian. The variance of the
+sampled weights also depends on the grid spacing, range, and centre.
+
+The returned real vector has one entry for each point in `grid`:
+
+- `normalization=:l2` divides by `sqrt(sum(abs2, w))`, so
+  `sum(abs2, weights) == 1` up to floating-point rounding;
+- `normalization=:l1` divides by `sum(w)`, so `sum(weights) == 1` up to
+  floating-point rounding;
+- `normalization=:none` returns the formula above without rescaling.
+
+The `:l1` and `:l2` branches subtract the largest exponent before taking the
+exponential. This common factor cancels during normalization and keeps at least
+one sampled weight nonzero for a narrow packet.
+
+Throw `ArgumentError` if `grid` is empty or if `normalization` is not `:none`,
+`:l1`, or `:l2`. Throw `DomainError` if `center`, `sigma`, a grid point, or a
+numeric `period` is not finite; also throw `DomainError` when `sigma <= 0` or a
+numeric `period <= 0`.
 """
 function gaussian_weights(grid::AbstractVector{<:Real}, center::Real, sigma::Real;
                           period::Union{Nothing,Real}=2π,
@@ -238,6 +358,20 @@ function gaussian_weights(grid::AbstractVector{<:Real}, center::Real, sigma::Rea
     return weights ./ scale
 end
 
+"""
+    _check_packet_inputs(AL, AR, packet)
+
+Check the dimensions used by the packet-tensor constructors. `AL` and `AR`
+must have the same shape `(D, d, D)`, and every element of `packet` must have
+that shape. `D` is the vacuum MPS bond dimension and `d` is the local Hilbert
+space dimension. The arrays follow `(left bond, physical index, right bond)`
+ordering.
+
+Return `nothing` when the dimensions agree. Throw `ArgumentError` when
+`packet` is empty. Throw `DimensionMismatch` when `AL` and `AR` have different
+dimensions, when the left and right vacuum bond dimensions differ, or when any
+packet tensor has dimensions different from `AL`.
+"""
 function _check_packet_inputs(AL::AbstractArray{<:Number,3},
                               AR::AbstractArray{<:Number,3},
                               packet::AbstractVector{<:AbstractArray{<:Number,3}})
@@ -252,6 +386,24 @@ function _check_packet_inputs(AL::AbstractArray{<:Number,3},
     return nothing
 end
 
+"""
+    _block_upper(AL, AR, B)
+
+Form the upper-triangular MPS tensor
+
+```math
+M^s=\\begin{pmatrix}A_L^s & B^s\\\\ 0 & A_R^s\\end{pmatrix}
+```
+
+from arrays `AL`, `AR`, and `B` of shape `(D, d, D)`. For each physical index
+`s`, the two block rows and columns label whether the single `B` insertion has
+occurred. The returned dense array has shape `(2D, d, 2D)` and element type
+`promote_type(eltype(AL), eltype(AR), eltype(B))`. None of the inputs is
+modified.
+
+The block formula assumes that `_check_packet_inputs` has already checked the
+three shapes.
+"""
 function _block_upper(AL::AbstractArray{<:Number,3},
                       AR::AbstractArray{<:Number,3},
                       B::AbstractArray{<:Number,3})
@@ -267,13 +419,33 @@ end
 """
     single_particle_packet_tensors(AL, AR, packet)
 
-Construct the dense site tensors for exactly one quasiparticle wave packet.
-`packet[n]` is the already weighted excitation tensor at site `n`. The virtual
-automaton opens from bond dimension `D` to `2D`, permits one and only one
-off-diagonal `B` insertion, and closes back to `D`.
+Construct the dense MPS tensors for a single tangent-space excitation supported
+on `N = length(packet)` sites. `AL` and `AR` are the left- and right-canonical
+vacuum tensors of shape `(D, d, D)`. `packet[n]` is the complete excitation
+tensor at site `n`, including its spatial envelope and phase, and has the same
+shape.
 
-The returned arrays use MPSKit's `(left bond, physical, right bond)` ordering.
-They can be converted to `TensorMap`s by the simulation layer.
+Contracting the returned tensors gives the sum
+
+```math
+\\sum_{n=1}^{N} A_L^{[1]}\\cdots A_L^{[n-1]}
+B_n^{[n]} A_R^{[n+1]}\\cdots A_R^{[N]}.
+```
+
+There is one `B_n` insertion in every term. No normalization is applied to
+this state.
+
+For `N > 1`, the first tensor has shape `(D, d, 2D)`, every interior tensor has
+shape `(2D, d, 2D)`, and the last has shape `(2D, d, D)`. For `N == 1`, return
+a one-element vector containing a copy of `packet[1]`, with shape `(D, d, D)`.
+The array order is `(left bond, physical index, right bond)`.
+
+For `N > 1`, the vector element type is `Array{T,3}`, where
+`T = promote_type(eltype(AL), eltype(AR), eltype(packet[1]))`. For `N == 1`,
+the copied packet tensor determines the element type. Throw `ArgumentError`
+when `packet` is empty. Throw `DimensionMismatch` when `AL` and `AR` have
+different dimensions, when their left and right bond dimensions differ, or
+when a packet tensor does not have the vacuum-tensor dimensions.
 """
 function single_particle_packet_tensors(
         AL::AbstractArray{<:Number,3}, AR::AbstractArray{<:Number,3},
@@ -291,6 +463,19 @@ function single_particle_packet_tensors(
     return tensors
 end
 
+"""
+    _right_multiply_bond(tensor, matrix)
+
+Contract `matrix` into the right virtual index of `tensor`. For a tensor with
+shape `(Dleft, d, Dright)`, the returned array has the same shape and entries
+
+```math
+T'_{a s b}=\\sum_{c=1}^{D_{\\mathrm{right}}}T_{a s c}M_{c b}.
+```
+
+The input arrays are not modified. Throw `DimensionMismatch` unless `matrix`
+has shape `(Dright, Dright)`.
+"""
 function _right_multiply_bond(tensor::AbstractArray{<:Number,3},
                               matrix::AbstractMatrix{<:Number})
     Dleft, d, Dright = size(tensor)
@@ -303,17 +488,32 @@ end
 """
     two_particle_packet_tensors(AL, AR, Cinv, left_packet, right_packet)
 
-Construct an ordered two-particle MPS from disjoint packet supports. Each
-packet is independently closed, guaranteeing one excitation in each region.
-The first close tensor is right-multiplied by the vacuum gauge matrix `C⁻¹`
-before the second packet is reopened; for a canonical uMPS this is the glue
-described in Sec. III B of the supplement to arXiv:2307.02522.
+Construct dense MPS tensors with one tangent-space excitation in
+`left_packet` and one in `right_packet`. The two vectors describe consecutive,
+non-overlapping spatial regions. Their entries already contain the desired
+envelopes and phases.
 
-A single upper-triangular block spanning both packet regions is not equivalent:
-it permits only one `B` insertion and therefore represents a one-particle
-superposition. This routine deliberately exposes a `D`-dimensional bond between
-the independently closed packets. Grow that bond before one-site TDVP if the
-collision calculation needs a larger evolution bond.
+Each region is formed with [`single_particle_packet_tensors`](@ref), so every
+term in the contracted state contains one tensor from `left_packet` and one
+from `right_packet`. No normalization or orthogonalization is applied.
+
+`AL` and `AR` are the left- and right-canonical vacuum tensors with shape
+`(D, d, D)`. `Cinv` has shape `(D, D)` and represents the inverse centre matrix
+`C^{-1}` of the canonical uniform MPS. It is contracted into the right bond of
+the final tensor in the left region before the right region is appended. This
+joins the right-canonical vacuum segment of the first packet to the
+left-canonical vacuum segment of the second packet, as in Sec. III B of the
+supplement to arXiv:2307.02522.
+
+The result contains `length(left_packet) + length(right_packet)` arrays in
+`(left bond, physical index, right bond)` order. Its outer bonds have dimension
+`D`; the bond joining the two regions also has dimension `D`; and a packet with
+more than one site has internal bond dimension `2D`.
+
+Throw `ArgumentError` if either packet is empty. Throw `DimensionMismatch` if
+`AL` and `AR` have different dimensions, if their left and right bond
+dimensions differ, if a packet tensor does not have shape `(D, d, D)`, or if
+`Cinv` does not have shape `(D, D)`.
 """
 function two_particle_packet_tensors(
         AL::AbstractArray{<:Number,3}, AR::AbstractArray{<:Number,3},
