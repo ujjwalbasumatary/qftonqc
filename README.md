@@ -2,12 +2,11 @@
 
 This repository contains material from HE381, *Quantum Field Theory on a
 Quantum Computer*, taught by Prof. Aninda Sinha at IISc in the fall of 2025,
-and the tensor-network calculations that grew out of the course.
+with Ujjwal Basumatary as the teaching assistant. Ujjwal implemented the
+scripts and maintains the repository.
 
-Ujjwal Basumatary was the teaching assistant for the course and implemented
-and maintained the code.
-
-The Julia calculations follow the methods described in these two papers.
+The Julia tensor-network calculations grew out of the course and follow
+the methods described in these two papers.
 
 - [Real-Time Scattering in Ising Field Theory using Matrix Product States](https://arxiv.org/abs/2411.13645),
 - [High-Energy Collision of Quarks and Mesons in the Schwinger Model](https://arxiv.org/abs/2307.02522).
