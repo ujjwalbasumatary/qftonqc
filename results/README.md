@@ -1,8 +1,9 @@
 # Simulation results
 
-Run outputs belong in model-specific subdirectories here, for example
-`ift/<run-name>/`, `schwinger/<run-name>/`, or `phi4/<run-name>/`.
+You can collect quench outputs in `schwinger/<run-name>/` and collision
+outputs in `ift/<run-name>/` or `phi4/<run-name>/`.
 
-The contents of this directory are intentionally ignored by Git. Preserve raw
-datasets separately when they are needed for a paper or release, and version a
-small manifest or download script instead of committing large generated files.
+Git ignores the contents of this directory. Copy data needed for a paper to
+backed-up storage. Keep a small text file with the full command, Git commit,
+Julia version, parameter values, array definitions, and the location of the
+copied data.

@@ -1,32 +1,54 @@
-# Quantum Field Theory on a Quantum Computer
-Implementation of algorithms for HE381: Quantum Field Theory on a Quantum Computer taught by Prof. Aninda Sinha @ IISc during the fall 2025 semester.
+# Quantum field theory on a quantum computer
 
-## To run the Python scripts and notebooks
-- Go to <https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html> to install a Conda distribution. We used Miniconda during our tutorials.
-- Create a virtual environment (see details here <https://docs.conda.io/projects/conda/en/stable/user-guide/getting-started.html>) and install the relevant packages.
+This repository contains material from HE381, *Quantum Field Theory on a
+Quantum Computer*, taught by Prof. Aninda Sinha at IISc in the fall of 2025,
+and the tensor-network calculations that grew out of the course.
 
-- We will need
-    - `NumPy` and `SciPy` for numerical linear algebra.
-    - `Qiskit` to build and simulate quantum circuits.
-- All the above can be installed by typing (in your environment) `pip install package-name-in-lowercase`. In addition, we will need
-    - Qiskit-aer (`qiskit_aer`) to build noise models.
-    - `MatPlotLib` for plotting data.
+The Julia calculations follow two references:
 
-## To run the Julia scripts and notebooks
-- Go to <https://julialang.org/downloads/> to install Julia.  
-  - The basic distribution does not come with all the packages that are needed.  
-  - `LinearAlgebra.jl` is available by default.
+- [Real-Time Scattering in Ising Field Theory using Matrix Product States](https://arxiv.org/abs/2411.13645),
+- [High-Energy Collision of Quarks and Mesons in the Schwinger Model](https://arxiv.org/abs/2307.02522).
 
-- We are going to need the following packages:
-  - `MPSKit.jl` and `TensorKit.jl` for the MPS calculations  
-  - `Plots.jl` for nice and beautiful plots  
-  - `LaTeXStrings.jl` for LaTeX strings in figures  
-  - `JLD2.jl` to save data (this is not necessary; I just like this package)
-  - `ArgParse.jl` for argument parsing from the command line.
-  - `IJulia.jl` for interactive Julia via Jupyter Lab or Notebook.
+The Ising calculation constructs two incoming tangent-space excitations and
+evolves them with TDVP. It saves local energy and spin expectation values.
 
-All of these can be installed (globally) by opening the Julia REPL (Read-Evaluate-Print-Loop) by typing `Julia` in your shell. Hit `]` to enter the package manager and then type `add("PackageNameWithoutTheJl")` to install the package. Alternatively from the REPL (or a Jupyter instance once you have `IJulia` installed)
-```julia
-using Pkg
-Pkg.add("PackageNameWithoutTheJl")
+The Schwinger calculation evolves a finite-chain ground state after a local
+source quench and saves the field expectation value at each site.
+
+## Files
+
+```text
+simulations/             Julia package and current calculations
+  models/ift/            Ising spectrum and collisions
+  models/schwinger/      Schwinger source quench
+  models/phi4/           lattice phi-four calculation
+course/tutorials/        notebooks used in class
+course/examples/         longer numerical examples
+course/projects/         student reports, notebooks, and presentations
+results/                 data and figures from local runs
+docs/                    documentation website
 ```
+
+Each model directory contains its Julia programs together with related
+notebooks and examples. Student submissions are under `course/projects/`.
+
+## Julia environment
+
+The calculations require Julia 1.12 or a later 1.x release. From the
+repository root, run
+
+```bash
+julia --startup-file=no --project=simulations -e \
+  'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+julia --startup-file=no --project=simulations -e 'using Pkg; Pkg.test()'
+```
+
+The first MPSKit compilation can take several minutes. Commands for the model
+calculations are in [`simulations/README.md`](simulations/README.md). Outputs
+can be stored in `results/ift/`, `results/schwinger/`, and `results/phi4/`;
+Git ignores their contents.
+
+The remaining calculations are listed in
+[`simulations/STATUS.md`](simulations/STATUS.md).
+The documentation source is in [`docs/`](docs/), including commands for
+building and viewing the website locally.

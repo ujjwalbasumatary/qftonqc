@@ -1,18 +1,19 @@
-# Simulation entry points
+# Model calculations
 
-Run every script from the repository root with `--project=julia`. Use `--help`
-to inspect its parameters.
+Run these programs from the repository root with `--project=simulations`.
+Each program accepts `--help`.
 
-| Script | Purpose | Status |
-| --- | --- | --- |
-| `ift/spectrum.jl` | uMPS vacuum and tangent-space dispersion scan | Maintained diagnostic |
-| `ift/collide_fixed_momentum.jl` | Two separated IFT packets at `+k` and `-k` | Preferred IFT collision driver |
-| `ift/collide_momentum_grid.jl` | IFT packets assembled from a full commensurate momentum grid | Maintained but more expensive diagnostic |
-| `schwinger/source_quench.jl` | Finite-chain five-site source quench | Exploratory; not the paper's scattering protocol |
-| `phi4/collide_wavepackets.jl` | Two-packet lattice phi-four evolution | Exploratory |
+| Script | Calculation |
+| --- | --- |
+| `ift/scripts/spectrum.jl` | uMPS vacuum and tangent-space dispersion |
+| `ift/scripts/collide_fixed_momentum.jl` | two Ising packets built at momenta `+k` and `-k` |
+| `ift/scripts/collide_momentum_grid.jl` | two Ising packets Fourier summed over a momentum grid |
+| `schwinger/scripts/source_quench.jl` | finite-chain source quench in the bosonized Schwinger Hamiltonian |
+| `phi4/scripts/collide_wavepackets.jl` | two-packet lattice $\phi^4$ evolution |
 
-Collision and quench outputs default to `julia/results/<model>/`. Override the
-root with `--output_dir`; raw outputs are intentionally ignored by Git.
+Outputs go to `results/<model>/` unless `--output_dir` is supplied. Git ignores
+the contents of the results directory.
 
-Files under `../legacy/` are neither imported nor tested as supported entry
-points.
+The `notebooks/` and `examples/` directories contain additional calculations
+for reading and modification. The command-line programs listed above use the
+shared package in `simulations/src/`.
