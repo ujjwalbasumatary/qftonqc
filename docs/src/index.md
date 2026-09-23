@@ -12,14 +12,18 @@ Hamiltonian. The saved energy and field expectation values follow their
 motion through the lattice. The Schwinger program prepares a finite chain
 with a central source and evolves it after the source strength changes.
 
-The physics follows two references:
+The Ising calculations draw on
+[Real-Time Scattering in Ising Field Theory using Matrix Product States](https://arxiv.org/abs/2411.13645).
+The reference for the Schwinger model is
+[High-Energy Collision of Quarks and Mesons in the Schwinger Model](https://arxiv.org/abs/2307.02522).
 
-- [Real-Time Scattering in Ising Field Theory using Matrix Product States](https://arxiv.org/abs/2411.13645).
-- [High-Energy Collision of Quarks and Mesons in the Schwinger Model](https://arxiv.org/abs/2307.02522).
-
-The model pages give the Hamiltonians and explain how the states are
-constructed. [Running the calculations](running.md) contains the Julia
-commands, and [Data and figures](data.md) describes the saved arrays.
+The Hamiltonians and the construction of the initial states are described
+on the model pages. You can find the Julia commands in
+[Running the calculations](running.md) and the definitions of the saved
+arrays in [Data and figures](data.md).
+If you want to change a Hamiltonian or measure another observable,
+[Working on the calculations](continuing.md) follows the state preparation,
+evolution, and measurements through the Julia programs.
 The [function reference](reference/functions.md) includes the docstrings from
 the shared Julia module.
 

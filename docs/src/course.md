@@ -8,9 +8,9 @@ calculation. They run independently of the Julia package in `simulations/`.
 
 ## Teaching notebooks
 
-The directories in
+The numbered directories in
 [`course/tutorials/`](https://github.com/ujjwalbasumatary/qftonqc/tree/main/course/tutorials)
-follow the teaching order.
+follow the order in which the topics were taught.
 
 | Topic | Notebooks and calculations |
 | --- | --- |
@@ -36,7 +36,7 @@ and Hadamard tests to extract spectral information, including simulations
 with circuit noise. The figures are kept beside the notebook.
 
 The Mathematica notebooks are in
-[`course/mathematica/`](https://github.com/ujjwalbasumatary/qftonqc/tree/main/course/mathematica):
+[`course/mathematica/`](https://github.com/ujjwalbasumatary/qftonqc/tree/main/course/mathematica).
 [`TFIM.nb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/mathematica/TFIM.nb)
 contains transverse-field Ising calculations, and
 [`stringbreaking.nb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/mathematica/stringbreaking.nb)

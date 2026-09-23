@@ -29,6 +29,7 @@ makedocs(
         ],
         "Numerical comparisons" => "comparisons.md",
         "Data and figures" => "data.md",
+        "Working on the calculations" => "continuing.md",
         "Julia reference" => [
             "Shared functions" => "reference/functions.md",
             "Model programs" => "reference/programs.md",

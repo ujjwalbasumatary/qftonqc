@@ -18,7 +18,9 @@ data files. The source code for each program is linked in the
 
 ## Ising collision arrays
 
-Both collision programs save these keys in separate energy and spin files:
+Both collision programs write the energy and spin expectation values to
+separate files. Each file also contains the times at which the expectation
+values were saved.
 
 | Key | Shape | Quantity |
 | --- | --- | --- |
@@ -66,7 +68,7 @@ the Ising momentum-grid program. Its energy file contains `energy_exp` and
 `times`; its other file contains `phi_sq_exp` and `times`. Both observable
 arrays have shape `(T, L)`.
 
-The measured bond operator assigns the onsite terms to the left site:
+The measured bond operator includes the onsite terms at the left site,
 
 ```math
 h_{n,n+1}=\frac{\pi_n^2}{2}+\frac{\mu_0^2\phi_n^2}{2}
@@ -83,12 +85,14 @@ described separately.
 
 ## Schwinger source-quench arrays
 
-The quench file contains all `L = parameters["lattice"]` sites. Its keys are:
+The quench file contains the field expectation values at all
+`L = parameters["lattice"]` sites, along with the times, parameters, and
+quantities returned during state preparation.
 
 | Key | Contents |
 | --- | --- |
-| `field` | Real array of shape `(length(times), L)` with ``\operatorname{Re}\langle\phi_n(t)\rangle``; no vacuum subtraction. |
-| `flux` | The same unrescaled values as `field`. |
+| `field` | Array of shape `(length(times), L)` containing ``\operatorname{Re}\langle\phi_n(t)\rangle`` without subtracting the vacuum expectation value. |
+| `flux` | Contains the same values as `field`, with no change of normalization. |
 | `times` | Saved times from zero through the requested final `--total_time`. |
 | `parameters` | Dictionary returned by the argument parser, including couplings, cutoffs, source strengths, and time arguments. |
 | `onsite_energies` | The `d_trunc` lowest eigenvalues of the onsite Hamiltonian in `d` oscillator states. |
@@ -96,9 +100,11 @@ The quench file contains all `L = parameters["lattice"]` sites. Its keys are:
 | `dmrg_residual` | Residual returned by MPSKit when finding the preparation ground state. |
 
 Here `--total_time` is a physical duration. The final interval is shorter than
-`--time_step` when necessary to reach it exactly. The onsite residual checks
-the diagonalization at the chosen cutoff; changes with `d` and `d_trunc` must
-be measured in separate calculations.
+`--time_step` when necessary to reach it exactly. The onsite residual compares
+the projected Hamiltonian with the diagonal matrix of retained eigenvalues
+at the chosen cutoff. The dependence on `d` and `d_trunc` can be examined by
+repeating the calculation with different numbers of oscillator states and
+retained onsite eigenstates.
 
 At ``\beta=\sqrt{4\pi}``, the Schwinger normalization in
 [the reference](https://arxiv.org/abs/2307.02522) gives
@@ -109,8 +115,8 @@ most 21 sites around `L÷2`; the JLD2 array retains the full chain.
 
 ## Loading files and keeping run parameters
 
-From the repository root, replace the example filename with a saved energy
-file and run:
+You can read a saved energy file with the following command from the
+repository root. Replace the example filename with the path to your file.
 
 ```bash
 julia --startup-file=no --project=simulations -e '
@@ -126,7 +132,8 @@ This reads the arrays without starting an evolution. In Julia, `load(path,
 The Ising and scalar files contain the observable and `times`, with run
 parameters encoded in the filename rather than a saved dictionary. Their
 filenames replace decimal points by `p` and minus signs by `m`. Keep the
-command, Julia version, and repository commit with the data. For scalar runs,
-use a different `--output_dir` when changing only `--momentum`: that argument
-is absent from the filename. Git ignores the contents of `results/`, so data
-that need to be retained must also be copied to backed-up storage.
+command, Julia version, and repository commit with the data. The scalar
+filenames omit `--momentum`, so use a different `--output_dir` when changing
+only that argument to avoid overwriting another run. Git ignores the
+contents of `results/`; copy data that you want to retain to storage where
+you keep backups.

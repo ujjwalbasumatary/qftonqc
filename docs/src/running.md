@@ -1,6 +1,6 @@
 # Running the calculations
 
-The commands below run from the repository root. The simulations use Julia
+Run the commands below from the repository root. The simulations use Julia
 1.12 or a later 1.x release and share the environment in `simulations/`.
 
 ```bash
@@ -28,15 +28,16 @@ julia --startup-file=no --project=simulations \
   -D 6 -n 9 --gx 1.06 --gz 0.006 --k-max 0.7 --target-cm-ratio 6
 ```
 
-This calculates a uniform-MPS vacuum with bond dimension 6 and samples one
-tangent-space excitation branch at nine momenta. The terminal output includes
-the mass ``m_1=E(0)``, a table of ``k``, ``E(k)``, and ``E(k)/m_1``, and the
-sampled momentum closest to ``2E(k)/m_1=6``.
+This finds a vacuum described by a uniform MPS with bond dimension 6, then
+calculates one tangent-space excitation branch at nine momenta. The terminal
+output includes the mass ``m_1=E(0)``, a table of ``k``, ``E(k)``, and
+``E(k)/m_1``, and the sampled momentum closest to ``2E(k)/m_1=6``.
 
 ## Ising collision
 
 The fixed-momentum program builds each packet from one excitation tensor,
-evaluated at ``+k`` or ``-k``:
+evaluated at ``+k`` for one packet and ``-k`` for the other. The command below
+uses ``k=0.38``.
 
 ```bash
 julia --startup-file=no --project=simulations \
@@ -50,8 +51,9 @@ amplitude envelope is ``\exp[-(n-n_0)^2/10^2]``. `T` counts saved times,
 including the initial state, so this command ends at ``t=(251-1)0.1=25``.
 The energy and spin arrays and their PNG figures go into `results/ift/`.
 
-The momentum-grid program instead Fourier sums tensors calculated across the
-Brillouin zone:
+In the momentum-grid program, each packet is a Fourier sum of excitation
+tensors calculated across the Brillouin zone. You can run it with the
+following command.
 
 ```bash
 julia --startup-file=no --project=simulations \
@@ -92,15 +94,18 @@ julia --startup-file=no --project=simulations \
   simulations/models/phi4/scripts/collide_wavepackets.jl --help
 ```
 
-The program takes the oscillator cutoff `--local_dim`, couplings `--mu_sq`
-and `--lambda`, packet momentum `--momentum`, and momentum spacing `--delta_p`.
-As in the Ising momentum-grid program, `--total_time` counts samples and the
-window has twice as many sites as momentum points. The saved observables are
-the vacuum-subtracted bond energy and ``\phi^2`` expectation value.
+The argument `--local_dim` sets the number of oscillator states retained at
+each site. The couplings are `--mu_sq` and `--lambda`; `--momentum` sets the
+packet momentum, and `--delta_p` sets the requested spacing of the momentum
+grid. As in the Ising momentum-grid program, `--total_time` counts saved
+samples and the window has twice as many sites as momentum points. The
+program saves the bond energy and ``\phi^2`` expectation value after
+subtracting their values in the vacuum.
 
 ## Workstation runs
 
-You can keep each run's arrays, figures, and terminal output in one directory:
+You can keep each run's arrays, figures, and terminal output in one directory.
+The following command saves them in `results/ift/gx1p06_gz0p006_k0p38/`.
 
 ```bash
 mkdir -p results/ift/gx1p06_gz0p006_k0p38
@@ -122,6 +127,6 @@ with the intended parameters gives a more useful estimate than the machine's
 core count alone. These programs set BLAS to one thread; `JULIA_NUM_THREADS`
 sets Julia's thread count separately.
 
-The example parameters above specify runs, not error estimates. The
-[numerical comparisons](comparisons.md) describe how to compare results as
-the time step, bond dimensions, basis, and window are changed.
+The [numerical comparisons](comparisons.md) page describes how to compare
+the energy and field expectation values between runs with different time
+steps, bond dimensions, basis sizes, and window lengths.

@@ -9,6 +9,7 @@ This directory contains the notebooks and term projects prepared for HE381,
   notebooks.
 - [`projects/`](projects/) contains student reports and accompanying code.
 
-The course material is separate from the Julia calculations in
-`simulations/`. The Python notebooks use NumPy, SciPy, Matplotlib, Qiskit, and
-Qiskit Aer; individual notebooks may use only part of this set.
+The Python notebooks use NumPy, SciPy, Matplotlib, Qiskit, and Qiskit Aer in
+different combinations. The import cells in each notebook list the packages
+it needs. These notebooks run independently of the Julia calculations in
+`simulations/`.

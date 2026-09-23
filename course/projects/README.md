@@ -11,5 +11,5 @@ course projects.
 | `schwinger/team-1/` | Schwinger model — Abhijeet Bhatta and Chayanka Kakati |
 | `schwinger/team-2/` | Schwinger model — Aman Goyal and Nikshay Chugh |
 
-`ift/scatter_prob.ipynb` imports `evoMPS`. The repository does not currently
-contain that package; install it separately before running the notebook.
+`ift/scatter_prob.ipynb` imports `evoMPS`, which you will need to install
+separately before running the notebook.

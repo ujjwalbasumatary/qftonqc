@@ -1,19 +1,20 @@
 # Model programs
 
-The five programs below contain the Hamiltonians, state preparation, and
-measurements for the Julia calculations. Each has a `parse_cmdline()` function
-that reads `ARGS`; `--help` prints its arguments. [Run commands](../running.md)
-use each program in a separate Julia process. Several files define the same
-function names, so their definitions are kept separate.
+Each of the five Julia programs below constructs a model Hamiltonian,
+prepares a state, and calculates its spectrum or time evolution. Each has
+a `parse_cmdline()` function that reads `ARGS`, and `--help` prints the
+available arguments. Several files define functions with the same names,
+so run each program in a separate Julia process using the
+[commands given here](../running.md).
 
-The source docstrings give argument conventions, return values, and tensor
-dimensions. The [shared-function reference](functions.md) covers the helpers
-imported from `QFTSimulations`.
+The docstrings in the source files describe the arguments, return values,
+and tensor dimensions. Functions imported from `QFTSimulations` are
+documented in the [shared-function reference](functions.md).
 
 ## Ising spectrum
 
 [`spectrum.jl`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/simulations/models/ift/scripts/spectrum.jl)
-has two functions:
+contains the functions `parse_cmdline()` and `main(args)`.
 
 | Function | Calculation |
 | --- | --- |
@@ -38,14 +39,14 @@ evaluates excitation tensors at ``+\kappa`` and ``-\kappa``.
 
 | Function | Calculation |
 | --- | --- |
-| `parse_cmdline()` | Reads the fields, dimensions, packet centres, position width, and saved time-sample count. |
+| `parse_cmdline()` | Reads the fields, dimensions, packet centres, width in position space, and number of saved times. |
 | `get_ops()` | Returns the three Pauli matrices as `TensorMap`s. |
 | `get_ham(h_x, h_z)` | Builds ``H=-\sum_n(\sigma_n^z\sigma_{n+1}^z+h_x\sigma_n^x+h_z\sigma_n^z)`` as an infinite MPO. |
 | `prep_gs(D, ham)` | Finds a one-site uniform vacuum with VUMPS. |
 | `get_QPstate(ψ_gs, ham, momenta)` | Returns the energies and tangent-space states from MPSKit's quasiparticle calculation. |
 | `get_B_tensor_list(states)` | Extracts dense excitation tensors and makes their first component real by a separate phase choice for each tensor. |
-| `create_stacked_tensor(ψ_gs, B_list, L, n_center, κ, σ)` | Multiplies the two excitation tensors by position-space Gaussians and joins their supports into an `L`-site window. |
-| `main(parsed_args)` | Normalizes the window, evolves it with two-site TDVP, and saves vacuum-subtracted bond energy and ``\sigma^z``. |
+| `create_stacked_tensor(ψ_gs, B_list, L, n_center, κ, σ)` | Weights the two excitation tensors with position-space Gaussians and places the resulting packets in an `L`-site window. |
+| `main(parsed_args)` | Normalizes the two-packet state, evolves it with two-site TDVP, and saves the bond energy and ``\sigma^z`` expectation values after subtracting their vacuum values. |
 
 The packet function uses
 
@@ -54,10 +55,10 @@ B_L(n)=B(+\kappa)e^{+i\kappa(n-n_L)-(n-n_L)^2/\sigma^2},\qquad
 B_R(n)=B(-\kappa)e^{-i\kappa(n-n_R)-(n-n_R)^2/\sigma^2}.
 ```
 
-`two_particle_packet_tensors` in the shared module closes one excitation
-insertion within each half-window and joins the halves using the inverse
-vacuum bond matrix. [Vacua and wave packets](../physics/wave-packets.md)
-describes this tensor construction.
+The shared function `two_particle_packet_tensors` constructs each
+half-window with exactly one excitation insertion. It joins the two halves
+using the inverse vacuum bond matrix. This tensor construction is described
+in [Vacua and wave packets](../physics/wave-packets.md).
 
 ## Ising packets on a momentum grid
 
@@ -74,7 +75,7 @@ calculates excitation tensors throughout a commensurate Brillouin-zone grid.
 | `get_B_tensor_list(states)` | Extracts the dense tensors and chooses each tensor's phase independently. |
 | `nearest_momentum_index(momentum, Δp, n_momenta)` | Wraps momentum into ``[-\pi,\pi)`` and selects the nearest grid point. |
 | `create_B_packet(B_tensor_list, n, offset, mom_idx, Δp, sigma)` | Fourier-sums the excitation tensors with periodic Gaussian momentum weights. |
-| `create_stacked_tensor(ψ_gs, B_packet_list_left, B_packet_list_right, L)` | Joins two `L`-site supports into a `2L`-site window. |
+| `create_stacked_tensor(ψ_gs, B_packet_list_left, B_packet_list_right, L)` | Combines two packets, each supported on `L` sites, in a `2L`-site window. |
 | `main()` | Chooses the commensurate grid, prepares and evolves the two-packet state, and saves the observables. |
 
 The site tensor is
@@ -85,8 +86,9 @@ B_n=\sum_j e^{-\delta p_j^2/\sigma^2}e^{ip_j(n-n_0)}B(p_j),
 ```
 
 Here ``\delta p_j`` is the shortest periodic displacement from the packet's
-central grid point. The phases chosen by `get_B_tensor_list` enter this sum;
-the function does not enforce continuity between neighbouring momenta.
+central grid point. The phases chosen by `get_B_tensor_list` enter this sum.
+Each phase is chosen independently, so continuity between neighbouring
+momenta is not imposed.
 
 ## Bosonized Schwinger source quench
 
@@ -102,7 +104,7 @@ source `J1`.
 | `get_elems(d_trunc; d, beta, mu, m, theta)` | Diagonalizes the onsite Hamiltonian and projects the operators into its lowest `d_trunc` eigenstates. Returns projected operators, retained energies, and the projection residual. |
 | `build_hamiltonian(L, d_trunc, phi, phi_sq, onsite; source_strength, kappa)` | Adds open-chain gradient couplings and a source on up to five central sites. |
 | `simulation_times(total_time, dt)` | Produces times ending exactly at `total_time`, with a shorter final interval if needed. |
-| `main()` | Finds the preparation ground state with DMRG, evolves with TDVP, and saves the field, times, parameters, and residuals. Returns `(field, times, plot_path, data_path)` as a named tuple. |
+| `main()` | Finds the ground state with source `J0` using DMRG, evolves it with source `J1` using TDVP, and saves the field, times, parameters, and residuals. Returns `(field, times, plot_path, data_path)` as a named tuple. |
 
 The local Hamiltonian diagonalized by `get_elems` is
 
