@@ -4,6 +4,12 @@ using QFTSimulations
 using MPSKit
 using TensorKit
 
+module SpectrumProgram
+include(joinpath(@__DIR__, "..", "models", "ift", "scripts", "spectrum.jl"))
+end
+
+include("spectrum.jl")
+
 @testset "Projected harmonic-oscillator operators" begin
     d = 10
     (; phi, phi2, pi2, phi4) = harmonic_oscillator_matrices(d)
@@ -90,6 +96,19 @@ end
     @test all(≈(spacing), diff(grid))
     @test last(grid) + spacing ≈ first(grid) + 2π
     @test grid[n ÷ 2 + 1] ≈ 0
+
+    # The fixed -π origin gives a sign change after N sites when N is odd.
+    for n_points in (5, 6, 31, 63, 64)
+        momenta = commensurate_momentum_grid(n_points)
+        phase = (-1)^n_points
+        @test all(isapprox.(exp.(im .* n_points .* momenta), phase; atol=1e-12))
+        amplitudes = ComplexF64.(1:n_points) ./ n_points
+        packet(x) = sum(amplitudes .* exp.(im .* momenta .* x))
+        for x in (0, 1, 3)
+            @test packet(x + n_points) ≈ phase * packet(x) atol=1e-11
+            @test abs2(packet(x + n_points)) ≈ abs2(packet(x)) atol=1e-10
+        end
+    end
 
     weights = gaussian_weights(grid, -π, 0.4)
     @test sum(abs2, weights) ≈ 1

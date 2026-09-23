@@ -156,9 +156,12 @@ julia --startup-file=no --project=simulations -e 'using Pkg; Pkg.test()'
 
 These tests compare oscillator matrix elements, dispersion formulas,
 momentum grids, Gaussian weights, and particle numbers in a product-vacuum
-packet construction. They do not run the model scripts. After changing a
-script, use its `--help` command to check the arguments. For an evolution
-script, run a short evolution into a separate `--output_dir` and load the
+packet construction. They also check that the Ising spectrum command rejects
+fields for which its single-particle mass is undefined or requires different
+vacua on the two sides. These checks finish before a ground-state calculation
+or time evolution begins. After changing a script, use its `--help` command
+to check the arguments. For an evolution script, run a short evolution into
+a separate `--output_dir` and load the
 resulting JLD2 file to check the saved keys, array dimensions, and initial
 and final times. The spectrum program prints its energy table to the
 terminal; compare those values after an edit. For a new observable, compare

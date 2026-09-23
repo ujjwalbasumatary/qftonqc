@@ -85,16 +85,19 @@ the requested ratio.
 The function prints the fields, lattice scaling variable, vacuum correlation
 length, ``m_1``, the selected momentum, and a comma-separated table with
 columns `k`, `E(k)`, and `E(k)/m_1`. It writes no files. For `g_z == 0`, the
-scaling-variable line prints the text `signed infinity` without evaluating
-its sign. In this case the program also prints the largest absolute
-difference from
+accepted fields have `g_x > 1`, so the scaling variable is positive infinity.
+In this case the program also prints the largest absolute difference from
 
 ```math
 E_{\rm exact}(k)=2\sqrt{1+g_x^2-2g_x\cos k}.
 ```
 
-At the critical point `(g_x, g_z) == (1, 0)`, ``E(0)=0`` and the mass ratios
-used for target selection are undefined.
+At `g_z == 0` and `g_x < 1`, a single kink connects two different ordered
+vacua. The excitation ansatz used here has the same vacuum on both sides,
+so the function rejects these fields before finding the vacuum. It also
+rejects the critical point `(g_x, g_z) == (1, 0)`, where ``E(0)=0`` and the
+mass ratios used for target selection are undefined. Both cases throw
+`ArgumentError` with the corresponding physical reason.
 """
 function main(args)
     gx = args["gx"]
@@ -112,6 +115,18 @@ function main(args)
     npoints >= 2 || throw(ArgumentError("points must be at least two"))
     target_cm_ratio >= 2 || throw(ArgumentError("target-cm-ratio must be at least two"))
     tolerance > 0 || throw(ArgumentError("vumps-tolerance must be positive"))
+
+    if iszero(gz)
+        gx < 1 && throw(ArgumentError(
+            "At gz = 0 and gx < 1, a single kink connects different ordered vacua. " *
+            "This spectrum program uses the same vacuum on both sides of an excitation; " *
+            "the one-particle mass requires a kink construction."
+        ))
+        gx == 1 && throw(ArgumentError(
+            "At gx = 1 and gz = 0, the excitation gap vanishes. " *
+            "E(k)/m_1 and the target centre-of-mass energy ratio are undefined."
+        ))
+    end
 
     sigma_x = TensorMap(ComplexF64[0 1; 1 0], ℂ^2 ← ℂ^2)
     sigma_z = TensorMap(ComplexF64[1 0; 0 -1], ℂ^2 ← ℂ^2)
@@ -141,7 +156,7 @@ function main(args)
 
     println("g_x = $gx")
     println("g_z = $gz")
-    println("eta_latt = ", iszero(gz) ? "signed infinity" : ift_eta_latt(gx, gz))
+    println("eta_latt = ", ift_eta_latt(gx, gz))
     println("vacuum bond dimension = $D")
     println("correlation length = ", correlation_length(vacuum))
     println("m_1 = $mass")

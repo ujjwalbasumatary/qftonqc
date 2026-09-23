@@ -150,8 +150,19 @@ Here `--sigma` is ``\sigma_p`` in lattice-momentum units. The continuous
 Gaussian has squared-amplitude momentum standard deviation ``\sigma_p/2``.
 If ``B`` is independent of momentum and the sum is replaced by an integral
 over the whole momentum axis, the Fourier transform has position standard
-deviation ``1/\sigma_p``. In the programs, the finite sum is periodic over
-``N`` sites, and both ``B(p)`` and its phase affect localization.
+deviation ``1/\sigma_p``. In the finite sum, both ``B(p)`` and its phase affect
+localization. The grid above gives ``e^{ip_jN}=(-1)^N``, so extending this sum
+beyond the packet support gives
+
+```math
+B_{n+N}=(-1)^N B_n.
+```
+
+The tensor repeats after ``N`` sites when ``N`` is even and changes sign when
+``N`` is odd. Its norm repeats in either case. The programs retain just ``N``
+sites for each packet and embed them in an infinite chain; they impose no
+periodic boundary condition on the window. Both even and odd grids can
+therefore be used for this construction.
 
 Each program makes the first component of each ``B(p)`` real by an independent
 phase rotation. This phase choice can change abruptly when the component

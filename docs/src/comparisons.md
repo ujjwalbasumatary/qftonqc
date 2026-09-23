@@ -37,10 +37,15 @@ exact lattice dispersion, with nearest-neighbour coupling set to one,
 \epsilon(k)=2\sqrt{1+g_x^2-2g_x\cos k}.
 ```
 
-`ift_free_fermion_dispersion` evaluates this expression. Compare the excitation
-branch with it at the same momenta in the gapped phase and with the same
-vacuum and boundary sector. In the quadratic bosonic limit, the corresponding
-comparison is with
+`ift_free_fermion_dispersion` evaluates this expression. For the spectrum
+program, make this comparison at ``g_z=0`` and ``g_x>1``, using the same
+momenta in both calculations. At ``g_z=0`` and ``g_x<1``, a single fermion is a kink
+connecting the two ordered vacua. The program uses the same vacuum on both
+sides of its excitation tensor and rejects that case. It also excludes the
+critical point ``(g_x,g_z)=(1,0)``, where its mass-normalized energy ratios
+are undefined. The [Ising page](physics/ising.md) explains the vacuum choice.
+
+In the quadratic bosonic limit, the corresponding comparison is with
 
 ```math
 \omega(p)=\chi\sqrt{\mu^2+4\sin^2(p/2)},

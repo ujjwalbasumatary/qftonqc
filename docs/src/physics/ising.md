@@ -72,11 +72,21 @@ on the same branch with opposite momenta, the central collision energy is
 momentum nearest the requested ``2E(p)/m_1``; the actual value is printed.
 The program writes its table to the terminal.
 
-At ``g_z=0`` the code also compares the excitation energies with
+At ``g_z=0`` and ``g_x>1``, the code also compares the excitation energies with
 
 ```math
 E_{\rm free}(p)=2\sqrt{1+g_x^2-2g_x\cos p}.
 ```
+
+For ``g_z=0`` and ``g_x<1``, the infinite chain has two ordered vacua with
+opposite longitudinal magnetizations. A single fermion is a kink, with one
+vacuum on its left and the other on its right. The excitation ansatz used
+here places the same vacuum on both sides, so it cannot represent this
+single-kink state. The spectrum command therefore rejects these parameters.
+The different-vacuum construction is described in Appendix C.1.1 of
+[Milsted et al.](https://arxiv.org/html/2012.07243v3). The command also rejects
+``(g_x,g_z)=(1,0)``, where the gap vanishes and ratios involving ``m_1`` are
+undefined.
 
 At ``g_z=0``, the spin chain can be expressed as a quadratic fermion
 Hamiltonian. The occupations of its independent quasiparticle modes are
@@ -86,8 +96,6 @@ continuum theory is interacting and nonintegrable. Scattering can then
 populate additional particle sectors when energy and momentum conservation
 allow them, as
 discussed in the [reference paper](https://arxiv.org/html/2411.13645v1#S1).
-The ratios involving ``m_1`` require a nonzero gap and therefore exclude the
-critical point itself.
 
 ## Two incoming packets
 

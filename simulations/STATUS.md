@@ -55,12 +55,17 @@ The following calculations are still required for the comparison with
 1. Calculate the vacuum energy, correlation length, Schmidt values, and
    excitation energies at several vacuum bond dimensions, comparing their
    values as the bond dimension increases.
-2. At $g_z=0$, compare the tangent-space dispersion with
+2. At $g_z=0$ and $g_x>1$, compare the tangent-space dispersion with
    $$
    \epsilon(k)=2\sqrt{1+g_x^2-2g_x\cos k}.
    $$
-   In the same limit, a two-packet evolution is expected to retain unit
-   probability in the two-particle sector.
+   The spectrum command uses the same vacuum on both sides of the excitation
+   tensor. It excludes $g_z=0$, $g_x<1$, where a single fermion is a kink
+   between different ordered vacua, and the critical point $(g_x,g_z)=(1,0)$,
+   where its mass-normalized ratios are undefined. In the free theory, an
+   exact two-particle state retains unit probability in the two-particle
+   sector; the packet preparation and evolution can be compared against
+   that expectation.
 3. For each incoming packet, calculate its norm, mean position, position
    variance, mean momentum, momentum variance, energy, and group velocity.
    Increase the support until the packet amplitude at its ends is negligible

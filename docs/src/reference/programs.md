@@ -22,15 +22,18 @@ contains the functions `parse_cmdline()` and `main(args)`.
 | `main(args)` | Constructs the Ising MPO, finds its uniform vacuum, and evaluates one tangent-space excitation branch on the momentum grid. Prints ``E(k)``, ``E(k)/E(0)``, and the momentum nearest the requested ratio. |
 
 For equal and opposite incoming momenta, `main` uses
-``E_{\rm cm}/m_1=2E(k)/E(0)``. At ``g_z=0`` it compares the calculated branch
-with `ift_free_fermion_dispersion` from the shared module,
+``E_{\rm cm}/m_1=2E(k)/E(0)``. At ``g_z=0`` and ``g_x>1``, it compares the
+calculated branch with `ift_free_fermion_dispersion` from the shared module,
 
 ```math
 E_{\rm exact}(k)=2\sqrt{1+g_x^2-2g_x\cos k}.
 ```
 
-The program prints a table and does not save files. Ratios involving ``E(0)``
-are undefined when the mass vanishes at the critical point.
+The program prints a table and does not save files. It rejects ``g_z=0``
+with ``g_x<1`` because a single kink needs different ordered vacua on its
+left and right, whereas the program uses the same vacuum on both sides.
+It also rejects ``(g_x,g_z)=(1,0)``, where the mass vanishes and the ratios
+involving ``E(0)`` are undefined.
 
 ## Ising packets at two fixed momenta
 
@@ -89,6 +92,12 @@ Here ``\delta p_j`` is the shortest periodic displacement from the packet's
 central grid point. The phases chosen by `get_B_tensor_list` enter this sum.
 Each phase is chosen independently, so continuity between neighbouring
 momenta is not imposed.
+
+With ``N`` momenta and ``\Delta p=2\pi/N``, the Fourier sum obeys
+``B_{n+N}=(-1)^N B_n``. It repeats for even ``N`` and changes sign for odd
+``N``, while its norm repeats in both cases. Each packet is cut to an
+``N``-site support inside the infinite chain, so the construction accepts
+either parity of ``N``. See [Wave packets](../physics/wave-packets.md).
 
 ## Bosonized Schwinger source quench
 

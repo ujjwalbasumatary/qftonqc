@@ -253,9 +253,12 @@ p_j=-\\frac{P}{2}+(j-1)\\frac{P}{n}, \\qquad j=1,\\ldots,n,
 
 where `P = period`. The grid covers the half-open interval
 `[-period/2, period/2)`, has spacing `period/n`, and satisfies
-`p_n + period/n = p_1 + period`. For the default `period = 2π`, these are
-commensurate momenta in the first Brillouin zone of a periodic `n`-site
-lattice.
+`p_n + period/n = p_1 + period`. For the default `period = 2π`,
+`exp(im * p_j * n) = (-1)^n`. A Fourier sum over this grid repeats after
+`n` sites for even `n` and changes sign for odd `n`; its squared magnitude
+repeats in both cases. The collision programs use this sum on a finite
+support inside an infinite vacuum, without imposing a periodic boundary
+condition on the MPS window.
 
 The return value is a one-dimensional Julia range of length `n`, so Julia does
 not store all `n` entries separately. Throw `DomainError` if `n < 2`, if
