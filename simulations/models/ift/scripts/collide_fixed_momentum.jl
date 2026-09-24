@@ -361,6 +361,13 @@ function main(parsed_args)
     flush(stdout)
 
     energies, states = get_QPstate(ψ_gs, ham, [κ, -κ])
+    println("Incoming excitation energies at k = ±$κ: $energies")
+    if iszero(h_z)
+        exact_energy = 2 * sqrt((h_x - 1)^2 + 4h_x * sin(κ / 2)^2)
+        println("Exact free-fermion energy at these momenta: $exact_energy")
+        println("Excitation-energy differences from the exact value: $(energies .- exact_energy)")
+    end
+    flush(stdout)
 
     B_list = get_B_tensor_list(states)
     wavepacket_window = create_stacked_tensor(ψ_gs, B_list, L, n_center, κ, σ)
@@ -376,6 +383,8 @@ function main(parsed_args)
 
     gs_value_energy = [real(expectation_value(ψ_gs, (i, i + 1) => ham_density)) for i in 1:L-1]
     gs_value_s_z = [real(expectation_value(ψ_gs, i => σ_z)) for i in 1:L]
+    println("Vacuum longitudinal magnetization: $(gs_value_s_z[1])")
+    flush(stdout)
 
     parameters = copy(parsed_args)
     parameters["evolution_bond_dimension"] = D_evolution
