@@ -9,8 +9,8 @@ creates a heavier species while keeping two outgoing particles, whereas
 and multiplicity distinguish the two.
 
 The current collision programs save local energy and field expectation
-values. The Ising overlap functions also calculate the projection onto pairs
-of localized excitation tensors. Identifying the particle species represented
+values. The Ising overlap functions also calculate projections onto pairs
+and triples of localized excitation tensors. Identifying the particle species represented
 by those tensors requires their excitation energies and momentum dependence.
 The fixed-momentum Ising program saves the initial MPS and states at selected
 times, together with the preparation vacuum and excitation tensors. These
@@ -66,9 +66,10 @@ C_{nm}(t)=\langle\delta h_n\delta h_m\rangle_t
 ```
 
 At sufficiently separated sites the bond operators act on disjoint sites.
-Correlations between outgoing regions supplement the one-point profiles;
-the current output files contain only the one-point observables listed in
-[data and figures](../data.md).
+Correlations between outgoing regions supplement the one-point profiles.
+They can be calculated from the saved MPS; the observable arrays alone do
+not contain them. The [320-site example](../demonstrations/ising-collision.md)
+includes three-point energy correlations after a collision.
 
 ## Energetically allowed channels
 
@@ -202,7 +203,35 @@ part of a packet. A higher excitation eigenvalue alone does not identify a
 stable species; compare its energy with the multiparticle thresholds and
 repeat the excitation calculation with a larger vacuum bond dimension.
 
-Projections onto three or more particles remain to be implemented. The other
-collision programs save only local-observable arrays, from which the
-many-body state cannot be reconstructed. Further numerical comparisons are
-described on the [comparison page](../comparisons.md).
+### Calculating three-particle overlaps in Julia
+
+`simulations/models/ift/scripts/three_particle_overlap.jl` has the
+implementation for three ordered insertions at ``n<m<r``. The first and
+middle excitation tensors are left-gauged, and the last is right-gauged.
+`three_particle_overlaps` returns the complex amplitudes, grouped by the
+outer positions ``(n,r)``. Its `minimum_separation` argument applies to both
+``m-n`` and ``r-m``.
+
+Different outer-position pairs are orthogonal in these gauges. With the
+outer positions held fixed, two states whose middle insertions differ can
+overlap. `middle_position_gram` calculates this matrix, and
+`three_particle_weight` uses its inverse on the independent directions to
+evaluate ``b^\dagger G^+b/\langle\psi|\psi\rangle``. The returned values
+include the smallest and largest Gram eigenvalues and the overlap discarded
+by the eigenvalue cutoff.
+
+This calculation keeps one excitation tensor at each of the three
+insertions. A particle's tensor changes with momentum, so a full ``111``
+projection also requires the momentum-dependent construction described for
+pairs above. Finite-separation reference states with two and three
+insertions can overlap with one another. `pair_triple_cross_gram` calculates
+``c_m=\langle n,m,r|n,r\rangle`` for a specified reference pair; the quantity
+``c^\dagger G^+c/\langle n,r|n,r\rangle`` measures how much of that pair
+lies in the three-insertion subspace.
+
+The [collision example](../demonstrations/ising-collision.md) gives the
+measured weights at several evolved times and separations, together with a
+Julia example for calculating them from saved states. Projections onto four
+or more particles remain to be implemented. The other collision programs
+save only local-observable arrays, from which the many-body state cannot be
+reconstructed.

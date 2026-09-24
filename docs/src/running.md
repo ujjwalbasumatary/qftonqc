@@ -1,7 +1,7 @@
 # Running the calculations
 
-Run the commands below from the repository root. The simulations use Julia
-1.12 or a later 1.x release and share the environment in `simulations/`.
+Run the commands below from the repository root. Use Julia 1.12.6 with the
+checked-in Manifest. The simulations share the environment in `simulations/`.
 
 ```bash
 julia --startup-file=no --project=simulations -e \
@@ -50,6 +50,19 @@ The window has 120 sites, with packet centres at sites 30 and 90. The
 amplitude envelope is ``\exp[-(n-n_0)^2/10^2]``. `T` counts saved times,
 including the initial state, so this command ends at ``t=(251-1)0.1=25``.
 The energy and spin arrays and their PNG figures go into `results/ift/`.
+
+This short run lets you examine the packet construction and evolution. For
+scattering measurements, widen the packets compared with the vacuum
+correlation length and enlarge the window to keep them apart initially.
+The [Ising page](physics/ising.md) explains the width convention.
+
+The program also saves the initial MPS, an MPS every 50 completed steps, and
+the final MPS. You can change the interval with `--save_every 100`, for
+example, or use `--save_every 0` to keep just the initial and final states.
+At `dt=0.1`, an interval of 50 means a lattice time interval of 5. The
+terminal prints the directory containing these states. Each run gets a new
+directory beneath `results/ift/states/`, so its state files do not replace
+those from another run. Loading a state is described in [Data and figures](data.md).
 
 In the momentum-grid program, each packet is a Fourier sum of excitation
 tensors calculated across the Brillouin zone. You can run it with the
@@ -131,8 +144,11 @@ JULIA_NUM_THREADS=auto julia --startup-file=no --project=simulations \
 ```
 
 A `tmux` session keeps a remote calculation running after you disconnect.
-The programs save the observables at the end of evolution, so an interrupted
-process currently has to be restarted from the beginning.
+The fixed-momentum Ising program saves MPS states during evolution. You can
+load a state and continue it with `MPSKit.timestep`; there is no command-line
+resume option yet. Each state file contains the local observables at that
+time, while the complete observable arrays are written at the end. The other
+evolution programs still write their outputs only at the end.
 
 The calculation time depends on the window length, oscillator cutoff, and
 bond dimensions. Compilation adds to the first run. Timing a short evolution

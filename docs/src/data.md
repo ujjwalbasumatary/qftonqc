@@ -61,6 +61,62 @@ the evolving window. The final column of `energy_exp` remains zero because
 there are only `L-1` internal bonds. Use `energy_exp[:, 1:end-1]` for plotting
 or summing those bonds. The energy PNG already omits that column.
 
+## Saved Ising MPS states
+
+`collide_fixed_momentum.jl` saves its initial and final MPS and an intermediate
+MPS every `--save_every` completed steps. The default interval is 50; zero
+keeps only the initial and final states. Step zero is the initial state, so
+`step_000050.jld2` contains the state at ``t=50\Delta t``. The final state is
+saved even when the number of steps is not a multiple of the interval.
+
+Each run has a separate directory under `<output_dir>/states/`. The directory
+name contains the physical parameters and a generated suffix; its full path
+is printed before evolution begins. A state file is written under a temporary
+name and renamed only after the write finishes. Existing state files are
+never replaced.
+
+Each file contains the following quantities.
+
+| Key | Contents |
+| --- | --- |
+| `state` | The full `WindowMPS`, including its left and right infinite boundaries. |
+| `step`, `time`, `state_norm` | Number of completed steps, lattice time, and norm of the saved state. |
+| `parameters` | Couplings, packet parameters, window length, time step, and the bond-dimension limit actually used. |
+| `reference` | Preparation vacuum and Hamiltonian, incoming excitation tensors, momenta and energies, correlation length, and vacuum energy and spin densities. |
+| `energy_density`, `spin_density` | Vacuum-subtracted observables at this time, with lengths `L-1` and `L`. |
+| `provenance` | Julia and package versions, Project and Manifest contents, copies of the calculation's source files, and Git revision when available. |
+| `format_version` | Version of this state-file layout, currently 1. |
+
+You can load a state from the repository root with
+
+```julia
+include("simulations/models/ift/scripts/state_io.jl")
+using .IFTStateIO
+using LinearAlgebra
+
+saved = load_ift_state("results/ift/states/<run-directory>/step_000050.jld2")
+state = saved["state"]
+vacuum = saved["reference"]["vacuum"]
+hamiltonian = saved["reference"]["hamiltonian"]
+@show saved["time"] norm(state) saved["parameters"]
+```
+
+Use the recorded Julia and package versions when loading the MPS objects.
+The state files contain the tensors, so contractions for new observables or
+outgoing overlaps can be performed after the run. The saved excitation
+tensors describe the incoming branch at the two central momenta. Additional
+species and momenta for an outgoing basis must be calculated from the same
+vacuum and Hamiltonian. Keep the initial state for the normalization of those
+overlaps. The [particle-production page](physics/particle-production.md)
+describes the projection calculation.
+
+These files contain observables at individual times, not the full history.
+The complete energy and spin arrays are written after evolution as described
+above. Saving the MPS periodically also requires more disk space than saving
+the local expectation values alone; its size grows roughly as ``L D^2`` at
+fixed local Hilbert-space dimension. Check the size of the first few files
+when choosing the interval for a long run.
+
 ## Scalar-field collision arrays
 
 The scalar program uses the same definitions of `T`, `times`, and `L = 2N` as

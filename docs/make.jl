@@ -27,6 +27,7 @@ makedocs(
             "Vacua and wave packets" => "physics/wave-packets.md",
             "Particle production" => "physics/particle-production.md",
         ],
+        "A 320-site Ising collision" => "demonstrations/ising-collision.md",
         "Numerical comparisons" => "comparisons.md",
         "Data and figures" => "data.md",
         "Working on the calculations" => "continuing.md",

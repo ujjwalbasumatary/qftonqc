@@ -116,6 +116,27 @@ Each half contains one excitation insertion, summed over its possible
 positions within that half. The two halves are joined to form the incoming
 two-particle state, and the complete window is normalized.
 
+For this fixed-momentum construction, choose packets that are broad compared
+with the vacuum correlation length ``\xi``. The useful ordering of lengths is
+``a\ll\xi\ll\sigma``, with the packet centres separated by several ``\sigma``.
+The spatial width should therefore be larger, not smaller, than ``\xi``.
+The excitation created by one tensor extends over neighbouring sites on the
+scale ``\xi``. A broad Gaussian superposes many such excitations and has a
+narrow momentum distribution, with standard deviation ``\Delta k=1/\sigma``.
+This is why using just ``B(k)`` at the central momentum can approximate the
+packet. The envelope's position standard deviation is ``\Delta n=\sigma/2``.
+Section II.2 and Figure 3 of
+[Jha et al.](https://arxiv.org/html/2411.13645v1#S2.SS2) discuss this condition;
+their typical widths are ``\sigma=70\text{--}120`` for correlation lengths of
+4–10 lattice sites.
+
+Increasing the width requires increasing both the distance between the
+centres and the window length. Leave room beyond each packet as well as
+between them, since their envelopes spread during evolution. The estimate
+``t_{\rm collision}\simeq(n_R-n_L)/(2|v(k)|)`` gives an initial choice of final
+time. The outgoing states then need time to separate while remaining inside
+the window. Increasing the window alone leaves the momentum spread unchanged.
+
 [`collide_momentum_grid.jl`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/simulations/models/ift/scripts/collide_momentum_grid.jl)
 instead calculates ``B(p)`` on a grid and Fourier sums the tensors. Its
 `--sigma` is a width in momentum, and `--mom` sets the central momentum.
@@ -165,7 +186,10 @@ rows and ``L`` columns. The measured bonds occupy columns `1:L-1` of
 ``t_r=(r-1)\Delta t``, including the initial state. Thus `--total_time` gives
 the number of saved samples, and the final time is ``(T-1)\Delta t``.
 
-PNG figures and JLD2 arrays are written under `results/ift/`. Commands are in
+The fixed-momentum program also saves the initial, periodic, and final MPS
+states for later overlaps and correlation functions. `--save_every` sets the
+interval in completed evolution steps. PNG figures, JLD2 arrays, and these
+states are written under `results/ift/`. Commands are in
 [Running the calculations](../running.md), and the saved keys are listed in
 [Data and figures](../data.md). Comparisons at different time steps, bond
 dimensions, packet widths, and window lengths are described in

@@ -19,6 +19,11 @@ are evolved in a finite window.
 [`scripts/spectrum.jl`](scripts/spectrum.jl) calculates the lowest
 tangent-space excitation energy over a chosen interval of momenta.
 
+[`scripts/bound_state_spectrum.jl`](scripts/bound_state_spectrum.jl)
+calculates several excitation energies while increasing the vacuum bond
+dimension. It saves the vacua, excitation tensors, eigenvector residuals,
+and comparisons with sums of two light-particle energies.
+
 [`scripts/collide_fixed_momentum.jl`](scripts/collide_fixed_momentum.jl) uses
 one excitation tensor for each packet, evaluated at momenta $+k$ and $-k$.
 It saves the vacuum-subtracted bond-energy density and
@@ -42,6 +47,10 @@ calculates excitation tensors in the left and right gauges on the saved
 vacuum. [`scripts/two_particle_overlap.jl`](scripts/two_particle_overlap.jl)
 has the contractions with localized excitation pairs, their norms, and their
 Gram matrices. The docstrings give the tensor conventions and normalization.
+[`scripts/three_particle_overlap.jl`](scripts/three_particle_overlap.jl)
+has the corresponding contractions for three ordered insertions. It also
+calculates the Gram matrix between middle positions and the overlap of
+these states with a specified two-particle reference.
 The particle-production page in `docs/src/physics/particle-production.md`
 explains how the momentum dependence enters the overlaps.
 

@@ -39,7 +39,11 @@ Their first rows contain the initial expectation values after subtracting
 the values in `ψ_gs`. The loop over `t_step in 2:T` advances `ψ_window` with
 `TDVP2` and fills the subsequent rows. Its rank limit is set by
 `truncrank(D_evolution)`. Once the loop finishes, `times` is constructed and
-the arrays are plotted and written to JLD2 files.
+the arrays are plotted and written to JLD2 files. The fixed-momentum program
+also calls `save_ift_state` before evolution, every `save_every` completed
+steps, and at the final time. `state_io.jl` has the implementation of the
+state-file writer and reader. Each file contains the complete MPS and the
+vacuum and excitation tensors used to prepare it.
 
 The momentum-grid Ising program and the scalar-field program follow the same
 sequence, but `main()` reads its own arguments. Before preparing the packets,
@@ -172,11 +176,13 @@ dimensions, basis sizes, and window lengths are described in
 
 ## Calculating outgoing probabilities
 
-The collision scripts currently save local expectation values. To calculate
-outgoing probabilities, retain `ψ_window` at the chosen late times, construct
-outgoing particle states from identified excitation branches, and evaluate
-their overlaps with it. Saving the complete state or performing those
-projections inside `main` requires adding code before the state is discarded
-when the function returns. The required overlaps and normalization are
-described in [Particle production](physics/particle-production.md); they
-have not yet been implemented in the programs.
+The fixed-momentum Ising program saves `ψ_window` at selected times. You can
+load these states with `load_ift_state` and construct outgoing particle states
+from excitation branches calculated over the saved vacuum. Compare overlaps
+with the initial two-particle state before using the same basis on a late-time
+state. The required overlaps and normalization are described in
+[Particle production](physics/particle-production.md). The two- and
+three-insertion contractions are in `two_particle_overlap.jl` and
+`three_particle_overlap.jl`; the [320-site example](demonstrations/ising-collision.md)
+shows their application to a saved collision. The other collision scripts still require
+state saving before their outgoing overlaps can be evaluated after a run.

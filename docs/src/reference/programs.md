@@ -1,9 +1,10 @@
 # Model programs
 
-Each of the five Julia programs below constructs a model Hamiltonian,
-prepares a state, and calculates its spectrum or time evolution. Each has
-a `parse_cmdline()` function that reads `ARGS`, and `--help` prints the
-available arguments. Several files define functions with the same names,
+The Julia programs below construct the model Hamiltonians, prepare states,
+and calculate spectra or time evolution. Their command-line entry points have
+a `parse_cmdline()` function that reads `ARGS`; `--help` prints the available
+arguments. The overlap modules provide functions for analysing saved states.
+Several files define functions with the same names,
 so run each program in a separate Julia process using the
 [commands given here](../running.md).
 
@@ -34,6 +35,25 @@ with ``g_x<1`` because a single kink needs different ordered vacua on its
 left and right, whereas the program uses the same vacuum on both sides.
 It also rejects ``(g_x,g_z)=(1,0)``, where the mass vanishes and the ratios
 involving ``E(0)`` are undefined.
+
+## Ising bound-state spectrum
+
+[`bound_state_spectrum.jl`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/simulations/models/ift/scripts/bound_state_spectrum.jl)
+has the implementation of the vacuum bond-dimension comparison. It saves
+the rest energies before scanning nonzero momenta, so the rest-mass table is
+available while the rest of the calculation runs.
+
+| Function | Calculation |
+| --- | --- |
+| `ising_hamiltonian(gx, gz)` | Constructs the uniform Ising MPO in units ``J=a=\hbar=1``. |
+| `excitation_solutions(vacuum, hamiltonian, momentum, environments; num=3)` | Calculates the low excitation eigenvalues, both gauges of their tensors, and the residual ``\|H_{\rm eff}B-EB\|/\|B\|``. |
+| `sampled_threshold(total_momentum, samples, lowest_energies)` | Minimizes the sum of two light-particle energies over the supplied momentum pairs. |
+| `main(args)` | Finds independent vacua at the requested dimensions and saves the spectra, residuals, settings, and threshold comparisons. |
+
+The sampled threshold is an upper bound on the minimum over the entire
+Brillouin zone. The excitation residual measures the eigensolver's error
+within its chosen variational space; comparing energies at different bond
+dimensions measures a separate source of error.
 
 ## Ising packets at two fixed momenta
 
@@ -102,6 +122,25 @@ gauges at its boundaries as in the reference tensors. Use a left-gauged
 excitation for `BL` and a right-gauged excitation for `BR`. The
 [particle-production page](../physics/particle-production.md) explains the
 normalization and the reconstruction of momentum-dependent particle states.
+
+## Ising three-particle overlaps
+
+[`three_particle_overlap.jl`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/simulations/models/ift/scripts/three_particle_overlap.jl)
+defines `IFTThreeParticleOverlap`. Its arrays have the same index order as
+the two-particle module. Use left-gauged tensors for the first and middle
+insertions and a right-gauged tensor for the last.
+
+| Function | Calculation |
+| --- | --- |
+| `three_particle_overlaps(tensors, AL, AR, Cinv, BL, BM, BR; minimum_separation=1)` | Contracts every allowed ordered triple and groups the amplitudes by the outer sites. |
+| `middle_position_gram(AL, Cinv, BL, BM, BR, span; middle_offsets)` | Calculates overlaps between different middle positions at fixed outer separation. |
+| `localized_triple_norms(AL, Cinv, BL, BM, BR, span; middle_offsets)` | Returns the diagonal entries of that Gram matrix. |
+| `pair_triple_cross_gram(AL, Cinv, BLpair, BRpair, BLtriple, BMtriple, BRtriple, span; middle_offsets)` | Calculates ``\langle\mathrm{triple}|\mathrm{pair}\rangle`` for a specified reference pair. |
+| `three_particle_weight(blocks, grams, state_norm2; minimum_separation=1, gram_minimum_separation=1)` | Combines the amplitudes using the full middle-position Gram matrix and reports its eigenvalue diagnostics. |
+
+The [320-site collision](../demonstrations/ising-collision.md) includes an
+example using these functions. Their source docstrings specify the stored
+position indices, eigenvalue cutoff, and boundary gauge assumptions.
 
 ## Ising packets on a momentum grid
 

@@ -21,8 +21,14 @@ norm, current local observables, run parameters, and Julia and source
 information. `state_io.jl` has the writer and reader.
 `particle_basis.jl` calculates excitation tensors in the left and right
 gauges, and `two_particle_overlap.jl` calculates their two-particle overlaps,
-pair norms, and Gram matrices. Projections onto three or more particles and
-energy correlations remain to be implemented.
+pair norms, and Gram matrices. `three_particle_overlap.jl` calculates
+overlaps with three fixed excitation tensors, including the Gram matrix
+between middle positions. The 320-site example in
+`docs/src/demonstrations/ising-collision.md` includes these projections and
+three-point energy correlations calculated from saved states. A full
+three-particle channel probability still requires momentum-dependent
+excitation tensors and a comparison after the outgoing particles have
+separated further.
 
 The JLD2 files contain local observables and sampling times. The Ising and
 $\phi^4$ programs put parameters in the filenames, while the Schwinger
@@ -60,7 +66,13 @@ through the vacuum bond matrix, and evolves the resulting window with
 two-site TDVP. It saves the vacuum-subtracted bond-energy density and
 $\langle\sigma_n^z\rangle-\langle\sigma^z\rangle_{\rm vac}$.
 
-The following calculations are still required for the comparison with
+`bound_state_spectrum.jl` repeats the vacuum and excitation calculations at
+several bond dimensions. At $(g_x,g_z)=(1.06,0.006)$, the second rest energy
+lies below $2m_1$ for dimensions 16 through 64; the demonstration page gives
+the values. This spectrum calculation uses new vacua and does not change
+the vacuum or bond dimension of the saved collision.
+
+The following comparisons extend the calculation towards the results of
 [arXiv:2411.13645](https://arxiv.org/abs/2411.13645).
 
 1. Calculate the vacuum energy, correlation length, Schmidt values, and
