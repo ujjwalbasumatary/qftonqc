@@ -24,9 +24,10 @@ its relation to the field theory.
 ![Vacuum-subtracted energy during the collision](../assets/ising-collision/energy.png)
 
 The colour shows the positive part of the vacuum-subtracted bond energy
-``\delta e_n(t)`` on a logarithmic scale starting at ``10^{-4}``. The packets
-meet near ``t=42``. After the collision, the two bright outer bands move
-apart, while a weaker signal remains between them. The logarithmic scale
+``\delta e_n(t)`` on a logarithmic scale starting at ``10^{-4}``. We use
+``J=a=\hbar=1``. The packets meet near lattice time ``t=42``. After the
+collision, the two bright outer bands move apart, while a weaker signal
+remains between them. The logarithmic scale
 makes this interior energy visible alongside the peaks. Negative local
 excess energy is possible because the subtraction is relative to the
 vacuum, rather than to the lowest eigenvalue of each individual bond
