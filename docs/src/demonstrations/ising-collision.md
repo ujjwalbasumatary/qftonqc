@@ -1,4 +1,4 @@
-# A 320-site Ising collision
+# IFT
 
 Two packets of the lightest Ising particle approach one another, collide,
 and leave energy between the two main outgoing packets. This example shows
