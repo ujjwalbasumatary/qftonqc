@@ -9,8 +9,13 @@ creates a heavier species while keeping two outgoing particles, whereas
 and multiplicity distinguish the two.
 
 The current collision programs save local energy and field expectation
-values. Extracting scattering probabilities also requires projecting the
-outgoing MPS onto particle states; these projections remain to be implemented.
+values. The Ising overlap functions also calculate the projection onto pairs
+of localized excitation tensors. Identifying the particle species represented
+by those tensors requires their excitation energies and momentum dependence.
+The fixed-momentum Ising program saves the initial MPS and states at selected
+times, together with the preparation vacuum and excitation tensors. These
+files can be loaded for the overlap calculation described below; see
+[Data and figures](../data.md).
 The Schwinger program prepares a ground state with a central source and changes
 that source; its initial state is described on the
 [Schwinger-model page](schwinger.md).
@@ -145,8 +150,59 @@ outgoing basis, reducing the time step, increasing the bond dimension, and
 enlarging the window. Assigning the missing weight to a particular channel
 requires an explicit projection onto that channel.
 
-For the Julia programs, the remaining work is to retain the evolved MPS,
-construct the separated outgoing basis from identified excitation branches,
-and evaluate these overlaps. The saved local-observable arrays cannot be
-used to reconstruct the required many-body state. The relevant numerical
-comparisons are collected on the [comparison page](../comparisons.md).
+### Calculating two-particle overlaps in Julia
+
+`simulations/models/ift/scripts/particle_basis.jl` has the functions for
+calculating excitation tensors on a saved uniform vacuum. Its
+`right_gauge_tensor` function converts a left-gauged excitation to the right
+gauge at the same momentum, preserving the momentum eigenstate and its phase.
+For each ordered pair of positions, use a left-gauged tensor at the left
+insertion and a right-gauged tensor at the right insertion. With these choices,
+states at different ordered positions are orthogonal.
+
+`simulations/models/ift/scripts/two_particle_overlap.jl` has the contractions
+with the evolved MPS. `two_particle_overlaps` returns the complex overlap for
+every allowed pair of positions, and `localized_pair_norms` calculates the
+norm of each reference pair. `two_particle_weight` divides the squared
+overlaps by those norms and by the evolved state's squared norm before
+summing over positions. For one fixed choice of the two excitation tensors,
+this gives the weight in their localized-pair subspace.
+
+A tensor calculated at one momentum only approximates a particle branch
+over a range of momenta. You can account for its momentum dependence by
+calculating tensors at several momenta and expanding them in a common
+reference basis. `orthonormal_tensor_basis` constructs that basis, while
+`pair_basis_grams` calculates overlaps between reference pairs at the same
+positions. The reference vectors are linear combinations of excitation
+tensors; their indices do not label particle species.
+
+Write the physical tensors as ``B_L(k)=\sum_a c_{L,a}(k)B_{L,a}`` and
+``B_R(q)=\sum_b c_{R,b}(q)B_{R,b}``. For raw position overlaps
+``O_{ab}(n,m)``, their momentum-space overlap is
+
+```math
+A(k,q)=\frac{1}{L\sqrt{\langle\psi|\psi\rangle}}
+\sum_{m-n\ge g} e^{-i(kn+qm)}
+\sum_{a,b}c_{L,a}(k)^*c_{R,b}(q)^*O_{ab}(n,m),
+```
+
+where ``g`` is the minimum separation and the discrete momenta have spacing
+``2\pi/L``. The factor ``1/L`` is the product of the two discrete Fourier
+normalizations. Keep the complex coefficients when forming this sum;
+summing probabilities over the reference vectors would describe a different
+subspace. Rescaling a reference pair also requires rescaling its expansion
+coefficient so that the physical tensor remains unchanged.
+
+At large separation, the Gram matrix of orthonormal reference pairs
+approaches the identity. Compare it with the identity at the separations
+used in the projection, and check the incoming two-particle weight with the
+same momentum grid. Repeating the outgoing projection at several late times
+and minimum separations shows whether the separation cut still excludes
+part of a packet. A higher excitation eigenvalue alone does not identify a
+stable species; compare its energy with the multiparticle thresholds and
+repeat the excitation calculation with a larger vacuum bond dimension.
+
+Projections onto three or more particles remain to be implemented. The other
+collision programs save only local-observable arrays, from which the
+many-body state cannot be reconstructed. Further numerical comparisons are
+described on the [comparison page](../comparisons.md).

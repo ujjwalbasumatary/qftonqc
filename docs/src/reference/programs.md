@@ -42,14 +42,21 @@ evaluates excitation tensors at ``+\kappa`` and ``-\kappa``.
 
 | Function | Calculation |
 | --- | --- |
-| `parse_cmdline()` | Reads the fields, dimensions, packet centres, width in position space, and number of saved times. |
+| `parse_cmdline()` | Reads the fields, dimensions, packet centres, width in position space, number of saved times, and MPS saving interval. |
 | `get_ops()` | Returns the three Pauli matrices as `TensorMap`s. |
 | `get_ham(h_x, h_z)` | Builds ``H=-\sum_n(\sigma_n^z\sigma_{n+1}^z+h_x\sigma_n^x+h_z\sigma_n^z)`` as an infinite MPO. |
 | `prep_gs(D, ham)` | Finds a one-site uniform vacuum with VUMPS. |
 | `get_QPstate(ψ_gs, ham, momenta)` | Returns the energies and tangent-space states from MPSKit's quasiparticle calculation. |
 | `get_B_tensor_list(states)` | Extracts dense excitation tensors and makes their first component real by a separate phase choice for each tensor. |
 | `create_stacked_tensor(ψ_gs, B_list, L, n_center, κ, σ)` | Weights the two excitation tensors with position-space Gaussians and places the resulting packets in an `L`-site window. |
-| `main(parsed_args)` | Normalizes the two-packet state, evolves it with two-site TDVP, and saves the bond energy and ``\sigma^z`` expectation values after subtracting their vacuum values. |
+| `main(parsed_args)` | Normalizes the two-packet state, evolves it with two-site TDVP, saves MPS states, and saves the vacuum-subtracted bond energy and ``\sigma^z`` expectation values. |
+
+[`state_io.jl`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/simulations/models/ift/scripts/state_io.jl)
+has the implementation of `save_ift_state`, `load_ift_state`, and
+`should_save_state`. The initial and final states are always saved;
+`--save_every` sets the interval between intermediate states. Each file keeps
+the vacuum, Hamiltonian, and incoming excitation tensors alongside the MPS.
+The file contents and loading example are in [Data and figures](../data.md).
 
 The packet function uses
 
@@ -62,6 +69,39 @@ The shared function `two_particle_packet_tensors` constructs each
 half-window with exactly one excitation insertion. It joins the two halves
 using the inverse vacuum bond matrix. This tensor construction is described
 in [Vacua and wave packets](../physics/wave-packets.md).
+
+## Ising excitation tensors and two-particle overlaps
+
+These two files contain functions to include in an analysis of saved MPS
+states. They do not start a new time evolution.
+
+[`particle_basis.jl`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/simulations/models/ift/scripts/particle_basis.jl)
+defines the module `IFTParticleBasis`.
+
+| Function | Calculation |
+| --- | --- |
+| `vacuum_arrays(vac)` | Returns dense left- and right-canonical vacuum tensors, the centre matrix, and its inverse. |
+| `right_gauge_tensor(vac, B, k)` | Converts a left-gauged excitation to the right gauge at momentum `k`, preserving the momentum eigenstate and its phase. |
+| `excitation_tensors(vac, ham, momenta; num=1)` | Calculates tangent-space energies and excitation tensors in both gauges on the supplied vacuum. |
+| `gauge_residuals(vac, BL, BR)` | Measures the canonical and excitation gauge residuals and the excitation tensor norms. |
+| `orthonormal_tensor_basis(tensors; rtol=1e-10)` | Uses an SVD to obtain an orthonormal reference basis and complex expansion coefficients. |
+
+[`two_particle_overlap.jl`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/simulations/models/ift/scripts/two_particle_overlap.jl)
+defines the module `IFTTwoParticleOverlap` and uses arrays with indices
+`(left bond, physical spin, right bond)`.
+
+| Function | Calculation |
+| --- | --- |
+| `two_particle_overlaps(tensors, AL, AR, Cinv, BL, BR; minimum_separation=1)` | Contracts the finite MPS with localized excitation pairs at every allowed ordered pair of positions. |
+| `localized_pair_norms(AL, Cinv, BL, BR, max_separation)` | Calculates the squared norm of each reference pair as a function of separation. |
+| `pair_basis_grams(AL, Cinv, left_basis, right_basis, max_separation)` | Calculates the Gram matrices between reference pairs at the same positions. |
+| `two_particle_weight(overlaps, norms, state_norm2; minimum_separation=1)` | Sums the normalized squared overlaps for an orthogonal localized-pair basis. |
+
+Supply the evolved state as `AC[1], AR[2], ..., AR[L]`, with the same vacuum
+gauges at its boundaries as in the reference tensors. Use a left-gauged
+excitation for `BL` and a right-gauged excitation for `BR`. The
+[particle-production page](../physics/particle-production.md) explains the
+normalization and the reconstruction of momentum-dependent particle states.
 
 ## Ising packets on a momentum grid
 

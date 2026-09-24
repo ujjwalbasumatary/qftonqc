@@ -36,6 +36,15 @@ multi-particle states in that channel. Summing the probabilities over the
 channels included in the calculation then checks how much of the final
 state those channels account for.
 
+[`scripts/state_io.jl`](scripts/state_io.jl) loads the MPS states saved by
+the fixed-momentum program. [`scripts/particle_basis.jl`](scripts/particle_basis.jl)
+calculates excitation tensors in the left and right gauges on the saved
+vacuum. [`scripts/two_particle_overlap.jl`](scripts/two_particle_overlap.jl)
+has the contractions with localized excitation pairs, their norms, and their
+Gram matrices. The docstrings give the tensor conventions and normalization.
+The particle-production page in `docs/src/physics/particle-production.md`
+explains how the momentum dependence enters the overlaps.
+
 [`notebooks/exact_diagonalization_and_qiskit.ipynb`](notebooks/exact_diagonalization_and_qiskit.ipynb)
 builds the open-chain Ising Hamiltonian by exact diagonalization and uses its
 ground state to initialize a Qiskit circuit.

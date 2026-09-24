@@ -12,18 +12,29 @@ particle species' dispersion. Calculating the probability of an outgoing
 channel requires overlaps with separated particle states of the corresponding
 species and multiplicity.
 
-## Additional information to save during evolution
+## States and observables saved during evolution
+
+The fixed-momentum Ising program saves the initial MPS, states every
+`--save_every` completed steps, and the final MPS. Each file includes the
+vacuum, Hamiltonian, incoming excitation tensors and energies, lattice time,
+norm, current local observables, run parameters, and Julia and source
+information. `state_io.jl` has the writer and reader.
+`particle_basis.jl` calculates excitation tensors in the left and right
+gauges, and `two_particle_overlap.jl` calculates their two-particle overlaps,
+pair norms, and Gram matrices. Projections onto three or more particles and
+energy correlations remain to be implemented.
 
 The JLD2 files contain local observables and sampling times. The Ising and
 $\phi^4$ programs put parameters in the filenames, while the Schwinger
-program also saves the parsed argument dictionary. The output still needs
-the following additions.
+program also saves the parsed argument dictionary. The other evolution
+programs still need MPS saving. Further additions across the programs include
+the following quantities.
 
-- the Git commit and Julia package versions;
+- the Git commit and Julia package versions where these are not already saved;
 - the norm and energy at every saved time;
 - the bond dimension and discarded weight along the window;
 - the distance between the outgoing signal and each window boundary;
-- saved MPS states from which an interrupted evolution can resume.
+- a command-line option to continue from a saved MPS state.
 
 Saving these quantities at the same times as the local observables allows
 comparisons between runs with different time steps, bond dimensions, and
