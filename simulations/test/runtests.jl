@@ -10,6 +10,7 @@ end
 
 include("spectrum.jl")
 include("ift_state_io.jl")
+include("ift_two_particle_overlap.jl")
 
 @testset "Projected harmonic-oscillator operators" begin
     d = 10
