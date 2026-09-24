@@ -1,6 +1,6 @@
 # Ising field theory
 
-The Ising calculation starts with a spin chain. Each site has two states, and
+We start with the UV lattice model where each site has two states, and
 the Hamiltonian is
 
 ```math
@@ -40,7 +40,7 @@ are ``g_x/J`` and ``g_z/J``.
 
 [`spectrum.jl`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/simulations/models/ift/scripts/spectrum.jl)
 finds a translation-invariant vacuum using a uniform matrix product state
-(MPS). A single tensor is repeated along the infinite chain. Its bond
+(uMPS), where a single tensor is repeated along the infinite chain. Its bond
 dimension, selected by `--bond-dimension`, limits how much entanglement the
 state can contain. VUMPS varies that tensor to minimize the energy per site.
 
@@ -53,9 +53,9 @@ summing over the insertion position with phase ``e^{ipn}``, giving the state
 ```
 
 States of this form define the tangent space in which MPSKit solves the
-Hamiltonian eigenvalue problem. The program requests one excitation branch
+Hamiltonian eigenvalue problem. The program finds one excitation branch
 at each momentum and reports its energy relative to the vacuum. Identifying
-it with a stable particle requires following the same branch as momentum and
+it with a stable particle requires continuation from the same branch as momentum and
 bond dimension change.
 
 The excitation tensor describes a disturbance of the correlated vacuum.
