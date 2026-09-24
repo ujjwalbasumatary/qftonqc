@@ -20,10 +20,11 @@ its relation to the field theory.
 
 ## The collision
 
-![Vacuum-subtracted energy for integrable and non-integrable collisions](../assets/ising-collision/energy-comparison.png)
+![Energy during integrable and non-integrable collisions](../assets/ising-collision/energy-comparison.png)
 
-Vacuum-subtracted bond energy ``\delta e_n(t)`` for (a) the integrable chain
-with ``h_x=1.06,\ h_z=0`` and (b) the non-integrable chain with
+We plot the difference ``\delta e_n(t)`` between the bond energy and its
+value in the vacuum. Panel (a) shows the integrable chain with
+``h_x=1.06,\ h_z=0`` and panel (b) the non-integrable chain with
 ``h_x=1.06,\ h_z=0.006``. Both calculations use 320 sites, packet centres at
 80 and 240, central momenta ``\pm0.38``, and Gaussian amplitude width
 ``\sigma=20``. The vacuum bond dimension is 8, the maximum evolution bond

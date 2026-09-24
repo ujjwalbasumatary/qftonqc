@@ -294,7 +294,7 @@ def main() -> None:
     vmin, vmax = draw_comparison(runs, output, plt, np)
     repository = here.parents[3]
     metadata = {
-        "observable": "Vacuum-subtracted internal bond energy delta_e_n(t).",
+        "observable": "Internal bond energy minus its value in the vacuum, delta_e_n(t).",
         "orientation": "Rows are times, columns are internal bonds 1 through L-1.",
         "panels": {
             "a": {"label": "Integrable", **input_record(runs[0], repository, np)},

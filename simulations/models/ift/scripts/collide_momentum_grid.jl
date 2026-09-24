@@ -306,8 +306,7 @@ be finite; the rounded grid must contain at least two momenta; and an explicitly
 supplied `D_evolution` must be at least `2D`. The program does not check
 `sigma`, although `create_B_packet` expects a positive, nonzero width.
 
-For every stored time, the program evaluates the vacuum-subtracted symmetric
-bond-energy density
+The symmetric bond-energy operator is
 
 ```math
 h_{n,n+1}=-J\sigma_n^z\sigma_{n+1}^z
@@ -315,7 +314,9 @@ h_{n,n+1}=-J\sigma_n^z\sigma_{n+1}^z
 -\frac12(h_x\sigma_{n+1}^x+h_z\sigma_{n+1}^z)
 ```
 
-and ``\langle\sigma_n^z\rangle-\langle\sigma^z\rangle_{\rm vac}``. If `T` is
+For every stored time, the program measures its expectation value, subtracts
+the expectation value in the vacuum, and saves the difference. It also saves
+``\langle\sigma_n^z\rangle-\langle\sigma^z\rangle_{\rm vac}``. If `T` is
 `total_time` and `L = 2N`, `energy_exp` and `s_z_exp` both have shape `(T, L)`.
 Energy values occupy columns `1:L-1`; column `L` remains zero and is omitted
 from the heatmap. All `L` columns of `s_z_exp` are filled. Row one is the

@@ -26,7 +26,8 @@ and comparisons with sums of two light-particle energies.
 
 [`scripts/collide_fixed_momentum.jl`](scripts/collide_fixed_momentum.jl) uses
 one excitation tensor for each packet, evaluated at momenta $+k$ and $-k$.
-It saves the vacuum-subtracted bond-energy density and
+It measures the energy on each bond, subtracts its value in the vacuum, and
+saves the difference. It also saves
 $\langle\sigma_n^z\rangle-\langle\sigma^z\rangle_{\rm vac}$.
 
 [`scripts/collide_momentum_grid.jl`](scripts/collide_momentum_grid.jl)

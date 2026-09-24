@@ -1,5 +1,5 @@
 {
-  "observable": "Vacuum-subtracted internal bond energy delta_e_n(t).",
+  "observable": "Internal bond energy minus its value in the vacuum, delta_e_n(t).",
   "orientation": "Rows are times, columns are internal bonds 1 through L-1.",
   "panels": {
     "a": {

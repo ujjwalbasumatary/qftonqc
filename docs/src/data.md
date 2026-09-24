@@ -24,8 +24,8 @@ values were saved.
 
 | Key | Shape | Quantity |
 | --- | --- | --- |
-| `energy_exp` | `(T, L)` | Vacuum-subtracted bond-energy expectation value; columns `1:L-1` are filled. |
-| `s_z_exp` | `(T, L)` | Vacuum-subtracted ``\sigma_n^z`` expectation value at all `L` sites. |
+| `energy_exp` | `(T, L)` | Bond energy minus its value in the vacuum; columns `1:L-1` are filled. |
+| `s_z_exp` | `(T, L)` | Expectation value of ``\sigma_n^z`` minus its value in the vacuum, at all `L` sites. |
 | `times` | `(T,)` | `0, dt, …, (T-1)dt`; included in both files. |
 
 Here `T` is the integer `--total_time` argument. Row one contains the initial
@@ -83,7 +83,7 @@ Each file contains the following quantities.
 | `step`, `time`, `state_norm` | Number of completed steps, lattice time, and norm of the saved state. |
 | `parameters` | Couplings, packet parameters, window length, time step, and the bond-dimension limit actually used. |
 | `reference` | Preparation vacuum and Hamiltonian, incoming excitation tensors, momenta and energies, correlation length, and vacuum energy and spin densities. |
-| `energy_density`, `spin_density` | Vacuum-subtracted observables at this time, with lengths `L-1` and `L`. |
+| `energy_density`, `spin_density` | Energy and spin expectation values at this time, minus their values in the vacuum. Their lengths are `L-1` and `L`. |
 | `provenance` | Julia and package versions, Project and Manifest contents, copies of the calculation's source files, and Git revision when available. |
 | `format_version` | Version of this state-file layout, currently 1. |
 

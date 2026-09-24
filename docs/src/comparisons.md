@@ -10,7 +10,7 @@ between runs ``a`` and ``b`` within a region ``R`` is
 ```
 
 where ``R`` is the same spatial region in both runs. This absolute difference
-remains meaningful where a vacuum-subtracted observable crosses zero.
+remains meaningful when an observable passes through its vacuum value.
 Comparing packet positions and widths alongside the full profile helps
 distinguish a change in shape from a displacement. Even a small change in
 velocity can accumulate into a visible displacement at late times.

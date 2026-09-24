@@ -278,8 +278,7 @@ weight threshold.
 supplied `D_evolution` must be at least `2D`. `create_stacked_tensor` also
 checks the packet centre and Gaussian width. `save_every` must be nonnegative.
 
-For every stored time, the program evaluates the vacuum-subtracted symmetric
-bond-energy density
+The symmetric bond-energy operator is
 
 ```math
 h_{n,n+1}=-\sigma_n^z\sigma_{n+1}^z
@@ -287,7 +286,9 @@ h_{n,n+1}=-\sigma_n^z\sigma_{n+1}^z
 -\frac12(h_x\sigma_{n+1}^x+h_z\sigma_{n+1}^z)
 ```
 
-and ``\langle\sigma_n^z\rangle-\langle\sigma^z\rangle_{\rm vac}``. If `T` is
+For every stored time, the program measures its expectation value, subtracts
+the expectation value in the vacuum, and saves the difference. It also saves
+``\langle\sigma_n^z\rangle-\langle\sigma^z\rangle_{\rm vac}``. If `T` is
 `total_time` and `L` is `length`, `energy_exp` and `s_z_exp` both have shape
 `(T, L)`. Energy values occupy columns `1:L-1`; column `L` remains zero and is
 omitted from the heatmap. All `L` columns of `s_z_exp` are filled. Row one is

@@ -63,7 +63,8 @@ The spectrum program finds a one-site VUMPS ground state and the lowest branch
 returned by the tangent-space excitation calculation. The fixed-momentum
 collision program places one packet at $+k$ and one at $-k$, joins them
 through the vacuum bond matrix, and evolves the resulting window with
-two-site TDVP. It saves the vacuum-subtracted bond-energy density and
+two-site TDVP. It measures the energy on each bond, subtracts its value in the
+vacuum, and saves the difference. It also saves
 $\langle\sigma_n^z\rangle-\langle\sigma^z\rangle_{\rm vac}$.
 
 `bound_state_spectrum.jl` repeats the vacuum and excitation calculations at

@@ -69,7 +69,7 @@ evaluates excitation tensors at ``+\kappa`` and ``-\kappa``.
 | `get_QPstate(ψ_gs, ham, momenta)` | Returns the energies and tangent-space states from MPSKit's quasiparticle calculation. |
 | `get_B_tensor_list(states)` | Extracts dense excitation tensors and makes their first component real by a separate phase choice for each tensor. |
 | `create_stacked_tensor(ψ_gs, B_list, L, n_center, κ, σ)` | Weights the two excitation tensors with position-space Gaussians and places the resulting packets in an `L`-site window. |
-| `main(parsed_args)` | Normalizes the two-packet state, evolves it with two-site TDVP, saves MPS states, and saves the vacuum-subtracted bond energy and ``\sigma^z`` expectation values. |
+| `main(parsed_args)` | Normalizes the two-packet state, evolves it with two-site TDVP, and saves MPS states. It also saves the bond energy and ``\sigma^z`` expectation values after subtracting their values in the vacuum. |
 
 [`state_io.jl`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/simulations/models/ift/scripts/state_io.jl)
 has the implementation of `save_ift_state`, `load_ift_state`, and
@@ -223,7 +223,7 @@ uses a truncated oscillator basis and two packets assembled on a momentum grid.
 | `nearest_momentum_index(momentum, Δp, n_momenta)` | Selects the nearest periodic momentum-grid point. |
 | `create_B_packet(B_tensor_list, n, offset, mom_idx, Δp, sigma)` | Uses the Fourier sum written above for the Ising momentum-grid program. |
 | `create_stacked_tensor(ψ_gs, B_packet_list_left, B_packet_list_right, L)` | Joins the two packet supports using the shared two-particle tensor construction. |
-| `main()` | Evolves the normalized window with two-site TDVP and saves vacuum-subtracted energy and ``\phi^2``. |
+| `main()` | Evolves the normalized window with two-site TDVP and saves the energy and ``\phi^2`` expectation values after subtracting their values in the vacuum. |
 
 The [scalar-field page](../physics/phi4.md) gives the Hamiltonian and basis
 conventions. Array dimensions, time indexing, and local energy assignments
