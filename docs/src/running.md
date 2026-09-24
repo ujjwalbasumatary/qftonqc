@@ -28,8 +28,8 @@ julia --startup-file=no --project=simulations \
   -D 6 -n 9 --gx 1.06 --gz 0.006 --k-max 0.7 --target-cm-ratio 6
 ```
 
-This finds a vacuum described by a uniform MPS with bond dimension 6, then
-calculates one tangent-space excitation branch at nine momenta. The terminal
+We first find the vacuum using a uniform MPS with bond dimension 6, then
+calculate one tangent-space excitation branch at nine momenta. The terminal
 output includes the mass ``m_1=E(0)``, a table of ``k``, ``E(k)``, and
 ``E(k)/m_1``, and the sampled momentum closest to ``2E(k)/m_1=6``.
 
@@ -88,8 +88,8 @@ julia --startup-file=no --project=simulations \
   -k 1.0 -m 0.3162277660 -t 3.1415926536 -T 1.0 -s 0.05
 ```
 
-This uses 120 oscillator states to diagonalize the onsite Hamiltonian and
-keeps its eight lowest eigenstates at each of 40 sites. The program finds
+Here we diagonalize the onsite Hamiltonian in 120 oscillator states and
+keep its eight lowest eigenstates at each of 40 sites. The program finds
 the ground state with source strength `J0`, changes it to `J1`, and saves
 ``\langle\phi_n(t)\rangle`` during evolution. `--J0` and `--J1` change the
 source strengths; their defaults are 1 and 0.2.
@@ -145,10 +145,11 @@ JULIA_NUM_THREADS=auto julia --startup-file=no --project=simulations \
 
 A `tmux` session keeps a remote calculation running after you disconnect.
 The fixed-momentum Ising program saves MPS states during evolution. You can
-load a state and continue it with `MPSKit.timestep`; there is no command-line
-resume option yet. Each state file contains the local observables at that
-time, while the complete observable arrays are written at the end. The other
-evolution programs still write their outputs only at the end.
+load a state and continue it with `MPSKit.timestep`. The collision commands
+above start a new run. Each state file contains the local
+observables at that time, while the complete observable arrays are written
+at the end. The other evolution programs still write their outputs only at
+the end.
 
 The calculation time depends on the window length, oscillator cutoff, and
 bond dimensions. Compilation adds to the first run. Timing a short evolution

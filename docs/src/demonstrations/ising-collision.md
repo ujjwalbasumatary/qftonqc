@@ -60,8 +60,8 @@ single outcome.
 ## The particle masses
 
 The incoming central energy is ``2E_1(0.38)\simeq1.6380``. To identify
-which species can appear after the collision, the uniform-vacuum and
-excitation calculations were repeated at larger bond dimensions ``D``.
+which species can appear after the collision, we repeat the uniform-vacuum
+and excitation calculations at larger bond dimensions ``D``.
 The table gives the two lowest rest energies above each vacuum.
 
 | ``D`` | ``m_1`` | ``m_2`` | ``2m_1-m_2`` |
@@ -119,9 +119,8 @@ W_{\rm ref}^{(3)}(t;g)=
 ```
 
 where ``b_{n,r}`` contains the overlaps at the allowed middle positions,
-and ``G_{r-n}`` is their Gram matrix. The
-[projection page](../physics/particle-production.md) explains why this
-matrix is needed.
+and ``G_{r-n}`` is their Gram matrix. The need for this matrix is explained
+on the [projection page](../physics/particle-production.md).
 
 ![Three-reference weights at late evolved times](../assets/ising-collision/three_reference_weights.png)
 
@@ -137,14 +136,13 @@ provides evidence for an outgoing three-particle component. At ``t=80``
 and ``g=40``, ``96.65\%`` of the weight on the selected Fourier grid has
 ``|p_1+p_2+p_3|<0.15``. Its total-momentum standard deviation is ``0.0697``,
 close to the incoming Gaussian estimate ``\sqrt{2}/\sigma=0.0707``.
-A separate check projects localized outgoing
-light-particle pairs onto the same triple references. Across the tested
+As a separate check, we project localized outgoing light-particle pairs
+onto the same triple references. Across the tested
 outer separations, their largest weight is ``1.58\times10^{-6}`` at
 ``g=40``. This checks contamination from those chosen pairs; it does not
 bound contamination from every possible two-particle state.
 
-The numbers
-above measure the specified reference subspace. Obtaining the full
+These weights measure the specified reference subspace. Obtaining the full
 ``111`` probability requires the momentum dependence of all three tensors
 and separation from the other channels. The visible time and
 separation dependence also shows that ``t=80`` is too early to read off a
@@ -240,8 +238,8 @@ triple reference states.
 ## Numerical comparisons still needed
 
 The evolved squared norm changes from one to ``0.995674``, and the summed
-excess energy decreases by about ``0.262\%``. Every overlap reported here
-is divided by the saved state's squared norm. That removes an overall
+excess energy decreases by about ``0.262\%``. Every overlap weight reported
+here is divided by the saved state's squared norm. That removes an overall
 normalization factor, but it cannot restore components lost during MPS
 truncation. The evolution reaches its bond-dimension limit of 24 on most
 bonds. Repeating the evolution at a larger bond dimension will show how

@@ -102,8 +102,8 @@ hamiltonian = saved["reference"]["hamiltonian"]
 ```
 
 Use the recorded Julia and package versions when loading the MPS objects.
-The state files contain the tensors, so contractions for new observables or
-outgoing overlaps can be performed after the run. The saved excitation
+The state files contain the tensors, so you can calculate new expectation
+values or outgoing overlaps after the run. The saved excitation
 tensors describe the incoming branch at the two central momenta. Additional
 species and momenta for an outgoing basis must be calculated from the same
 vacuum and Hamiltonian. Keep the initial state for the normalization of those

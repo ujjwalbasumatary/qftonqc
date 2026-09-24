@@ -1,7 +1,7 @@
 # Model programs
 
 The Julia programs below construct the model Hamiltonians, prepare states,
-and calculate spectra or time evolution. Their command-line entry points have
+and calculate spectra or time evolution. Each command-line program has
 a `parse_cmdline()` function that reads `ARGS`; `--help` prints the available
 arguments. The overlap modules provide functions for analysing saved states.
 Several files define functions with the same names,
@@ -39,9 +39,9 @@ involving ``E(0)`` are undefined.
 ## Ising bound-state spectrum
 
 [`bound_state_spectrum.jl`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/simulations/models/ift/scripts/bound_state_spectrum.jl)
-has the implementation of the vacuum bond-dimension comparison. It saves
-the rest energies before scanning nonzero momenta, so the rest-mass table is
-available while the rest of the calculation runs.
+implements the spectrum calculation at different vacuum bond dimensions.
+It saves the rest energies before scanning nonzero momenta, so the rest-mass
+table is available while the rest of the calculation runs.
 
 | Function | Calculation |
 | --- | --- |
@@ -136,7 +136,7 @@ insertions and a right-gauged tensor for the last.
 | `middle_position_gram(AL, Cinv, BL, BM, BR, span; middle_offsets)` | Calculates overlaps between different middle positions at fixed outer separation. |
 | `localized_triple_norms(AL, Cinv, BL, BM, BR, span; middle_offsets)` | Returns the diagonal entries of that Gram matrix. |
 | `pair_triple_cross_gram(AL, Cinv, BLpair, BRpair, BLtriple, BMtriple, BRtriple, span; middle_offsets)` | Calculates ``\langle\mathrm{triple}|\mathrm{pair}\rangle`` for a specified reference pair. |
-| `three_particle_weight(blocks, grams, state_norm2; minimum_separation=1, gram_minimum_separation=1)` | Combines the amplitudes using the full middle-position Gram matrix and reports its eigenvalue diagnostics. |
+| `three_particle_weight(blocks, grams, state_norm2; minimum_separation=1, gram_minimum_separation=1)` | Combines the amplitudes using the full middle-position Gram matrix. Returns the weight, the Gram eigenvalue range, the retained ranks and condition number, and the overlap discarded by the eigenvalue cutoff. |
 
 The [320-site collision](../demonstrations/ising-collision.md) includes an
 example using these functions. Their source docstrings specify the stored

@@ -13,7 +13,7 @@ The environment selected by `--project=docs` contains the packages for building
 this website. Installation and run commands are given in
 [Running the calculations](running.md).
 
-## Following an Ising collision through the code
+## Ising collision
 
 In `simulations/models/ift/scripts/collide_fixed_momentum.jl`,
 `parse_cmdline()` reads the arguments into a dictionary. At the end of the
@@ -52,7 +52,7 @@ an excitation tensor at each momentum. `create_B_packet` forms the Fourier
 sum for each site, and `create_stacked_tensor` joins the two packets.
 The scalar program saves `phi_sq_exp` in place of `s_z_exp`.
 
-## Following the Schwinger source quench
+## Schwinger source quench
 
 In `simulations/models/schwinger/scripts/source_quench.jl`, `main()` reads and
 checks the arguments, then calls `get_elems` to construct `basis`. This named
@@ -118,8 +118,8 @@ vacuum value is to be subtracted, calculate that value from `ψ_gs` beside
 bond energies, so the one-site value at `L` is filled separately. Include
 that site for the new observable as well.
 
-For a two-site observable, the bond-energy calculation gives the operator
-placement used by `expectation_value`.
+For a two-site observable, pass a pair of sites to `expectation_value`, as in
+the bond-energy calculation.
 
 ```julia
 energy_exp[t_step, i] = real(expectation_value(ψ_window, (i, i + 1) => ham_density)) - gs_value_energy[i]

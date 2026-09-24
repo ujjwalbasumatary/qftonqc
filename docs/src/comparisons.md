@@ -167,18 +167,20 @@ the conserved total excitation energy.
 
 ## Outgoing probabilities
 
-Once outgoing projections are implemented, vary the momentum basis, species
-included, minimum particle separation, and time of projection. Compare how
+For outgoing projections, vary the momentum basis, species included, minimum
+particle separation, and time of projection. Compare how
 each channel probability and their sum change under these variations. Look
 for a time interval in which the probabilities remain approximately constant
 as the particles separate, before boundary effects appear. The
 [particle-production page](physics/particle-production.md) defines the
 projection and the treatment of an overlapping basis.
 
-The current programs save local observables, times, and, for the Schwinger
-quench, onsite and DMRG residuals. Saving the norm and discarded weights at
-each time, saving the complete MPS, and calculating outgoing probabilities
-still require additions to the programs. Keep the command, source revision,
-Julia package versions, and the differences between runs with the data,
+The programs save local observables, times, and, for the Schwinger quench,
+onsite and DMRG residuals. The fixed-momentum Ising program also saves the
+complete MPS and its norm at selected times, so you can calculate outgoing
+overlaps after the run. The other collision programs still need MPS saving
+for this purpose. Recording discarded weights also requires additions to
+the programs. Keep the command, source revision, Julia package versions,
+and the differences between runs with the data,
 using separate output directories as described under
 [running the calculations](running.md) and [data and figures](data.md).

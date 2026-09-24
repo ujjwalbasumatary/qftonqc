@@ -9,9 +9,9 @@ then load the package with
 using QFTSimulations
 ```
 
-In the Julia REPL, `?two_particle_packet_tensors` opens the same docstring
-shown below. Each function description includes its arguments, the returned
-arrays or values, and the conventions used in the calculation.
+In the Julia REPL, you can enter `?two_particle_packet_tensors` to read the
+same docstring shown below. Each function description includes its arguments,
+the returned arrays or values, and the conventions used in the calculation.
 
 ```@docs
 QFTSimulations
