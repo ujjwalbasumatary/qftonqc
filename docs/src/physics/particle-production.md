@@ -13,8 +13,8 @@ values. The Ising overlap functions also calculate projections onto pairs
 and triples of localized excitation tensors. Identifying the particle species represented
 by those tensors requires their excitation energies and momentum dependence.
 The fixed-momentum Ising program saves the initial MPS and states at selected
-times, together with the preparation vacuum and excitation tensors. These
-files can be loaded for the overlap calculation described below; see
+times, together with the preparation vacuum and excitation tensors. You can
+load these files for the overlap calculation described below; see
 [Data and figures](../data.md).
 The Schwinger program prepares a ground state with a central source and changes
 that source; its initial state is described on the
@@ -29,7 +29,8 @@ For the Ising and scalar-field windows, the saved energy density is
 -\langle\Omega|h_{n,n+1}|\Omega\rangle,
 ```
 
-where ``|\Omega\rangle`` is the corresponding uniform vacuum. A localized
+where ``|\Omega\rangle`` is the corresponding uniform vacuum. The states
+in this expression have unit norm. A localized
 packet produces a band in position and time. Once the packet is separated
 from other excitations, its velocity can be compared with the dispersion of
 a candidate particle species,
@@ -56,7 +57,7 @@ observable. Section III of the
 this distinction using outgoing states containing different species.
 
 Two-point energy correlations retain information about which regions carry
-energy together. For instance, one can evaluate
+energy together. For instance, we can evaluate
 
 ```math
 C_{nm}(t)=\langle\delta h_n\delta h_m\rangle_t
@@ -92,8 +93,6 @@ subject to the momentum constraint.
 
 Energy and momentum conservation determine which outgoing configurations are
 allowed. The interactions determine the amplitude for reaching each one.
-Enough incoming energy to cross a threshold therefore permits a channel to
-open, while its probability still depends on the scattering dynamics.
 
 Finite packets have an energy distribution, so a packet centred near a
 threshold can contain components on both sides of it. The distribution
@@ -128,12 +127,13 @@ P_{\rm span}=\frac{b^\dagger G^+b}{\langle\psi|\psi\rangle},
 ```
 
 where ``G^+`` is the Moore–Penrose inverse on the retained independent
-directions. Simply summing ``|b_r|^2`` would count overlap between the basis
-states more than once. Forming ``G^+`` requires deciding which eigenvalues of
-``G`` to discard. Repeating the projection with different cutoffs shows how
-much that choice changes the probability. Save the discarded eigenvalues
-alongside the probability to record which part of the spectrum was omitted
-from the inverse.
+directions. The Gram matrix accounts for overlaps between the basis states;
+simply summing ``|b_r|^2`` need not give the probability in their span.
+When forming ``G^+``, we choose a cutoff below which
+to discard eigenvalues of ``G``. Repeating the projection with different
+cutoffs shows how much that choice changes the probability. Save the
+discarded eigenvalues alongside the probability to record which part of
+the spectrum was omitted from the inverse.
 
 The outgoing particles need time to separate. Restricting their insertion
 positions to a minimum separation excludes configurations that still interact

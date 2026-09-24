@@ -14,6 +14,7 @@ relates the scalar Hamiltonian to the fermionic theory.
 
 For the purpose of the calculations, we use the bosonized version of the Schwinger model
 with the Hamiltonian
+
 ```math
 \begin{aligned}
 H(J)={}&\sum_{n=1}^{L}\left[
@@ -69,7 +70,7 @@ quench implemented here.
 
 ## The onsite basis
 
-A scalar field has infinitely many onsite states. The calculation starts
+A scalar field has infinitely many onsite states. We start the calculation
 with the first ``d`` harmonic-oscillator states,
 
 ```math
@@ -80,9 +81,9 @@ with the first ``d`` harmonic-oscillator states,
 
 `--d` sets this oscillator cutoff. The matrices of ``\phi^2`` and ``\pi^2``
 are filled from their oscillator matrix elements. The cosine is evaluated as
-a matrix function of the truncated ``\phi`` matrix. The onsite Hamiltonian
-is then diagonalized, and the lowest `--d_trunc` eigenvectors form the basis
-used on every site of the MPS.
+a matrix function of the truncated ``\phi`` matrix. We then diagonalize the
+onsite Hamiltonian and use its lowest `--d_trunc` eigenvectors as the basis
+on every site of the MPS.
 
 If the columns of ``W`` are these eigenvectors, the field and quadratic
 operators in the retained basis are ``W^\dagger\phi W`` and
@@ -93,18 +94,19 @@ therefore uses both the projected field and the separately projected
 quadratic operator.
 
 The saved `onsite_projection_residual` measures how nearly
-``W^\dagger h_{\rm onsite}W`` is diagonal with the retained eigenvalues. To
-assess the truncation, increase ``d`` and ``d_{\rm trunc}`` separately and
-compare the retained energies and field evolution. Increasing ``d`` enlarges
-the oscillator space in which the onsite Hamiltonian is diagonalized, while
+``W^\dagger h_{\rm onsite}W`` is diagonal with the retained eigenvalues. You
+can check how much the truncation affects the result by increasing ``d`` and
+``d_{\rm trunc}`` separately and comparing the retained energies and field
+evolution. Increasing ``d`` enlarges the oscillator space in which the
+onsite Hamiltonian is diagonalized, while
 increasing ``d_{\rm trunc}`` retains more of its eigenstates on each MPS site.
 
 ## Preparation and time evolution
 
-DMRG, the density-matrix renormalization group, minimizes the finite-chain
-energy for ``H(J_0)``. `--D` sets the MPS bond dimension. The same onsite
-basis is used for both source strengths, so the quench changes only the
-linear source term. For ``t>0`` the desired evolution is
+We use DMRG, the density-matrix renormalization group, to minimize the
+finite-chain energy for ``H(J_0)``. `--D` sets the MPS bond dimension. We keep
+the same onsite basis for both source strengths, so the quench changes only
+the linear source term. For ``t>0`` we evolve the state according to
 
 ```math
 |\psi(t)\rangle=e^{-iH(J_1)t}|\Omega(J_0)\rangle.
@@ -118,8 +120,8 @@ away from the source region through the coupling between neighbouring sites.
 
 The program approximates this evolution using TDVP. Setting ``J_1=0`` removes
 the source after preparation. With ``J_1=J_0``, the preparation Hamiltonian
-also governs the evolution, so any residual time dependence of the computed
-ground state can be examined.
+also governs the evolution. You can use this choice to check whether the
+computed ground state has any residual time dependence.
 
 Here `--total_time` is the final physical lattice time. `--time_step` gives
 the maximum interval between samples, and the last interval is shortened
@@ -159,9 +161,9 @@ vacuum on both sides. This distinction determines the boundary tensors in
 the excitation calculation, as described in
 [Sec. III.1 of the supplement](https://arxiv.org/html/2307.02522#S3.SS1).
 
-The evolution describes the response to a source change. Simulating a quark
-or meson collision requires preparing particle wave packets and evolving
-them toward each other. The relation between outgoing states and scattering
-probabilities is discussed in [Particle production](particle-production.md).
+To simulate a quark or meson collision, we would need to prepare particle
+wave packets and evolve them toward each other. The relation between outgoing
+states and scattering probabilities is discussed in
+[Particle production](particle-production.md).
 Commands and array-loading examples are in
 [Running the calculations](../running.md) and [Data and figures](../data.md).

@@ -2,10 +2,9 @@
 
 These notebooks and projects accompany HE381, *Quantum Field Theory on a
 Quantum Computer*, taught by Prof. Aninda Sinha at IISc in the fall of 2025.
-We use NumPy, SciPy, Matplotlib, Qiskit, and Qiskit Aer in the Python
-notebooks; you can check each notebook's import cells for the packages it
-needs. You can run these notebooks independently of the Julia package in
-`simulations/`.
+The Python notebooks use NumPy, SciPy, Matplotlib, Qiskit, and Qiskit Aer in
+different combinations. Their import cells list the packages used by each
+calculation. They run independently of the Julia package in `simulations/`.
 
 ## Teaching notebooks
 
@@ -22,7 +21,7 @@ follow the order in which the topics were taught.
 | State preparation | [`tutorial.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/05-state-preparation/state_prep/tutorial.ipynb) discretizes oscillator position and momentum and prepares the harmonic ground state by changing the Hamiltonian. [`sho_adiabatic_state_prep.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/05-state-preparation/state_prep/sho_adiabatic_state_prep.ipynb) introduces a quartic coupling in a truncated oscillator basis. |
 | Matrix product states | [`mps_demo.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/06-matrix-product-states/mps_demo.ipynb) and [`MPS_demo_fin.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/06-matrix-product-states/MPS_demo_fin.ipynb) write spin states as products of tensors and examine their bond dimensions and entanglement. |
 
-You can also find supplementary
+The supplementary notebooks include
 [differential-equation examples](https://github.com/ujjwalbasumatary/qftonqc/tree/main/course/tutorials/01-numpy-and-odes/supplementary)
 and separate demonstrations of Qiskit's
 [statevector sampler](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/03-qiskit-and-tfim/supplementary/statevector_sampler.ipynb)
@@ -30,13 +29,11 @@ and [statevector estimator](https://github.com/ujjwalbasumatary/qftonqc/blob/mai
 
 ## Oscillator spectrum and Mathematica
 
-In
-[`noisy_spectrum_qiskit.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/examples/anharmonic-oscillator-spectrum/noisy_spectrum_qiskit.ipynb),
-we represent an anharmonic oscillator in a truncated number basis and use
-split time-evolution circuits and Hadamard tests to extract spectral
-information. We also simulate the circuits with noise. You can
-find the figures beside the notebook in
-`course/examples/anharmonic-oscillator-spectrum/`.
+[`noisy_spectrum_qiskit.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/examples/anharmonic-oscillator-spectrum/noisy_spectrum_qiskit.ipynb)
+in `course/examples/anharmonic-oscillator-spectrum/` represents an anharmonic
+oscillator in a truncated number basis. It uses split time-evolution circuits
+and Hadamard tests to extract spectral information, including simulations
+with circuit noise. The figures are kept beside the notebook.
 
 The Mathematica notebooks are in
 [`course/mathematica/`](https://github.com/ujjwalbasumatary/qftonqc/tree/main/course/mathematica).
@@ -76,10 +73,10 @@ also contains Morse-potential, entropy, and circuit-noise calculations.
 
 ### Schwinger model — Abhijeet Bhatta and Chayanka Kakati
 
-In their [report](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/projects/schwinger/team-1/Final_Term_Paper_Report_AB_CK.pdf)
-and [notebook](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/projects/schwinger/team-1/Quantum_simulation_of_Schwinger_model_final.ipynb),
-Abhijeet and Chayanka develop the lattice Schwinger Hamiltonian from its
-staggered-fermion formulation and implement quantum-circuit calculations.
+The [report](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/projects/schwinger/team-1/Final_Term_Paper_Report_AB_CK.pdf)
+and [notebook](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/projects/schwinger/team-1/Quantum_simulation_of_Schwinger_model_final.ipynb)
+develop the lattice Schwinger Hamiltonian from its staggered-fermion formulation
+and implement quantum-circuit calculations.
 
 ### Schwinger model — Aman Goyal and Nikshay Chugh
 

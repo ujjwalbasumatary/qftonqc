@@ -27,7 +27,7 @@ values costly in energy. The Hamiltonian is unchanged when both ``\phi`` and
 
 ## Oscillator states and the vacuum
 
-Each site is represented by the first ``d`` harmonic-oscillator states. The
+We represent each site by the first ``d`` harmonic-oscillator states. The
 field and its conjugate momentum are expressed as
 
 ```math
@@ -89,17 +89,16 @@ an ``N``-site interval and is centred at local site ``N\div2``; the two
 intervals form a window of ``2N`` sites. The normalized window contains one
 excitation insertion in each interval.
 
-The phase of each ``B(p_i)`` is chosen independently by making its first
+We choose the phase of each ``B(p_i)`` independently by making its first
 array component real. Since these phases enter the Fourier sum, they can
-change the packet's position and shape. The resulting spatial profile and
-its dependence on momentum spacing are part of the comparisons described
-in [Wave packets](wave-packets.md).
+change the packet's position and shape. You can compare the initial spatial
+profile at different momentum spacings; this is discussed in
+[Wave packets](wave-packets.md).
 
 The Hamiltonian remains fixed throughout this calculation. Time dependence
 comes from the localized initial state, whose momentum components have
 different energies and acquire different phases. The packets propagate
-according to the excitation dispersion, and their overlap brings the two
-excitations into the region where they interact.
+according to the excitation dispersion and interact when they overlap.
 
 Two-site TDVP evolves the window while its exterior remains the uniform
 vacuum. `--evolution_bond_dimension` sets the largest bond rank retained

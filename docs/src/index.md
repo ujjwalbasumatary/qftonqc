@@ -8,30 +8,28 @@ I currently maintain the repository.
 It contains the course notebooks and student projects, together with Julia
 calculations of quantum fields in one spatial dimension.
 
-We use matrix product states to describe the vacuum and its excitations in
-the Julia calculations. For the Ising and lattice ``\phi^4`` models, we
-prepare two localized wave packets moving toward each other and evolve
-them under the interacting Hamiltonian. We calculate the energy and field
-expectation values to track their motion through the lattice. For the
-Schwinger model, we prepare a finite chain with a central source, change
-the source strength, and evolve the state under the new Hamiltonian.
+The Julia programs use matrix product states to describe the vacuum and its
+excitations. In the Ising and lattice ``\phi^4`` calculations, two localized
+wave packets approach each other and evolve under the interacting
+Hamiltonian. The saved energy and field expectation values show their
+motion through the lattice. The Schwinger program prepares a finite chain
+with a central source and evolves it after the source strength changes.
 
 The Ising calculations draw on
 [Real-Time Scattering in Ising Field Theory using Matrix Product States](https://arxiv.org/abs/2411.13645).
 The reference for the Schwinger model is
 [High-Energy Collision of Quarks and Mesons in the Schwinger Model](https://arxiv.org/abs/2307.02522).
 
-On the model pages, we introduce each Hamiltonian and explain how we
-prepare the initial states. You can find the Julia commands in
+The Hamiltonians and the construction of the initial states are described
+on the model pages. You can find the Julia commands in
 [Running the calculations](running.md) and the definitions of the saved
 arrays in [Data and figures](data.md).
-If you want to change a Hamiltonian or measure another observable, we
-explain where to make those changes in
-[Working on the calculations](continuing.md). You can look up the shared
-Julia functions and their arguments in the
-[function reference](reference/functions.md).
+If you want to change a Hamiltonian or measure another observable, the
+relevant functions are explained in
+[Working on the calculations](continuing.md).
+The [function reference](reference/functions.md) includes the docstrings from
+the shared Julia module.
 
-In the [course material](course.md), you can find notebooks on NumPy,
-numerical time evolution, Qiskit, state preparation, and matrix product
-states. Student presentations and reports are grouped by project alongside
-their notebooks.
+The [course material](course.md) covers NumPy, numerical time evolution,
+Qiskit, state preparation, and matrix product states. Student presentations
+and reports are grouped by project alongside their notebooks.

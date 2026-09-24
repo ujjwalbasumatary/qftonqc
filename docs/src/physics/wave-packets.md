@@ -1,9 +1,9 @@
 # Wave packets
 
-The Ising and scalar-field collision programs start from a uniform MPS vacuum.
-A localized excitation is made by replacing a vacuum tensor with an excitation
-tensor and summing over its position. Two incoming packets occupy separate
-regions of a finite window, with the uniform vacuum continuing outside it.
+We start the Ising and scalar-field collision calculations from a uniform MPS
+vacuum. A localized excitation is made by replacing a vacuum tensor with an
+excitation tensor and summing over its position. Two incoming packets occupy
+separate regions of a finite window, with the uniform vacuum continuing outside it.
 
 The functions that assemble these packet tensors are in
 [`QFTSimulations.jl`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/simulations/src/QFTSimulations.jl).
@@ -121,10 +121,10 @@ spatial structure affect the position and momentum moments of the prepared
 state. The width of that state therefore needs to be calculated after packet
 preparation, rather than read directly from the Gaussian envelope.
 
-The approximation here is to use ``B(\kappa)`` throughout the packet's
+We approximate the excitation tensor by ``B(\kappa)`` throughout the packet's
 momentum spread. Comparing ``B(p)`` over that spread, or comparing with a
-packet assembled from several momenta, tests this choice. The position
-envelope follows Eq. (14) of the
+packet assembled from several momenta, shows how much this affects the packet.
+The position envelope follows Eq. (14) of the
 [Ising scattering paper](https://arxiv.org/abs/2411.13645).
 
 ## Packets from a momentum grid

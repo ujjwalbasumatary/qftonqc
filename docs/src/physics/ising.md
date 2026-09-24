@@ -44,8 +44,8 @@ finds a translation-invariant vacuum using a uniform matrix product state
 dimension, selected by `--bond-dimension`, limits how much entanglement the
 state can contain. VUMPS varies that tensor to minimize the energy per site.
 
-An excitation is obtained by replacing a vacuum tensor ``A`` by ``B(p)`` and
-summing over the insertion position with phase ``e^{ipn}``, giving the state
+We construct an excitation by replacing a vacuum tensor ``A`` by ``B(p)``
+and summing over the insertion position with phase ``e^{ipn}``, giving the state
 
 ```math
 |\Phi_p(B)\rangle=\sum_n e^{ipn}
@@ -113,18 +113,17 @@ Here `--kappa` sets ``k``, `--sigma` sets ``\sigma``, and `--n_center` sets
 Gaussian, the squared envelope has position standard deviation ``\sigma/2``;
 lattice sampling and finite support affect the actual packet variance.
 Each half contains one excitation insertion, summed over its possible
-positions within that half. The two halves are joined to form the incoming
-two-particle state, and the complete window is normalized.
+positions within that half. We join the two halves to form the incoming
+two-particle state and normalize the complete window.
 
-For this fixed-momentum construction, choose packets that are broad compared
-with the vacuum correlation length ``\xi``. The useful ordering of lengths is
+For this fixed-momentum construction, we choose packets that are broad compared
+with the vacuum correlation length ``\xi``. The lengths should satisfy
 ``a\ll\xi\ll\sigma``, with the packet centres separated by several ``\sigma``.
-The spatial width should therefore be larger, not smaller, than ``\xi``.
 The excitation created by one tensor extends over neighbouring sites on the
 scale ``\xi``. A broad Gaussian superposes many such excitations and has a
 narrow momentum distribution, with standard deviation ``\Delta k=1/\sigma``.
-This is why using just ``B(k)`` at the central momentum can approximate the
-packet. The envelope's position standard deviation is ``\Delta n=\sigma/2``.
+We can then approximate the packet using ``B(k)`` at the central momentum.
+The envelope's position standard deviation is ``\Delta n=\sigma/2``.
 Section II.2 and Figure 3 of
 [Jha et al.](https://arxiv.org/html/2411.13645v1#S2.SS2) discuss this condition;
 their typical widths are ``\sigma=70\text{--}120`` for correlation lengths of
@@ -149,8 +148,8 @@ phase dependence are described in [Wave packets](wave-packets.md).
 A localized packet contains a range of momenta and hence a range of
 excitation energies. Their relative phases change during evolution, causing
 the packet to move and spread. For a narrow distribution around momentum
-``k``, its velocity is approximately ``dE/dp`` evaluated at ``k``. The
-opposite central momenta are chosen so that the two separated packets move
+``k``, its velocity is approximately ``dE/dp`` evaluated at ``k``. We choose
+opposite central momenta so that the two separated packets move
 toward each other.
 
 The vacuum extends to infinity on either side of the window. Two-site TDVP,
