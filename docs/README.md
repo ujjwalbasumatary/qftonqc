@@ -1,7 +1,7 @@
 # Documentation website
 
-The pages in `src/` are built with Documenter.jl. The function reference also
-reads the docstrings in `simulations/src/QFTSimulations.jl`.
+We use Documenter.jl to build the pages in `src/` and generate the function
+reference from the docstrings in `simulations/src/QFTSimulations.jl`.
 
 From the repository root, install the documentation packages and build the
 site with
@@ -11,8 +11,9 @@ julia --startup-file=no --project=docs -e 'using Pkg; Pkg.instantiate()'
 julia --startup-file=no --project=docs docs/make.jl
 ```
 
-This uses a separate Julia environment from the simulations. Building the
-documentation does not run the ground-state or time-evolution calculations.
+We keep the documentation packages in a separate Julia environment. You
+can build the site without running any ground-state or time-evolution
+calculations.
 
 To view the result locally, run
 
