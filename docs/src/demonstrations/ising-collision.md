@@ -9,8 +9,8 @@ The Hamiltonian is
 
 ```math
 H=-\sum_n\left(\sigma_n^z\sigma_{n+1}^z
- +1.06\,\sigma_n^x+h_z\,\sigma_n^z\right),
-\qquad J=a=\hbar=1.
+ +h_x\,\sigma_n^x+h_z\,\sigma_n^z\right),
+\qquad J=a=\hbar=1, h_x = 1.06\,.
 ```
 
 The [Ising scattering paper](https://arxiv.org/abs/2411.13645) describes the
