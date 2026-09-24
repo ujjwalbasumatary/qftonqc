@@ -1,19 +1,19 @@
 # Bosonized Schwinger model
 
 [`source_quench.jl`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/simulations/models/schwinger/scripts/source_quench.jl)
-prepares the ground state of a scalar chain in the presence of a local source.
-At ``t=0`` the source strength changes, and the state evolves under the new
+can be used to prepare the ground state of a scalar chain in the presence of a local source.
+At ``t=0`` the source strength changes, resulting in a quench, and the state evolves under the new
 Hamiltonian. The field expectation value records the response across the
 chain.
 
 Bosonization expresses the fermion and electric-field dynamics of the
 Schwinger model in terms of a scalar field. The scalar field is proportional
 to the total electric field, with the conventions given below. The
-[derivation in the reference paper](https://arxiv.org/html/2307.02522#S1.SS1)
+derivation in the [reference](https://arxiv.org/html/2307.02522#S1.SS1)
 relates the scalar Hamiltonian to the fermionic theory.
 
-The program uses an open chain with Hamiltonian
-
+For the purpose of the calculations, we use the bosonized version of the Schwinger model
+with the Hamiltonian
 ```math
 \begin{aligned}
 H(J)={}&\sum_{n=1}^{L}\left[
@@ -50,7 +50,7 @@ H_{\rm paper}=\chi\sum_n\left[
  -\lambda\cos(\beta\phi_n-\theta)\right].
 ```
 
-The table relates the coupling names in the program to those in the paper
+The following table shows the relationship of the coupling names in the program to those in the paper
 at ``\chi=1``.
 
 | Program argument | Coefficient in the program | Paper convention at ``\chi=1`` |
