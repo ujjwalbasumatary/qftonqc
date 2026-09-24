@@ -1,0 +1,115 @@
+{
+  "observable": "Vacuum-subtracted internal bond energy delta_e_n(t).",
+  "orientation": "Rows are times, columns are internal bonds 1 through L-1.",
+  "panels": {
+    "a": {
+      "label": "Integrable",
+      "directory": "results/ift/2026-09-24-integrable-320",
+      "parameters": {
+        "kappa": 0.38,
+        "h_x": 1.06,
+        "h_z": 0.0,
+        "sigma": 20.0,
+        "length": 320,
+        "n_center": 80,
+        "total_time": 801,
+        "bond_dimension": 8,
+        "evolution_bond_dimension": 24,
+        "time_step": 0.1,
+        "random_seed": 20260924
+      },
+      "sources": {
+        "energy": {
+          "path": "results/ift/2026-09-24-integrable-320/data/energy_exp.csv",
+          "sha256": "bb29fb6262320383b37e41a2dcf82fc48118f2128c842175179eb917051c4a12"
+        },
+        "times": {
+          "path": "results/ift/2026-09-24-integrable-320/data/times.csv",
+          "sha256": "a88355862cb5b9bc7a38b767e0d3198f78d5ed8d2b4678d6b89315b9471ba04e"
+        },
+        "summary": {
+          "path": "results/ift/2026-09-24-integrable-320/plots/summary.json",
+          "sha256": "b002c23c9c3d94092b38005b9bdb4833908096cd78d8526ef957109b354e9f33"
+        }
+      },
+      "raw_energy_shape": [
+        801,
+        320
+      ],
+      "plotted_energy_shape": [
+        801,
+        319
+      ],
+      "omitted_column": {
+        "one_based_index": 320,
+        "reason": "Unused final column; every entry is exactly zero."
+      },
+      "initial_time": 0.0,
+      "final_time": 80.0,
+      "energy_min": -0.0001190035851508231,
+      "energy_max": 0.062366494787873705,
+      "nonpositive_samples": 62692,
+      "positive_samples_below_colour_minimum": 94552
+    },
+    "b": {
+      "label": "Non-integrable",
+      "directory": "results/ift/2026-09-24-collision-320",
+      "parameters": {
+        "kappa": 0.38,
+        "h_x": 1.06,
+        "h_z": 0.006,
+        "sigma": 20.0,
+        "length": 320,
+        "n_center": 80,
+        "total_time": 801,
+        "bond_dimension": 8,
+        "evolution_bond_dimension": 24,
+        "time_step": 0.1,
+        "random_seed": 20260924
+      },
+      "sources": {
+        "energy": {
+          "path": "results/ift/2026-09-24-collision-320/data/energy_exp.csv",
+          "sha256": "138284c46749eb08c401bc72ff0a9260aeeffc8ceece0ce72cfcd7c23b7664c1"
+        },
+        "times": {
+          "path": "results/ift/2026-09-24-collision-320/data/times.csv",
+          "sha256": "a88355862cb5b9bc7a38b767e0d3198f78d5ed8d2b4678d6b89315b9471ba04e"
+        },
+        "summary": {
+          "path": "results/ift/2026-09-24-collision-320/plots/summary.json",
+          "sha256": "255b27b247c7811b439178efb3ddcf20d852a5831d4399350264d3cc4b680f29"
+        }
+      },
+      "raw_energy_shape": [
+        801,
+        320
+      ],
+      "plotted_energy_shape": [
+        801,
+        319
+      ],
+      "omitted_column": {
+        "one_based_index": 320,
+        "reason": "Unused final column; every entry is exactly zero."
+      },
+      "initial_time": 0.0,
+      "final_time": 80.0,
+      "energy_min": -8.680570106056607e-05,
+      "energy_max": 0.06341315225447941,
+      "nonpositive_samples": 49194,
+      "positive_samples_below_colour_minimum": 97981
+    }
+  },
+  "colour_scale": {
+    "normalization": "LogNorm",
+    "colormap": "inferno",
+    "vmin": 0.0001,
+    "vmax": 0.06341315225447941,
+    "shared_between_panels": true,
+    "nonpositive_and_under_range_colour": "black"
+  },
+  "units": "J = a = hbar = 1",
+  "text_rendering": "LaTeX",
+  "data_operations": "Omit verified unused zero column; mask nonpositive values for LogNorm. No smoothing, interpolation, rescaling, or extra vacuum subtraction."
+}

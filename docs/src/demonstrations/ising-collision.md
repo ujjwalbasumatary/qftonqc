@@ -1,16 +1,15 @@
 # IFT
 
-Two packets of the lightest Ising particle approach one another, collide,
-and leave energy between the two main outgoing packets. This example shows
-the evolution and the overlaps calculated from its saved MPS states. It
-also includes a separate calculation of the particle masses, which helps
-identify the outgoing channels that the collision can reach.
+We compare collisions of two Ising particles at an integrable point and
+away from it. The packets have the same initial positions, central momenta,
+and Gaussian width in both calculations. The particle masses and
+outgoing-state overlaps later on this page are for the non-integrable case.
 
 The Hamiltonian is
 
 ```math
 H=-\sum_n\left(\sigma_n^z\sigma_{n+1}^z
- +1.06\,\sigma_n^x+0.006\,\sigma_n^z\right),
+ +1.06\,\sigma_n^x+h_z\,\sigma_n^z\right),
 \qquad J=a=\hbar=1.
 ```
 
@@ -21,47 +20,56 @@ its relation to the field theory.
 
 ## The collision
 
-![Vacuum-subtracted energy during the collision](../assets/ising-collision/energy.png)
+![Vacuum-subtracted energy for integrable and non-integrable collisions](../assets/ising-collision/energy-comparison.png)
 
-The colour shows the positive part of the vacuum-subtracted bond energy
-``\delta e_n(t)`` on a logarithmic scale starting at ``10^{-4}``. We use
-``J=a=\hbar=1``. The packets meet near lattice time ``t=42``. After the
-collision, the two bright outer bands move apart, while a weaker signal
-remains between them. The logarithmic scale
-makes this interior energy visible alongside the peaks. Negative local
-excess energy is possible because the subtraction is relative to the
-vacuum, rather than to the lowest eigenvalue of each individual bond
-operator. The [signed figure](../assets/ising-collision/energy-signed.pdf)
-retains those values.
+Vacuum-subtracted bond energy ``\delta e_n(t)`` for (a) the integrable chain
+with ``h_x=1.06,\ h_z=0`` and (b) the non-integrable chain with
+``h_x=1.06,\ h_z=0.006``. Both calculations use 320 sites, packet centres at
+80 and 240, central momenta ``\pm0.38``, and Gaussian amplitude width
+``\sigma=20``. The vacuum bond dimension is 8, the maximum evolution bond
+dimension is 24, and the time step is ``\Delta t=0.1``, with evolution up to
+``t=80``. We use ``J=a=\hbar=1``. The two panels share a logarithmic colour
+scale, with values below ``10^{-4}`` shown in black. Neither energy density
+is rescaled.
+The [PDF figure](../assets/ising-collision/energy-comparison.pdf) is also available.
 
-The finite window has 320 sites, with the same uniform MPS vacuum extending
-to infinity on each side. The Gaussian amplitudes are proportional to
+In (a), the packets meet near ``t=40`` and separate into two outgoing bands.
+In (b), they meet near ``t=42`` and leave a broad, weaker signal between the
+main outgoing bands. This interior energy is visible on the same colour
+scale that shows no comparable band in (a). At ``h_z=0``, the spin chain can
+be mapped to free fermions whose mode occupations are conserved; two
+incoming quasiparticles therefore remain two. The mapping is given in
+[Appendix A of the paper](https://arxiv.org/html/2411.13645v1#A1).
+
+The finite window has a uniform MPS vacuum extending to infinity on each
+side. We calculate the vacuum and excitation tensors separately for each
+Hamiltonian before preparing the packets. The Gaussian amplitudes are
+proportional to
 ``\exp[-(n-n_0)^2/\sigma^2]``. Here ``\sigma=20`` is the width parameter of
-the amplitude, not the standard deviation of its squared magnitude.
+the amplitude, not the standard deviation of its squared magnitude. The
+vacuum MPS correlation lengths are about 12.95 sites in (a) and 6.79 sites
+in (b). Full MPS states are saved at ``t=0,5,10,\ldots,80`` in both runs.
 
-| Quantity | Value |
-| --- | --- |
-| Packet centres | 80 and 240 |
-| Central momenta | ``+0.38`` and ``-0.38`` |
-| Gaussian amplitude width ``\sigma`` | 20 |
-| Vacuum bond dimension | 8 |
-| Maximum evolution bond dimension | 24 |
-| Time step | 0.1 |
-| Final evolved time | 80 |
-| Saved MPS times | ``0,5,10,\ldots,80`` |
-| Vacuum correlation length | 6.79 sites |
+At ``t=80``, bonds 120 through 190 contain about ``0.0068\%`` of the summed
+excess energy in (a), compared with ``6.35\%`` in (b). We obtain these fractions
+by summing the signed ``\delta e_n`` over those bonds and dividing by its
+sum over all 319 internal bonds. Negative local excess energy is possible
+because the subtraction is relative to the vacuum, rather than to the
+lowest eigenvalue of each bond operator. The
+[signed figure for (b)](../assets/ising-collision/energy-signed.pdf) retains
+those values. Outgoing particle probabilities require the projections
+discussed below.
 
-At ``t=80``, bonds 120 through 190 contain about ``6.35\%`` of the total
-excess energy. This is an energy fraction; converting it into a particle
-probability would require knowing the energy and spatial profile of each
-outgoing component. The expectation-value plot includes all components of
-the quantum state, so counting its bands does not count the particles in a
-single outcome.
+The signed plot also makes faint oscillations around zero visible. Such
+oscillations are present before the collision in both runs, with values of
+order ``10^{-5}``. Comparing them at larger bond dimensions and smaller
+time steps would help separate coherent oscillations from numerical errors.
 
 ## The particle masses
 
-The incoming central energy is ``2E_1(0.38)\simeq1.6380``. To identify
-which species can appear after the collision, we repeat the uniform-vacuum
+For ``h_z=0.006``, the incoming central energy is
+``2E_1(0.38)\simeq1.6380``. To identify which species can appear after the
+collision, we repeat the uniform-vacuum
 and excitation calculations at larger bond dimensions ``D``.
 The table gives the two lowest rest energies above each vacuum.
 
@@ -184,14 +192,20 @@ julia --project=simulations simulations/models/ift/scripts/collide_fixed_momentu
   --save_every 50 --output_dir results/ift/collision-320
 ```
 
+This command uses the non-integrable parameters in panel (b). For panel
+(a), change `--h_z 0.006` to `--h_z 0` and use
+`--output_dir results/ift/integrable-320` to keep the two runs separate.
+
 `--total_time 801` counts the initial row and 800 evolution steps, giving
 ``t_{\rm final}=80``. The saved states are in a new subdirectory under
-`results/ift/collision-320/states/`. The run shown here used Julia 1.12.6,
-two Julia threads, one BLAS thread, and random seed 20260924. It took about
+`results/ift/collision-320/states/`. Both runs shown here used Julia 1.12.6,
+two Julia threads, one BLAS thread, and random seed 20260924. Each took about
 two hours on the machine used for this example. Compilation, processor,
 memory, and package versions affect that time. The command above uses a
-new random initialization; the [settings file](../assets/ising-collision/run-settings.toml)
-records the parameters of the displayed run.
+new random initialization. The settings files for
+[panel (a)](../assets/ising-collision/integrable-run-settings.toml) and
+[panel (b)](../assets/ising-collision/run-settings.toml) record the parameters
+of the displayed runs.
 
 The mass comparison can be repeated separately with
 
@@ -238,11 +252,12 @@ triple reference states.
 
 ## Numerical comparisons still needed
 
-The evolved squared norm changes from one to ``0.995674``, and the summed
-excess energy decreases by about ``0.262\%``. Every overlap weight reported
-here is divided by the saved state's squared norm. That removes an overall
-normalization factor, but it cannot restore components lost during MPS
-truncation. The evolution reaches its bond-dimension limit of 24 on most
+For ``h_z=0.006``, the evolved squared norm changes from one to ``0.995674``,
+and the summed excess energy decreases by about ``0.262\%``. For ``h_z=0``,
+the summed excess energy decreases by about ``0.351\%``. Every overlap
+weight reported here is divided by the saved state's squared norm. That
+removes an overall normalization factor, but it cannot restore components
+lost during MPS truncation. The evolution reaches its bond-dimension limit of 24 on most
 bonds. Repeating the evolution at a larger bond dimension will show how
 much the overlaps change when more entanglement is retained.
 The time step and outgoing separation time also need to be varied before
@@ -263,3 +278,19 @@ physical interpretation.
 two overlap and correlation figures from their adjacent CSV files. Run it
 with Python, NumPy, and Matplotlib installed; it uses LaTeX by default, or
 Matplotlib's mathematical lettering with `--no-tex`.
+
+[`plot_energy_comparison.py`](../assets/ising-collision/plot_energy_comparison.py)
+draws the two energy panels from the energy JLD2 files written by the Julia
+calculation. It needs NumPy, Matplotlib, and h5py installed in your Python
+environment. If `data/energy_exp.csv`, `data/times.csv`, and
+`plots/summary.json` are present, it reads those exports instead and does
+not need h5py. The [figure settings](../assets/ising-collision/energy-comparison.json)
+record the parameters, input files, and shared colour limits of the figure
+above. After running the two calculations with the commands on this page,
+you can draw their energy densities with
+
+```sh
+python docs/src/assets/ising-collision/plot_energy_comparison.py \
+  --integrable-directory results/ift/integrable-320 \
+  --nonintegrable-directory results/ift/collision-320
+```

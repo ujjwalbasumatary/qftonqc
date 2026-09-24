@@ -1,0 +1,23 @@
+julia_version = "1.12.6"
+random_seed = 20260924
+julia_threads = 2
+blas_threads = 1
+hamiltonian = "H = -sum_j (sigma_z[j]*sigma_z[j+1] + hx*sigma_x[j] + hz*sigma_z[j])"
+coupling_J = 1.0
+lattice_spacing = 1.0
+hbar = 1.0
+
+[collision]
+vacuum_bond_dimension = 8
+maximum_evolution_bond_dimension = 24
+window_length = 320
+left_packet_center = 80
+right_packet_center = 240
+central_momentum = 0.38
+gaussian_amplitude_width = 20.0
+number_of_saved_times = 801
+time_step = 0.1
+final_time = 80.0
+mps_save_interval_time = 5.0
+hx = 1.06
+hz = 0.0
