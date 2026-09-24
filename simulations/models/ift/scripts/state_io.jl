@@ -3,7 +3,7 @@
 
 Save and reload the finite MPS window used in the fixed-momentum Ising
 collision. Each file contains the state, both infinite boundaries, the
-vacuum and excitation tensors used in its preparation, and the physical
+vacuum and excitation tensors used in its preparation, and the lattice
 time. These objects allow subsequent overlaps and correlation functions to
 be evaluated without repeating the collision.
 """
@@ -137,7 +137,7 @@ end
     load_ift_state(path)
 
 Read a saved Ising collision state and return its string-keyed dictionary.
-For example, `saved["state"]` is the `WindowMPS`, `saved["time"]` its physical
+For example, `saved["state"]` is the `WindowMPS`, `saved["time"]` its lattice
 time, and `saved["reference"]["vacuum"]` the preparation vacuum. Checkpoint
 format versions other than 1 and objects that do not reload as a `WindowMPS`
 throw `ArgumentError`.

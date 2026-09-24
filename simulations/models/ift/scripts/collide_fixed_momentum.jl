@@ -304,7 +304,7 @@ each completed step.
 
 The initial MPS, each requested intermediate MPS, and the final MPS are
 written before plotting to a new directory beneath `states/`. Each file
-contains the physical time, norm, run parameters, current local observables,
+contains the lattice time, norm, run parameters, current local observables,
 vacuum, Hamiltonian, excitation energies and tensors used in preparation,
 and source and package information. The step-zero state supplies the
 incoming reference for later sector overlaps. See `IFTStateIO.save_ift_state`

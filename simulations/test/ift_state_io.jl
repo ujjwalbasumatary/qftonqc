@@ -78,9 +78,9 @@ JLD2.writeas(::Type{UnwritableReference}) = error("deliberate test write failure
             "hamiltonian" => hamiltonian,
             "excitation_tensors" => excitation_tensors,
             "momenta" => [0.3, -0.3],
-            "energies" => [1.0, 1.0],
-            "vacuum_energy" => -1.3,
-            "vacuum_spin" => 1.0,
+            "excitation_energies" => [1.0, 1.0],
+            "vacuum_energy_density" => fill(-1.3, 3),
+            "vacuum_spin_density" => ones(4),
         )
         parameters = Dict{String, Any}("length" => 4, "time_step" => 0.1)
         provenance = Dict{String, Any}("julia_version" => string(VERSION))
@@ -122,9 +122,9 @@ JLD2.writeas(::Type{UnwritableReference}) = error("deliberate test write failure
             @test initial["reference"]["hamiltonian"] isa InfiniteMPOHamiltonian
             @test initial["reference"]["excitation_tensors"] == excitation_tensors
             @test initial["reference"]["momenta"] == reference["momenta"]
-            @test initial["reference"]["energies"] == reference["energies"]
-            @test initial["reference"]["vacuum_energy"] == reference["vacuum_energy"]
-            @test initial["reference"]["vacuum_spin"] == reference["vacuum_spin"]
+            @test initial["reference"]["excitation_energies"] == reference["excitation_energies"]
+            @test initial["reference"]["vacuum_energy_density"] == reference["vacuum_energy_density"]
+            @test initial["reference"]["vacuum_spin_density"] == reference["vacuum_spin_density"]
 
             # Saving a later state must retain its norm rather than normalize it.
             later_path = joinpath(state_directory, "step_000007.jld2")
