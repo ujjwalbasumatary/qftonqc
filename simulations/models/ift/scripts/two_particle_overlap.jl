@@ -11,7 +11,7 @@ module IFTTwoParticleOverlap
 
 using LinearAlgebra
 
-export two_particle_overlaps, localized_pair_norms, two_particle_weight
+export two_particle_overlaps, localized_pair_norms, pair_basis_grams, two_particle_weight
 
 function _finite_array(value, dimensions, name)
     value isa AbstractArray || throw(ArgumentError("$name must be an array"))
@@ -188,6 +188,100 @@ function localized_pair_norms(AL, Cinv, BL, BR, max_separation::Integer)
         r < max_separation && (environment = _left_transfer(environment, left, left))
     end
     return norms
+end
+
+"""
+    pair_basis_grams(AL, Cinv, left_basis, right_basis, max_separation)
+
+Calculate the Gram matrices of several excitation pairs at fixed insertion
+positions. `left_basis[a]` and `right_basis[b]` are excitation tensors with
+indices `(left bond, physical index, right bond)`, each with the same
+dimensions as `AL`. The state labeled `(a,b)` has `left_basis[a] * Cinv`
+at the first insertion, `right_basis[b]` at the second, and `AL` between
+them. As in [`localized_pair_norms`](@ref), the contractions outside the
+pair are identities.
+
+The result is a vector of complex matrices. Entry `grams[r]` is the Gram
+matrix when the insertions are `r` lattice sites apart. If the basis sizes
+are `KL` and `KR`, its rows and columns use the ordering
+`index(a,b) = a + (b-1)*KL`, so that
+`grams[r][index(a,b), index(c,d)] = ⟨a,b; r | c,d; r⟩`.
+In particular, its diagonal reproduces the norms calculated separately by
+[`localized_pair_norms`](@ref).
+
+The calculation starts from
+`E[a,c] = Σₛ (BL[a]ₛ Cinv)† (BL[c]ₛ Cinv)` and
+`Q[d,b] = Σₛ BR[d]ₛ BR[b]ₛ†`. For adjacent insertions the matrix entry
+is `tr(E[a,c] Q[d,b])`. Each increase of the separation propagates every
+`E[a,c]` through one copy of `AL`. This retains the finite-separation
+overlaps, which need not factor into overlaps of isolated particles.
+
+Both basis collections must be nonempty and `max_separation` must be
+positive. Linearly dependent and zero basis tensors are allowed: a Gram
+matrix is positive semidefinite, not necessarily invertible. The function
+returns the direct contractions without clipping eigenvalues, imposing
+unit diagonal entries, or orthogonalizing the supplied basis. Hermiticity
+and positive semidefiniteness hold up to floating-point roundoff. A matrix
+different from the identity must be retained when projecting onto this
+basis; summing squared overlaps alone would then give the wrong weight.
+
+These matrices compare different excitation tensors at the same two
+positions. They do not test orthogonality between different positions;
+that also requires the canonical and excitation gauge conditions stated
+in [`two_particle_overlaps`](@ref).
+"""
+function pair_basis_grams(AL, Cinv, left_basis, right_basis, max_separation::Integer)
+    max_separation >= 1 || throw(ArgumentError("max_separation must be positive"))
+    isempty(left_basis) && throw(ArgumentError("left_basis must contain at least one tensor"))
+    isempty(right_basis) && throw(ArgumentError("right_basis must contain at least one tensor"))
+    left, _, first_tensor, second_tensor =
+        _reference_tensors(AL, Cinv, first(left_basis), first(right_basis))
+    first_tensors = [first_tensor]
+    second_tensors = [second_tensor]
+    for tensor in Iterators.drop(left_basis, 1)
+        _, _, transformed, _ = _reference_tensors(left, Cinv, tensor, second_tensor)
+        push!(first_tensors, transformed)
+    end
+    for tensor in Iterators.drop(right_basis, 1)
+        _, _, _, checked = _reference_tensors(left, Cinv, first(left_basis), tensor)
+        push!(second_tensors, checked)
+    end
+
+    KL, KR = length(first_tensors), length(second_tensors)
+    D, d, _ = size(left)
+    environments = Matrix{Matrix{ComplexF64}}(undef, KL, KL)
+    for a in 1:KL, c in 1:KL
+        environment = zeros(ComplexF64, D, D)
+        for s in 1:d
+            environment .+= @view(first_tensors[a][:, s, :])' * @view(first_tensors[c][:, s, :])
+        end
+        environments[a, c] = environment
+    end
+    right_contractions = Matrix{Matrix{ComplexF64}}(undef, KR, KR)
+    for b in 1:KR, e in 1:KR
+        contraction = zeros(ComplexF64, D, D)
+        for s in 1:d
+            contraction .+= @view(second_tensors[e][:, s, :]) * @view(second_tensors[b][:, s, :])'
+        end
+        right_contractions[e, b] = contraction
+    end
+
+    grams = Vector{Matrix{ComplexF64}}(undef, max_separation)
+    for r in 1:max_separation
+        gram = Matrix{ComplexF64}(undef, KL*KR, KL*KR)
+        for a in 1:KL, b in 1:KR, c in 1:KL, e in 1:KR
+            gram[a+(b-1)*KL, c+(e-1)*KL] =
+                _close_environments(environments[a, c], right_contractions[e, b])
+        end
+        all(isfinite, gram) || throw(ArgumentError("the Gram matrix at separation $r has nonfinite entries"))
+        grams[r] = gram
+        if r < max_separation
+            for a in 1:KL, c in 1:KL
+                environments[a, c] = _left_transfer(environments[a, c], left, left)
+            end
+        end
+    end
+    return grams
 end
 
 """

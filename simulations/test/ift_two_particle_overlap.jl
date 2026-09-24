@@ -149,6 +149,48 @@ end
         @test two_particle_weight(rescaled, rescaled_norms, 1.0) ≈ 1.0
     end
 
+    @testset "Gram matrices compare all choices of excitation tensors" begin
+        D, d, largest_separation = 2, 2, 3
+        AL = randn(rng, ComplexF64, D, d, D) / 3
+        AR = randn(rng, ComplexF64, D, d, D) / 3
+        Cinv = randn(rng, ComplexF64, D, D)
+        left_basis = [randn(rng, ComplexF64, D, d, D) / 2 for _ in 1:2]
+        right_basis = [randn(rng, ComplexF64, D, d, D) / 2 for _ in 1:3]
+        KL, KR = length(left_basis), length(right_basis)
+        grams = pair_basis_grams(AL, Cinv, left_basis, right_basis, largest_separation)
+        @test length(grams) == largest_separation
+        @test all(gram -> size(gram) == (KL*KR, KL*KR), grams)
+        for r in 1:largest_separation
+            gram = grams[r]
+            @test gram ≈ gram' atol=1e-13 rtol=1e-12
+            @test minimum(eigvals(Hermitian(gram))) >= -1e-12 * max(1, opnorm(gram))
+            for a in 1:KL, b in 1:KR, c in 1:KL, e in 1:KR
+                bra = pair_reference(AL, AR, Cinv, left_basis[a], right_basis[b], r+1, 1, r+1)
+                ket = pair_reference(AL, AR, Cinv, left_basis[c], right_basis[e], r+1, 1, r+1)
+                @test gram[a+(b-1)*KL, c+(e-1)*KL] ≈ dense_overlap(bra, ket) atol=1e-13 rtol=1e-12
+            end
+        end
+        for a in 1:KL, b in 1:KR
+            norms = localized_pair_norms(AL, Cinv, left_basis[a], right_basis[b], largest_separation)
+            @test [gram[a+(b-1)*KL, a+(b-1)*KL] for gram in grams] ≈ norms atol=1e-13 rtol=1e-12
+        end
+
+        # A three-dimensional site has a vacuum and two orthogonal flavours.
+        vacuum3 = reshape(ComplexF64[1, 0, 0], 1, 3, 1)
+        flavour1 = reshape(ComplexF64[0, 1, 0], 1, 3, 1)
+        flavour2 = reshape(ComplexF64[0, 0, 1], 1, 3, 1)
+        flavours = [flavour1, flavour2]
+        flavour_grams = pair_basis_grams(vacuum3, center_inverse, flavours, flavours, 4)
+        @test all(gram -> gram == Matrix{ComplexF64}(I, 4, 4), flavour_grams)
+
+        # A Gram matrix may have zero eigenvalues; no inverse is taken here.
+        dependent_grams = pair_basis_grams(up, center_inverse, [down, 2down, zero(down)], [down], 3)
+        expected = ComplexF64[1 2 0; 2 4 0; 0 0 0]
+        @test all(gram -> gram == expected, dependent_grams)
+        @test all(gram -> eigvals(Hermitian(gram)) ≈ [0, 0, 5], dependent_grams)
+        @test pair_basis_grams(up, center_inverse, (down,), (down,), 2) == [ones(1, 1), ones(1, 1)]
+    end
+
     @testset "Vacuum, three-particle states, and a mixed particle count" begin
         L = 6
         vacuum = product_state(zeros(Int, L))
@@ -196,6 +238,12 @@ end
         @test_throws ArgumentError two_particle_overlaps(ket, up, up, center_inverse, Inf*down, down)
         @test_throws ArgumentError localized_pair_norms(up, center_inverse, down, down, 0)
         @test_throws ArgumentError localized_pair_norms(up, center_inverse, zero(down), down, 2)
+        @test_throws ArgumentError pair_basis_grams(up, center_inverse, [down], [down], 0)
+        @test_throws ArgumentError pair_basis_grams(up, center_inverse, [], [down], 1)
+        @test_throws ArgumentError pair_basis_grams(up, center_inverse, [down], [], 1)
+        @test_throws ArgumentError pair_basis_grams(up, center_inverse, [down, zeros(1, 3, 1)], [down], 1)
+        @test_throws ArgumentError pair_basis_grams(up, center_inverse, [down], [down, zeros(1, 3, 1)], 1)
+        @test_throws ArgumentError pair_basis_grams(up, center_inverse, [down, NaN*down], [down], 1)
         @test_throws ArgumentError two_particle_weight(zeros(2, 3), ones(2), 1.0)
         @test_throws ArgumentError two_particle_weight(fill(ComplexF64(Inf), 3, 3), ones(2), 1.0)
         @test_throws ArgumentError two_particle_weight(zeros(3, 3), [1.0], 1.0)
