@@ -10,6 +10,7 @@ end
 
 include("spectrum.jl")
 include("ift_state_io.jl")
+include("ift_collision_settings.jl")
 include("ift_two_particle_overlap.jl")
 include("ift_particle_basis.jl")
 include("ift_three_particle_overlap.jl")

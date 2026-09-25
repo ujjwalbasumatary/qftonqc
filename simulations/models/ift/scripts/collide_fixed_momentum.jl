@@ -261,7 +261,7 @@ function create_stacked_tensor(ψ_gs, B_list, L, n_center, κ, σ)
 end
 
 @doc raw"""
-    main(parsed_args)
+    main(parsed_args; checkpoint_callback=nothing)
 
 Prepare two Gaussian quasiparticle packets and evolve their finite MPS window
 with two-site TDVP. The vacuum is the one-site uniform MPS returned by
@@ -312,11 +312,19 @@ incoming reference for later sector overlaps. See `IFTStateIO.save_ift_state`
 for the file contents and step convention. The returned named tuple gives
 `state_directory`, `energy_path`, and `spin_path`.
 
+An optional `checkpoint_callback` is called immediately after each MPS file is
+closed, including the initial state. It receives a named tuple containing
+`state`, `step`, `time`, `state_path`, `parameters`, `energy_density`, and
+`spin_density`. The observable vectors are views of the current row and should
+not be modified. A callback can record additional measurements or throw an
+exception to stop evolution; the checkpoint that triggered it remains saved.
+The default does not change the evolution or add measurements.
+
 The saved heatmaps are local expectation values. They contain no projection
 onto outgoing particle sectors. Norms are stored at the MPS saving times;
 discarded weights and distances to a window boundary are not recorded.
 """
-function main(parsed_args)
+function main(parsed_args; checkpoint_callback=nothing)
     D = parsed_args["bond_dimension"]
     D_evolution_arg = parsed_args["evolution_bond_dimension"]
     T = parsed_args["total_time"]
@@ -415,6 +423,12 @@ function main(parsed_args)
     save_ift_state(joinpath(state_directory, "step_000000.jld2"), ψ_window;
         step=0, dt, parameters, reference, provenance,
         energy_density=energy_exp[1, 1:L-1], spin_density=s_z_exp[1, :])
+    if checkpoint_callback !== nothing
+        checkpoint_callback((; state=ψ_window, step=0, time=0.0,
+            state_path=joinpath(state_directory, "step_000000.jld2"), parameters,
+            energy_density=view(energy_exp, 1, 1:L-1),
+            spin_density=view(s_z_exp, 1, :)))
+    end
     println("Saved initial MPS at t = 0")
     flush(stdout)
     evolution_alg = TDVP2(; trscheme=truncrank(D_evolution))
@@ -433,6 +447,12 @@ function main(parsed_args)
             save_ift_state(state_path, ψ_window;
                 step=completed_steps, dt, parameters, reference, provenance,
                 energy_density=energy_exp[t_step, 1:L-1], spin_density=s_z_exp[t_step, :])
+            if checkpoint_callback !== nothing
+                checkpoint_callback((; state=ψ_window, step=completed_steps,
+                    time=completed_steps * dt, state_path, parameters,
+                    energy_density=view(energy_exp, t_step, 1:L-1),
+                    spin_density=view(s_z_exp, t_step, :)))
+            end
         end
         elapsed = (time_ns() - evolution_start) / 1e9
         println("Completed step $completed_steps/$(T - 1), t = $(completed_steps * dt), elapsed = $(round(elapsed; digits=2)) s")
