@@ -19,6 +19,28 @@ julia --startup-file=no --project=simulations -e 'using Pkg; Pkg.test()'
 
 The first MPSKit and TensorKit compilation can take several minutes.
 
+## Worked examples
+
+Short examples of the spectrum, packets, time evolution, overlaps, and a
+source quench are in [`examples/`](examples/). You can run each independently
+on a laptop. Their equations, commands, and Julia functions are explained in
+the [worked examples](https://ujjwalbasumatary.github.io/qftonqc/examples/)
+section of the documentation.
+
+For example, the following command evolves two Ising packets in a 64-site
+window to lattice time 12 and saves five MPS states.
+
+```bash
+julia --startup-file=no --threads=1 --project=simulations simulations/examples/ising.jl evolution
+```
+
+Every run creates a new directory beneath `results/examples/`. To run only
+the tests for these examples, use
+
+```bash
+julia --startup-file=no --threads=1 --project=simulations simulations/test/worked_examples.jl
+```
+
 ## Ising field theory
 
 The spectrum program represents the vacuum by a single MPS tensor repeated
@@ -121,7 +143,10 @@ JULIA_NUM_THREADS=auto julia --startup-file=no --project=simulations \
 ```
 
 For a remote run, a persistent shell such as `tmux` keeps the calculation
-running after you disconnect. The programs save observables at the end of the
-run; saving intermediate MPS states for restart is still to be added.
+running after you disconnect. The fixed-momentum Ising program saves its
+initial and final MPS, along with intermediate states at the interval set by
+`--save_every`. The complete observable arrays are written at the end.
+The [data page](https://ujjwalbasumatary.github.io/qftonqc/data/) explains
+how to load a saved state for further measurements.
 
 The remaining calculations are listed in [`STATUS.md`](STATUS.md).

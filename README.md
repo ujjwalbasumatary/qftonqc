@@ -27,6 +27,7 @@ simulations/             Julia environment and model calculations
   models/ift/            Ising spectrum and collisions
   models/schwinger/      Schwinger source quench
   models/phi4/           lattice φ⁴ calculation
+  examples/              short calculations explained in the documentation
 course/tutorials/        notebooks used in class
 course/examples/         longer numerical examples
 course/projects/         student reports, notebooks, and presentations
@@ -52,6 +53,12 @@ The first MPSKit compilation can take several minutes. Commands for the model
 calculations are in [`simulations/README.md`](simulations/README.md). Outputs
 can be stored in `results/ift/`, `results/schwinger/`, and `results/phi4/`;
 Git ignores their contents.
+
+The [worked examples](https://ujjwalbasumatary.github.io/qftonqc/examples/)
+explain the Ising vacuum, packet preparation, time evolution, particle
+overlaps, and a Schwinger source quench. Their scripts are in
+[`simulations/examples/`](simulations/examples/) and use small systems that
+you can run on a laptop.
 
 The remaining calculations are listed in
 [`simulations/STATUS.md`](simulations/STATUS.md).

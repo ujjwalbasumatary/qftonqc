@@ -20,6 +20,14 @@ makedocs(
         "Introduction" => "index.md",
         "Repository" => "repository.md",
         "Running the calculations" => "running.md",
+        "Worked examples" => [
+            "Overview" => "examples/index.md",
+            "Ising vacuum and spectrum" => "examples/ising-spectrum.md",
+            "Preparing two packets" => "examples/ising-packets.md",
+            "Time evolution and saved states" => "examples/ising-evolution.md",
+            "Two- and three-excitation overlaps" => "examples/overlaps.md",
+            "Schwinger source quench" => "examples/schwinger.md",
+        ],
         "Physics" => [
             "Ising field theory" => "physics/ising.md",
             "Bosonized Schwinger model" => "physics/schwinger.md",

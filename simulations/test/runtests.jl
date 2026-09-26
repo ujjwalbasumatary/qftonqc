@@ -16,6 +16,7 @@ include("ift_particle_basis.jl")
 include("ift_three_particle_overlap.jl")
 include("ift_three_particle_momentum.jl")
 include("ift_bound_state_spectrum.jl")
+include("worked_examples.jl")
 
 @testset "Projected harmonic-oscillator operators" begin
     d = 10

@@ -9,6 +9,7 @@ simulations/
   Project.toml             Julia dependencies
   Manifest.toml            package versions
   src/QFTSimulations.jl     shared operators and MPS constructions
+  examples/                scripts for the worked examples in the documentation
   test/                    tests of the shared functions
   models/
     ift/                   Ising spectrum and two-packet evolution

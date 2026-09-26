@@ -24,6 +24,8 @@ The Hamiltonians and the construction of the initial states are described
 on the model pages. You can find the Julia commands in
 [Running the calculations](running.md) and the definitions of the saved
 arrays in [Data and figures](data.md).
+The [worked examples](examples/index.md) walk through short calculations
+you can run on a laptop, with the physics and Julia explained together.
 If you want to change a Hamiltonian or measure another observable, the
 relevant functions are explained in
 [Working on the calculations](continuing.md).
