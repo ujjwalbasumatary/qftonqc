@@ -7,6 +7,9 @@ and saved times. Each panel lists its own fields, width, and momentum.
 ``--signed`` adds a signed-energy figure; ``--spin`` adds a figure of
 <sigma_z> minus its value in the vacuum, read from the native spin files.
 Both keep negative values. Python 3.11 or later is needed when reading TOML.
+``--slice-time T --slice-region FIRST LAST`` also plots the energy at one
+saved lattice time, showing the whole window and an enlarged central interval.
+The signed values at every bond are exported as CSV alongside the figure.
 
 Supply each completed run with ``--integrable-directory`` and
 ``--nonintegrable-directory``. The script reads ``data/energy_exp.csv``,
@@ -392,6 +395,95 @@ def draw_comparison(runs, output: Path, plt, np, *, labels=None,
     return vmin, vmax
 
 
+def draw_energy_slice(runs, time: float, region: tuple[int, int], output: Path,
+                      plt, np, *, labels=None) -> dict:
+    """Compare signed bond energies at a saved time, with an enlarged interval.
+
+    ``time`` must match a measured row in every run; there is no interpolation
+    in time. ``region`` gives inclusive, one-based bond indices. The left
+    panel includes every physical bond and shades this interval. The right
+    panel uses a separate linear vertical scale to show its smaller energies.
+    Both panels retain negative values and draw straight lines between the
+    measured points. No colour threshold or division by peak height is used.
+
+    Energy fractions are sums over this same interval divided by the signed
+    sum over all internal bonds at the chosen time. They describe where the
+    energy lies. The CSV contains every bond, including those outside the
+    enlarged interval, with one column per run in the heatmap's panel order.
+    The returned record gives the time, interval, curve styles, sums, and
+    two outer maxima for captions and numerical comparisons.
+    """
+    from matplotlib.ticker import MaxNLocator, ScalarFormatter
+
+    length = runs[0]["parameters"]["length"]
+    first, last = region
+    if not 1 <= first < last < length:
+        raise ValueError("The slice region must lie within bonds 1 through L-1.")
+    profiles = []
+    for run in runs:
+        if run["parameters"]["length"] != length:
+            raise ValueError("Energy slices need equal window lengths.")
+        matches = np.flatnonzero(np.isclose(run["times"], time, rtol=0, atol=1e-10))
+        if len(matches) != 1:
+            raise ValueError(f"Lattice time {time} is not a saved row in {run['directory']}")
+        profiles.append(run["energy"][matches[0]])
+    colours = ("#0072B2", "#E69F00", "#009E73", "#CC79A7")
+    styles = ("-", "--", "-.", ":")
+    bonds = np.arange(1, length)
+    fig, axes = plt.subplots(1, 2, figsize=(7.0, 3.25), layout="constrained")
+    records = {}
+    for index, (run, profile, colour, style) in enumerate(zip(runs, profiles, colours, styles)):
+        p = run["parameters"]
+        label = (labels[index] if labels is not None else
+                 rf"$h_x={p['h_x']:g},\ h_z={p['h_z']:g},\ \sigma={p['sigma']:g}$")
+        for ax in axes:
+            ax.plot(bonds, profile, color=colour, linestyle=style, label=label)
+        total = float(profile.sum())
+        if total <= 0:
+            raise ValueError("A positive total energy is needed for the interval fraction.")
+        central = profile[first-1:last]
+        records[chr(97 + index)] = {
+            "label": labels[index] if labels else run["directory"].name,
+            "colour": colour, "line_style": style,
+            "total_energy": total, "interval_energy": float(central.sum()),
+            "interval_energy_fraction": float(central.sum() / total),
+            "interval_energy_minimum": float(central.min()),
+            "interval_energy_maximum": float(central.max()),
+            "left_energy_peak_bond": int(np.argmax(profile[:length//2])) + 1,
+            "right_energy_peak_bond": int(np.argmax(profile[length//2:])) + length//2 + 1,
+        }
+    axes[0].axvspan(first, last, color="#6B6B6B", alpha=.10, linewidth=0, zorder=0)
+    axes[0].set_xlim(0, length)
+    axes[1].set_xlim(first, last)
+    central_values = np.concatenate([profile[first-1:last] for profile in profiles])
+    low, high = min(0., float(central_values.min())), max(0., float(central_values.max()))
+    margin = .08 * max(high - low, np.finfo(float).eps)
+    axes[1].set_ylim(low - margin, high + margin)
+    titles = (rf"(a) $t={time:g}$", rf"(b) $t={time:g},\quad {first}\leq n\leq {last}$")
+    for ax, title in zip(axes, titles):
+        ax.axhline(0, color="#6B6B6B", linewidth=.6, zorder=0)
+        ax.set(xlabel=r"Bond $n$", ylabel=rf"$\delta e_n({time:g})$")
+        ax.set_title(title, loc="left", pad=8)
+        ax.xaxis.set_major_locator(MaxNLocator(nbins=4))
+        ax.yaxis.set_major_locator(MaxNLocator(nbins=4))
+        formatter = ScalarFormatter(useMathText=True)
+        formatter.set_powerlimits((0, 0))
+        ax.yaxis.set_major_formatter(formatter)
+        ax.minorticks_on()
+    handles, legend_labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, legend_labels, loc="outside upper center",
+               ncol=2 if labels is not None else 1, handlelength=3.0)
+    export(fig, "energy-slice", output, plt)
+    csv_path = output / "energy-slice.csv"
+    np.savetxt(csv_path, np.column_stack((bonds, *profiles)), delimiter=",",
+               header="bond," + ",".join(f"delta_e_{chr(97+i)}" for i in range(len(runs))),
+               comments="", fmt=["%d"] + ["%.17g"] * len(runs))
+    return {"lattice_time": time, "interval_inclusive": [first, last],
+            "vertical_scales": "Linear in both panels; the right panel enlarges the interval.",
+            "data_operations": "None; every signed bond value is retained in the CSV and full-window panel.",
+            "csv": csv_path.name, "curves": records}
+
+
 def main() -> None:
     """Read runs, compare their saved arrays, and export figures with input hashes."""
     here = Path(__file__).resolve().parent
@@ -405,11 +497,16 @@ def main() -> None:
                         help="Repeat for each completed run in a width or coupling comparison.")
     parser.add_argument("--signed", action="store_true", help="Also draw signed bond energies.")
     parser.add_argument("--spin", action="store_true", help="Also draw the saved spin differences.")
+    parser.add_argument("--slice-time", type=float, help="Also compare energies at this saved lattice time.")
+    parser.add_argument("--slice-region", type=int, nargs=2, metavar=("FIRST", "LAST"),
+                        help="Inclusive bond interval to enlarge in the energy slice.")
     parser.add_argument("--output-directory", type=Path,
                         help="Directory for PDF, PNG, and JSON; required with --run-directory.")
     parser.add_argument("--no-tex", action="store_true",
                         help="Use Matplotlib mathematical lettering instead of external LaTeX.")
     args = parser.parse_args()
+    if (args.slice_time is None) != (args.slice_region is None):
+        parser.error("Supply --slice-time and --slice-region together.")
     if args.run_directory:
         if args.integrable_directory or args.nonintegrable_directory:
             parser.error("Use --run-directory or the integrable/nonintegrable pair, not both.")
@@ -479,6 +576,9 @@ def main() -> None:
             "orientation": "Rows are times, columns are all sites 1 through L.",
             "colour_scale": {"normalization": "Normalize", "colormap": "RdBu_r",
                              "vmin": low, "vmax": high, "shared_between_panels": True}}
+    if args.slice_time is not None:
+        metadata["energy_slice"] = draw_energy_slice(
+            runs, args.slice_time, tuple(args.slice_region), output, plt, np, labels=labels)
     with (output / "energy-comparison.json").open("w") as stream:
         json.dump(metadata, stream, indent=2, allow_nan=False)
         stream.write("\n")
