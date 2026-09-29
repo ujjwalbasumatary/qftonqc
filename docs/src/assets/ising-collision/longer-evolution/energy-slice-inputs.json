@@ -1,0 +1,264 @@
+{
+  "observable": "Internal bond energy minus its value in the vacuum, delta_e_n(t).",
+  "orientation": "Rows are times, columns are internal bonds 1 through L-1.",
+  "panels": {
+    "a": {
+      "label": "sigma20",
+      "directory": "results/ift/2026-09-26-workstation/completed/sigma20",
+      "parameters": {
+        "kappa": 0.38,
+        "h_x": 1.06,
+        "h_z": 0.006,
+        "sigma": 20.0,
+        "length": 640,
+        "n_center": 160,
+        "total_time": 1701,
+        "bond_dimension": 8,
+        "evolution_bond_dimension": 48,
+        "time_step": 0.1,
+        "random_seed": 20260926
+      },
+      "sources": {
+        "energy_and_times": {
+          "path": "results/ift/2026-09-26-workstation/completed/sigma20/data/energy_scattering_infinite_mom_0p38_hx_1p06_hz_0p006_sigma_20p0_L_640_n_160_T_1701_D_8_Dmax_48_dt_0p1.jld2",
+          "sha256": "e8f954b607626daf3e41e6a2744d371bd71925bcc6ef048facb5e86fc1a71861"
+        },
+        "settings": {
+          "path": "results/ift/2026-09-26-workstation/completed/sigma20/run-settings.toml",
+          "sha256": "8cd98a7dc828cdd5bc32a0dfa486e7fbc4ce53953cd1f2f7c943d945294628ff"
+        },
+        "checkpoints": {
+          "path": "results/ift/2026-09-26-workstation/completed/sigma20/checkpoints.csv",
+          "sha256": "7a4ea593bba04ecd1ea7c0b705bc3e2609136e139ac88948f0a320c1b40e5c42"
+        },
+        "spin_and_times": {
+          "path": "results/ift/2026-09-26-workstation/completed/sigma20/data/sz_value_scattering_infinite_mom_0p38_hx_1p06_hz_0p006_sigma_20p0_L_640_n_160_T_1701_D_8_Dmax_48_dt_0p1.jld2",
+          "sha256": "a4cbaf574cd2be44a0eb802bac5c7c70f9e1495b9aa885cf1f90a7dd02530ba5"
+        }
+      },
+      "raw_energy_shape": [
+        1701,
+        640
+      ],
+      "plotted_energy_shape": [
+        1701,
+        639
+      ],
+      "omitted_column": {
+        "one_based_index": 640,
+        "reason": "Unused final column; every entry is exactly zero."
+      },
+      "initial_time": 0.0,
+      "final_time": 170.0,
+      "energy_min": -4.404059851226272e-05,
+      "energy_max": 0.06277441090365055,
+      "nonpositive_samples": 310827,
+      "positive_samples_below_colour_minimum": 456220,
+      "checkpoint_comparison": {
+        "rows_checked": 35,
+        "maximum_energy_sum_difference": 0.0,
+        "final_norm_squared": 0.9976250915414063,
+        "final_relative_energy_change": -0.0024537642344793966,
+        "final_edge_energy_fraction": 0.00020010835465260633
+      }
+    },
+    "b": {
+      "label": "sigma40",
+      "directory": "results/ift/2026-09-26-workstation/completed/sigma40",
+      "parameters": {
+        "kappa": 0.38,
+        "h_x": 1.06,
+        "h_z": 0.006,
+        "sigma": 40.0,
+        "length": 640,
+        "n_center": 160,
+        "total_time": 1701,
+        "bond_dimension": 8,
+        "evolution_bond_dimension": 48,
+        "time_step": 0.1,
+        "random_seed": 20260926
+      },
+      "sources": {
+        "energy_and_times": {
+          "path": "results/ift/2026-09-26-workstation/completed/sigma40/data/energy_scattering_infinite_mom_0p38_hx_1p06_hz_0p006_sigma_40p0_L_640_n_160_T_1701_D_8_Dmax_48_dt_0p1.jld2",
+          "sha256": "2a408fc84db638567e8e6a743d087ff3eae9519eecffacef00077e6ed5531bbd"
+        },
+        "settings": {
+          "path": "results/ift/2026-09-26-workstation/completed/sigma40/run-settings.toml",
+          "sha256": "7e89907d339cd14bd0aabab7566939766ce7352b590fadac43b293b83efbad3a"
+        },
+        "checkpoints": {
+          "path": "results/ift/2026-09-26-workstation/completed/sigma40/checkpoints.csv",
+          "sha256": "6a271569a5bb0e65ff97cf52373aef699069aeb4276f7cb3c4269145776292d2"
+        },
+        "spin_and_times": {
+          "path": "results/ift/2026-09-26-workstation/completed/sigma40/data/sz_value_scattering_infinite_mom_0p38_hx_1p06_hz_0p006_sigma_40p0_L_640_n_160_T_1701_D_8_Dmax_48_dt_0p1.jld2",
+          "sha256": "2bddc483d0ae32cdc08f3a0512ed3a3a91d989c91765bcb86e2f7fec02bac734"
+        }
+      },
+      "raw_energy_shape": [
+        1701,
+        640
+      ],
+      "plotted_energy_shape": [
+        1701,
+        639
+      ],
+      "omitted_column": {
+        "one_based_index": 640,
+        "reason": "Unused final column; every entry is exactly zero."
+      },
+      "initial_time": 0.0,
+      "final_time": 170.0,
+      "energy_min": -1.6386756580999418e-05,
+      "energy_max": 0.032768540059908036,
+      "nonpositive_samples": 236713,
+      "positive_samples_below_colour_minimum": 402426,
+      "checkpoint_comparison": {
+        "rows_checked": 35,
+        "maximum_energy_sum_difference": 0.0,
+        "final_norm_squared": 0.9972743970561522,
+        "final_relative_energy_change": -0.0007488922745616867,
+        "final_edge_energy_fraction": 4.999423318700049e-05
+      }
+    },
+    "c": {
+      "label": "paper-sigma40",
+      "directory": "results/ift/2026-09-26-workstation/completed/paper-sigma40",
+      "parameters": {
+        "kappa": 0.4875922799110412,
+        "h_x": 1.4,
+        "h_z": 0.05,
+        "sigma": 40.0,
+        "length": 640,
+        "n_center": 160,
+        "total_time": 1701,
+        "bond_dimension": 8,
+        "evolution_bond_dimension": 48,
+        "time_step": 0.1,
+        "random_seed": 20260927
+      },
+      "sources": {
+        "energy_and_times": {
+          "path": "results/ift/2026-09-26-workstation/completed/paper-sigma40/data/energy_scattering_infinite_mom_0p4875922799110412_hx_1p4_hz_0p05_sigma_40p0_L_640_n_160_T_1701_D_8_Dmax_48_dt_0p1.jld2",
+          "sha256": "e8b13558505e804774d5eb8ead3563c616e2229b522028420b0e13f172b8dec0"
+        },
+        "settings": {
+          "path": "results/ift/2026-09-26-workstation/completed/paper-sigma40/run-settings.toml",
+          "sha256": "37a091ed41003bbc4247cedfa8d38e859102588bca02903586f2c92b9a86ab36"
+        },
+        "checkpoints": {
+          "path": "results/ift/2026-09-26-workstation/completed/paper-sigma40/checkpoints.csv",
+          "sha256": "ba4fc448c109cae0672438cfdd250e6bb8d053035cba6156ad4b4d917711a987"
+        },
+        "spin_and_times": {
+          "path": "results/ift/2026-09-26-workstation/completed/paper-sigma40/data/sz_value_scattering_infinite_mom_0p4875922799110412_hx_1p4_hz_0p05_sigma_40p0_L_640_n_160_T_1701_D_8_Dmax_48_dt_0p1.jld2",
+          "sha256": "8d7dfe5967504e5e74df83418e62d35d3e6ba329068d16d1135c489d3d07ae7f"
+        }
+      },
+      "raw_energy_shape": [
+        1701,
+        640
+      ],
+      "plotted_energy_shape": [
+        1701,
+        639
+      ],
+      "omitted_column": {
+        "one_based_index": 640,
+        "reason": "Unused final column; every entry is exactly zero."
+      },
+      "initial_time": 0.0,
+      "final_time": 170.0,
+      "energy_min": -1.3053782146332793e-05,
+      "energy_max": 0.0581341850836925,
+      "nonpositive_samples": 212234,
+      "positive_samples_below_colour_minimum": 457004,
+      "checkpoint_comparison": {
+        "rows_checked": 35,
+        "maximum_energy_sum_difference": 6.217248937900877e-15,
+        "final_norm_squared": 0.9997708685676165,
+        "final_relative_energy_change": -0.00028352627456192185,
+        "final_edge_energy_fraction": 1.7829273316568798e-05
+      }
+    }
+  },
+  "colour_scale": {
+    "normalization": "LogNorm",
+    "colormap": "inferno",
+    "vmin": 0.0001,
+    "vmax": 0.06277441090365055,
+    "shared_between_panels": true,
+    "nonpositive_and_under_range_colour": "black"
+  },
+  "units": "J = a = hbar = 1",
+  "text_rendering": "LaTeX",
+  "data_operations": "Omit verified unused zero column; mask nonpositive values for LogNorm. No smoothing, interpolation, rescaling, or extra vacuum subtraction.",
+  "signed_energy_colour_scale": {
+    "normalization": "SymLogNorm",
+    "linthresh": 0.0001,
+    "colormap": "RdBu_r",
+    "vmin": -0.06277441090365055,
+    "vmax": 0.06277441090365055,
+    "shared_between_panels": true
+  },
+  "spin": {
+    "observable": "Local expectation of sigma_z minus its value in the vacuum.",
+    "orientation": "Rows are times, columns are all sites 1 through L.",
+    "colour_scale": {
+      "normalization": "Normalize",
+      "colormap": "RdBu_r",
+      "vmin": -0.6884301160542856,
+      "vmax": 0.6884301160542856,
+      "shared_between_panels": true
+    }
+  },
+  "energy_slice": {
+    "lattice_time": 170.0,
+    "interval_inclusive": [
+      240,
+      400
+    ],
+    "vertical_scales": "Linear in both panels; the right panel enlarges the interval.",
+    "data_operations": "None; every signed bond value is retained in the CSV and full-window panel.",
+    "csv": "energy-slice.csv",
+    "curves": {
+      "a": {
+        "label": "sigma20",
+        "colour": "#0072B2",
+        "line_style": "-",
+        "total_energy": 1.6388656331549565,
+        "interval_energy": 0.08982060057936425,
+        "interval_energy_fraction": 0.05480656788589307,
+        "interval_energy_minimum": 0.0005231787592940851,
+        "interval_energy_maximum": 0.0006517355926913826,
+        "left_energy_peak_bond": 148,
+        "right_energy_peak_bond": 477
+      },
+      "b": {
+        "label": "sigma40",
+        "colour": "#E69F00",
+        "line_style": "--",
+        "total_energy": 1.637981187912565,
+        "interval_energy": 0.0927055975783293,
+        "interval_energy_fraction": 0.05659747392854545,
+        "interval_energy_minimum": 0.000539143163022171,
+        "interval_energy_maximum": 0.0007121893693333714,
+        "left_energy_peak_bond": 148,
+        "right_energy_peak_bond": 476
+      },
+      "c": {
+        "label": "paper-sigma40",
+        "colour": "#009E73",
+        "line_style": "-.",
+        "total_energy": 2.9552920433884324,
+        "interval_energy": 0.015314408097017118,
+        "interval_energy_fraction": 0.005182028669984901,
+        "interval_energy_minimum": 3.4732184701624647e-05,
+        "interval_energy_maximum": 0.0009254620091885268,
+        "left_energy_peak_bond": 172,
+        "right_energy_peak_bond": 454
+      }
+    }
+  }
+}

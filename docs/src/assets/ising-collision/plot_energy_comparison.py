@@ -582,6 +582,10 @@ def main() -> None:
     with (output / "energy-comparison.json").open("w") as stream:
         json.dump(metadata, stream, indent=2, allow_nan=False)
         stream.write("\n")
+    if args.slice_time is not None:
+        with (output / "energy-slice-inputs.json").open("w") as stream:
+            json.dump(metadata, stream, indent=2, allow_nan=False)
+            stream.write("\n")
     print(f"Shared colour limits: {vmin:.17g} to {vmax:.17g}")
     print(f"Wrote energy-comparison.png, .pdf, and .json to {output}")
 

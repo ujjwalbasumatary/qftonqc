@@ -1,16 +1,18 @@
 # IFT
 
 We compare collisions of two Ising particles at an integrable point and
-away from it. The packets have the same initial positions, central momenta,
-and Gaussian width in both calculations. The particle masses and
-outgoing-state overlaps later on this page are for the non-integrable case.
+away from it, then examine how the outgoing energy changes with broader
+packets and different couplings. The first comparison uses 320 sites and
+evolves to ``t=80``. The [longer evolutions](#Broader-packets-and-longer-evolution)
+use 640 sites and reach ``t=170``. Energy slices at these final times show
+the smaller energy density between the two main outgoing peaks.
 
 The Hamiltonian is
 
 ```math
 H=-\sum_n\left(\sigma_n^z\sigma_{n+1}^z
  +h_x\,\sigma_n^x+h_z\,\sigma_n^z\right),
-\qquad J=a=\hbar=1, h_x = 1.06\,.
+\qquad J=a=\hbar=1\,.
 ```
 
 The [Ising scattering paper](https://arxiv.org/abs/2411.13645) describes the
@@ -18,7 +20,7 @@ MPS packet construction and outgoing-state projections used here. The
 [Ising theory page](../physics/ising.md) introduces the lattice model and
 its relation to the field theory.
 
-## The collision
+## Integrable and non-integrable collisions
 
 ![Energy during integrable and non-integrable collisions](../assets/ising-collision/energy-comparison.png)
 
@@ -51,13 +53,32 @@ the amplitude, not the standard deviation of its squared magnitude. The
 vacuum MPS correlation lengths are about 12.95 sites in (a) and 6.79 sites
 in (b). Full MPS states are saved at ``t=0,5,10,\ldots,80`` in both runs.
 
+### Energy at ``t=80``
+
+![Energy at lattice time 80 across the window and between the outgoing peaks](../assets/ising-collision/energy-slice.png)
+
+The solid blue curve is the integrable run with ``h_x=1.06,\ h_z=0``;
+the dashed orange curve is the non-integrable run with
+``h_x=1.06,\ h_z=0.006``. We take both slices at ``t=80``, using the same
+320-site runs as in the heatmap. Their other parameters are
+``\sigma=20``, ``\kappa=0.38``, vacuum bond dimension 8, maximum evolution
+bond dimension 24, and ``\Delta t=0.1``. Panel (a) includes all 319 internal
+bonds. The shaded interval, ``120\le n\le190``, is enlarged in panel (b),
+where the vertical scale is smaller. Both axes are linear, and the curves
+retain the signed energy values, including values below ``10^{-4}``.
+The non-integrable curve stays above zero across this interval, while the
+integrable curve has small oscillations around zero. You can download the
+[PDF](../assets/ising-collision/energy-slice.pdf) and the
+[values at every bond](../assets/ising-collision/energy-slice.csv).
+
 At ``t=80``, bonds 120 through 190 contain about ``0.0068\%`` of the summed
-excess energy in (a), compared with ``6.35\%`` in (b). We obtain these fractions
+excess energy in the integrable run, compared with ``6.35\%`` in the
+non-integrable run. We obtain these fractions
 by summing the signed ``\delta e_n`` over those bonds and dividing by its
 sum over all 319 internal bonds. Negative local excess energy is possible
 because the subtraction is relative to the vacuum, rather than to the
 lowest eigenvalue of each bond operator. The
-[signed figure for (b)](../assets/ising-collision/energy-signed.pdf) retains
+[signed heatmap for the non-integrable run](../assets/ising-collision/energy-signed.pdf) retains
 those values. Outgoing particle probabilities require the projections
 discussed below.
 
@@ -68,7 +89,7 @@ time steps would help separate coherent oscillations from numerical errors.
 
 ## The particle masses
 
-For ``h_z=0.006``, the incoming central energy is
+For the ``h_x=1.06,\ h_z=0.006`` collision above, the incoming central energy is
 ``2E_1(0.38)\simeq1.6380``. To identify which species can appear after the
 collision, we repeat the uniform-vacuum
 and excitation calculations at larger bond dimensions ``D``.
@@ -108,8 +129,9 @@ vacuum and boundary tensors.
 
 ## Overlaps after the collision
 
-The two-light-particle calculation includes the momentum dependence of the
-excitation tensors. At ``t=80``, its outgoing weight is ``0.259713`` with
+For the 320-site non-integrable run, the two-light-particle calculation
+includes the momentum dependence of the excitation tensors. At ``t=80``,
+its outgoing weight is ``0.259713`` with
 at least 80 sites between the two insertions. The same calculation recovers
 ``0.998331`` of the incoming state; dividing by that incoming value gives
 ``0.260147``. Reducing the final-state separation to 60 sites changes this
@@ -180,10 +202,127 @@ magnitude. Subtracting the products of one- and two-point expectations
 gives a connected third cumulant of ``1.05\times10^{-8}``. These
 correlations compare energy in the outer and interior regions together.
 
+## Broader packets and longer evolution
+
+We also evolve three non-integrable collisions in a window of 640 sites.
+In the first two runs, we keep the couplings and central momenta fixed and
+change the Gaussian width from ``\sigma=20`` to ``\sigma=40``. The broader
+packet has a narrower momentum distribution. For the Gaussian envelope,
+the momentum standard deviation is approximately ``\Delta p=1/\sigma``.
+In the third run, we change the couplings and choose
+the incoming central energy to be ``2E_1(\kappa)\simeq3.15m_1``, where
+``m_1`` is the lightest particle's rest energy calculated with the same vacuum.
+These couplings and this energy are used in the lower row of Fig. 4 of
+[Jha et al.](https://arxiv.org/html/2411.13645v1#S3).
+
+![Energy during three non-integrable collisions evolved to lattice time 170](../assets/ising-collision/longer-evolution/energy-comparison.png)
+
+We plot ``\delta e_n(t)``, the bond energy minus its value in the vacuum.
+In (a), ``h_x=1.06``, ``h_z=0.006``, ``\sigma=20``, and the incoming
+momenta are centred at ``\pm0.38``. In (b), the fields and central momenta
+are unchanged, with ``\sigma=40``. In (c), ``h_x=1.4``, ``h_z=0.05``,
+``\sigma=40``, and ``\kappa=0.4875922799``. The first two runs have
+``2E_1(\kappa)/m_1\simeq6.42``, compared with ``3.15`` in (c).
+All three start with packet centres at sites 160 and 480, a vacuum bond
+dimension of 8, and a maximum evolution bond dimension of 48. We use
+``\Delta t=0.1`` and evolve to ``t=170``, saving an MPS every 5 units of
+lattice time. The units are ``J=a=\hbar=1``. The three panels share an
+inferno colour scale from ``10^{-4}`` to ``0.06277``; values below the
+lower limit appear black. Each panel contains the measured energies on
+all 639 internal bonds. The [PDF](../assets/ising-collision/longer-evolution/energy-comparison.pdf)
+is also available.
+
+The incoming group velocities give meeting times of approximately ``t=83``
+in (a) and (b), and ``t=90`` in (c), leaving about 80–87 units of lattice
+time after the collision. A broad region of positive energy remains between
+the main outgoing bands in (a) and (b). It is much fainter in (c).
+
+### Energy at ``t=170``
+
+![Energy at lattice time 170 for the three non-integrable runs, including an enlarged central interval](../assets/ising-collision/longer-evolution/energy-slice.png)
+
+We compare the final energy profiles for the three runs in the heatmap.
+The solid blue and dashed orange curves have ``h_x=1.06,\ h_z=0.006``
+and widths ``\sigma=20`` and ``40``, respectively. The dash-dotted green
+curve has ``h_x=1.4,\ h_z=0.05,\ \sigma=40``. Their momenta, MPS bond
+dimensions, and time step are those given above. Panel (a) shows the full
+window at ``t=170``. Panel (b) enlarges the shaded interval
+``240\le n\le400``, using a smaller vertical scale. Both panels retain
+every signed energy value in their displayed interval. The curves join
+the values at neighbouring bonds without smoothing or a colour cutoff.
+The [PDF](../assets/ising-collision/longer-evolution/energy-slice.pdf) and
+[slice data](../assets/ising-collision/longer-evolution/energy-slice.csv)
+are available for download.
+
+The two widths give similar energy densities in the central interval,
+roughly ``5\times10^{-4}`` to ``7\times10^{-4}``. Their main outgoing
+peaks are near bonds 148 and 476–477, outside that interval. In the third
+run, the value at bond 320 is ``5.43\times10^{-5}``, which explains why
+the centre appears black in its heatmap. The slice displays this smaller
+value directly.
+
+We can also compare the energy contained in this interval by summing its
+bond energies and dividing by the sum over the whole window,
+
+```math
+f_{240:400}(170)=
+\frac{\sum_{n=240}^{400}\delta e_n(170)}
+     {\sum_{n=1}^{639}\delta e_n(170)}\,.
+```
+
+| Run in the heatmap | Energy in bonds 240–400 as a fraction of the total |
+| --- | --- |
+| (a) ``h_x=1.06,\ h_z=0.006,\ \sigma=20`` | ``5.48\%`` |
+| (b) ``h_x=1.06,\ h_z=0.006,\ \sigma=40`` | ``5.66\%`` |
+| (c) ``h_x=1.4,\ h_z=0.05,\ \sigma=40`` | ``0.518\%`` |
+
+These fractions describe the spatial distribution of energy. To find the
+particle content, we can project the saved states onto outgoing particle
+states, as explained on the [particle-production page](../physics/particle-production.md).
+Such projections have not yet been calculated for these three runs.
+For a three-particle final state, energy and momentum conservation allow
+a continuous range of outgoing momenta. The energy expectation value can
+therefore have a broad central contribution. This effect is discussed in
+[Section III of the paper](https://arxiv.org/html/2411.13645v1#S3), where
+three-point energy correlations are used to examine which outgoing regions
+carry energy together.
+
+### Signed energy and spin
+
+The [signed-energy figure](../assets/ising-collision/longer-evolution/energy-signed-comparison.png)
+shows the same three runs in the same order, with positive values in red,
+negative values in blue, and zero in white. Its colour scale is linear
+between ``-10^{-4}`` and ``10^{-4}``, and logarithmic outside that interval;
+the limits are ``\pm0.06277`` in every panel. The most negative bond
+energies over the full evolution are ``-4.40\times10^{-5}``,
+``-1.64\times10^{-5}``, and ``-1.31\times10^{-5}`` in (a), (b), and (c).
+A [PDF copy](../assets/ising-collision/longer-evolution/energy-signed-comparison.pdf)
+is available.
+
+The [spin figure](../assets/ising-collision/longer-evolution/spin-comparison.png)
+plots ``\delta\langle\sigma_n^z(t)\rangle
+=\langle\sigma_n^z\rangle_t-\langle\sigma^z\rangle_{\rm vac}``
+on all 640 sites, for the same parameters and times. Blue shows a decrease
+from the vacuum magnetization and red an increase. All three panels use
+the same linear colour scale, with limits ``\pm0.68843``. The spin change
+is smaller in (c), so its tracks appear fainter on this shared scale.
+The [PDF](../assets/ising-collision/longer-evolution/spin-comparison.pdf)
+is also available.
+
+Over the evolution to ``t=170``, the summed bond energy decreases by
+``0.245\%``, ``0.0749\%``, and ``0.0284\%`` in (a), (b), and (c).
+The final squared norms are ``0.997625``, ``0.997274``, and ``0.999771``.
+The local expectation values already include division by the state's
+squared norm. Increasing the vacuum and evolution bond dimensions and
+reducing the time step would show how much the spatial profiles change
+with these numerical choices. The colour limits and these measured
+quantities are recorded in the
+[figure settings](../assets/ising-collision/longer-evolution/energy-comparison.json).
+
 ## Running the calculation
 
 After [installing the Julia environment](../running.md), you can run the
-same collision parameters from the repository directory with
+320-site non-integrable collision from the repository directory with
 
 ```sh
 julia --project=simulations simulations/models/ift/scripts/collide_fixed_momentum.jl \
@@ -253,8 +392,9 @@ triple reference states.
 
 ## Numerical comparisons still needed
 
-For ``h_z=0.006``, the evolved squared norm changes from one to ``0.995674``,
-and the summed excess energy decreases by about ``0.262\%``. For ``h_z=0``,
+For the 320-site run with ``h_z=0.006``, the evolved squared norm changes
+from one to ``0.995674``, and the summed excess energy decreases by about
+``0.262\%``. For ``h_z=0``,
 the summed excess energy decreases by about ``0.351\%``. Every overlap
 weight reported here is divided by the saved state's squared norm. That
 removes an overall normalization factor, but it cannot restore components
@@ -265,8 +405,8 @@ The time step and outgoing separation time also need to be varied before
 quoting final channel probabilities.
 
 The figures and small numerical tables are included with the website;
-the full saved MPS files remain in the local results directory. You can
-download the [three-reference weights](../assets/ising-collision/three_reference_weights.csv),
+the full saved MPS files remain on the machines used for the calculations.
+You can download the [three-reference weights](../assets/ising-collision/three_reference_weights.csv),
 [energy correlations](../assets/ising-collision/three_energy_selected.csv),
 and spectrum tables for [dimensions 16–32](../assets/ising-collision/spectrum-16-32.csv)
 and [48–64](../assets/ising-collision/spectrum-48-64.csv).
@@ -293,5 +433,27 @@ you can draw their energy densities with
 ```sh
 python docs/src/assets/ising-collision/plot_energy_comparison.py \
   --integrable-directory results/ift/integrable-320 \
-  --nonintegrable-directory results/ift/collision-320
+  --nonintegrable-directory results/ift/collision-320 \
+  --slice-time 80 --slice-region 120 190
 ```
+
+The [slice settings](../assets/ising-collision/energy-slice-inputs.json)
+include the signed energy sums used in the ``t=80`` caption. For a
+comparison of widths or couplings, repeat `--run-directory` in the desired
+panel order. For example, if you collect the three 640-site outputs in
+`results/ift/sigma20`, `results/ift/sigma40`, and `results/ift/paper-sigma40`,
+you can draw their heatmaps and final slices with
+
+```sh
+python docs/src/assets/ising-collision/plot_energy_comparison.py \
+  --run-directory results/ift/sigma20 \
+  --run-directory results/ift/sigma40 \
+  --run-directory results/ift/paper-sigma40 \
+  --signed --spin --slice-time 170 --slice-region 240 400 \
+  --output-directory results/ift/comparison-plots
+```
+
+The slice CSVs contain one row per bond, with columns `delta_e_a`,
+`delta_e_b`, and, for the three-run comparison, `delta_e_c`. These column
+letters refer to the runs in their respective heatmaps. Both slice figures
+can be redrawn from the saved observables without loading the MPS states.
