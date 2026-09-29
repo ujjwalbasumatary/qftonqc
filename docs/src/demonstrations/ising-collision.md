@@ -36,12 +36,16 @@ scale, with values below ``10^{-4}`` shown in black. Neither energy density
 is rescaled.
 The [PDF figure](../assets/ising-collision/energy-comparison.pdf) is also available.
 
-In (a), the packets meet near ``t=40`` and separate into two outgoing bands.
-In (b), they meet near ``t=42`` and leave a broad, weaker signal between the
-main outgoing bands. This interior energy is visible on the same colour
-scale that shows no comparable band in (a). At ``h_z=0``, the spin chain can
-be mapped to free fermions whose mode occupations are conserved; two
-incoming quasiparticles therefore remain two. The mapping is given in
+In the integrable run, the packets meet near ``t=40`` and separate into
+two outgoing bands. In the non-integrable run, they meet near ``t=42``.
+Two bright bands move away from the collision, with a weaker spread of
+energy between them. We use the same colour limits in both panels, so
+this difference comes from the measured energy densities.
+
+At ``h_z=0``, we can map the spin chain to free fermions. Their momentum-mode
+occupations are conserved, so a state of two incoming quasiparticles remains
+in the two-particle sector. Turning on ``h_z`` introduces interactions that
+allow the outgoing particle content to change. The free-fermion mapping is given in
 [Appendix A of the paper](https://arxiv.org/html/2411.13645v1#A1).
 
 The finite window has a uniform MPS vacuum extending to infinity on each
@@ -73,14 +77,17 @@ integrable curve has small oscillations around zero. You can download the
 
 At ``t=80``, bonds 120 through 190 contain about ``0.0068\%`` of the summed
 excess energy in the integrable run, compared with ``6.35\%`` in the
-non-integrable run. We obtain these fractions
-by summing the signed ``\delta e_n`` over those bonds and dividing by its
-sum over all 319 internal bonds. Negative local excess energy is possible
-because the subtraction is relative to the vacuum, rather than to the
-lowest eigenvalue of each bond operator. The
-[signed heatmap for the non-integrable run](../assets/ising-collision/energy-signed.pdf) retains
-those values. Outgoing particle probabilities require the projections
-discussed below.
+non-integrable run. We obtain these fractions by summing the signed
+``\delta e_n`` over those bonds and dividing by its sum over all 319
+internal bonds. The energy between the peaks is much smaller than the peak
+heights, but it extends over many bonds and contributes appreciably to the
+total in the non-integrable run.
+
+Some bonds have ``\delta e_n<0``. The vacuum minimizes the total energy;
+it need not minimize each bond term separately. A bond can therefore have
+an expectation value below its value in the vacuum while the total energy
+remains above the vacuum energy. These negative values are included in the
+slice and the [signed heatmap](../assets/ising-collision/energy-signed.pdf).
 
 The signed plot also makes faint oscillations around zero visible. Such
 oscillations are present before the collision in both runs, with values of
@@ -108,8 +115,7 @@ therefore cannot decay into two of them while conserving energy and
 momentum. Its mass changes by ``0.000192`` between ``D=48`` and ``D=64``,
 or about ``0.04\%``. The same change is about ``1.7\%`` of the binding
 energy ``2m_1-m_2``, so the binding energy is more sensitive to ``D`` than
-the mass. These successive-dimension differences are comparisons, rather
-than error bars on the limiting values.
+the mass.
 
 The two-species spectrum agrees with the regime described in
 [Appendix A of the paper](https://arxiv.org/html/2411.13645v1#A1).
@@ -174,13 +180,15 @@ outer separations, their largest weight is ``1.58\times10^{-6}`` at
 ``g=40``. This checks contamination from those chosen pairs; it does not
 bound contamination from every possible two-particle state.
 
-These weights measure the specified reference subspace. Obtaining the full
-``111`` probability requires the momentum dependence of all three tensors
-and separation from the other channels. The visible time and
-separation dependence also shows that ``t=80`` is too early to read off a
-final channel probability from these curves. Two particles with similar
-velocities can remain close long after the collision, and increasing
-``g`` removes their contribution along with nearby interacting states.
+Here we vary the three insertion positions while holding their excitation
+tensors at the reference momenta. To obtain the full ``111`` probability,
+we also need the momentum dependence of all three tensors and must distinguish
+their contribution from the other outgoing channels. The curves still change
+with time and with the minimum separation ``g``. Increasing ``g`` removes
+configurations in which two insertions are close together. This includes
+outgoing particles with similar velocities, which take longer to separate.
+We therefore need to compare these weights at later times before assigning
+a final three-particle probability.
 
 ## Energy correlations
 
@@ -234,8 +242,11 @@ is also available.
 
 The incoming group velocities give meeting times of approximately ``t=83``
 in (a) and (b), and ``t=90`` in (c), leaving about 80–87 units of lattice
-time after the collision. A broad region of positive energy remains between
-the main outgoing bands in (a) and (b). It is much fainter in (c).
+time after the collision. Broadening the packets widens both the incoming
+bands and the region where they overlap. After the main outgoing bands
+separate, positive energy remains between them in both (a) and (b).
+Much of the central energy in (c) falls below the colour scale's lower
+limit. We can examine it directly in a slice at fixed time.
 
 ### Energy at ``t=170``
 
@@ -254,12 +265,18 @@ The [PDF](../assets/ising-collision/longer-evolution/energy-slice.pdf) and
 [slice data](../assets/ising-collision/longer-evolution/energy-slice.csv)
 are available for download.
 
-The two widths give similar energy densities in the central interval,
-roughly ``5\times10^{-4}`` to ``7\times10^{-4}``. Their main outgoing
-peaks are near bonds 148 and 476–477, outside that interval. In the third
-run, the value at bond 320 is ``5.43\times10^{-5}``, which explains why
-the centre appears black in its heatmap. The slice displays this smaller
-value directly.
+At ``t=170``, the blue and orange curves have their main peaks near bonds
+148 and 476–477. Between those peaks, both curves remain positive. In the
+enlarged interval their values are roughly ``5\times10^{-4}`` to
+``7\times10^{-4}``, despite the difference in packet width. Broadening
+the incoming packets has therefore left a similar central energy density
+in these two runs.
+
+The green curve has much less energy near the centre. At bond 320 its
+value is ``5.43\times10^{-5}``, about half the heatmap's lower colour
+limit. This is why the centre of that heatmap appears black. The linear
+slice includes these smaller values and shows how the energy varies
+across the interval.
 
 We can also compare the energy contained in this interval by summing its
 bond energies and dividing by the sum over the whole window,
@@ -276,16 +293,42 @@ f_{240:400}(170)=
 | (b) ``h_x=1.06,\ h_z=0.006,\ \sigma=40`` | ``5.66\%`` |
 | (c) ``h_x=1.4,\ h_z=0.05,\ \sigma=40`` | ``0.518\%`` |
 
-These fractions describe the spatial distribution of energy. To find the
-particle content, we can project the saved states onto outgoing particle
-states, as explained on the [particle-production page](../physics/particle-production.md).
-Such projections have not yet been calculated for these three runs.
-For a three-particle final state, energy and momentum conservation allow
-a continuous range of outgoing momenta. The energy expectation value can
-therefore have a broad central contribution. This effect is discussed in
-[Section III of the paper](https://arxiv.org/html/2411.13645v1#S3), where
-three-point energy correlations are used to examine which outgoing regions
-carry energy together.
+The similar fractions in (a) and (b) put a number on the agreement between
+their central energy profiles. In (c), we have changed both the couplings
+and the incoming energy in units of ``m_1``, so the smaller fraction
+compares a different scattering process.
+
+### The outgoing particles
+
+The broad central energy raises the question of which particles carry it.
+An energy-density plot combines the possible outcomes in the outgoing
+quantum state. For a three-particle outcome, specifying the total energy
+and momentum still leaves a continuous range of ways to share momentum
+among the particles. Those different momenta give different velocities.
+Their contributions to the energy expectation value can therefore fill
+a broad region between the outer tracks. Newly produced particles need
+not each appear as a separate narrow line. This interpretation of the
+three-particle contribution is explained in
+[Section III of the paper](https://arxiv.org/html/2411.13645v1#S3).
+
+For the 320-site run, the overlaps and energy correlations above give
+additional information about the outgoing state. For the three 640-site
+runs, we have so far examined the local energy and spin expectation values.
+The next calculation is to take overlaps of their saved MPS states with
+states containing specified outgoing particles, at several late times.
+We can also calculate three-point energy correlations with two positions
+held near the outer peaks and the third varied across the centre. Together,
+these calculations address which particles are present and which outgoing
+regions carry energy together. The overlap construction is explained on
+the [particle-production page](../physics/particle-production.md).
+
+The percentages in the table are fractions of energy in a chosen spatial
+interval. An outgoing-channel probability instead comes from the overlap
+with states in that channel. Comparing those overlaps at several late
+times will also tell us whether the particles have separated enough for
+the inferred probabilities to stop changing. If they need more time, we
+can enlarge the window by adding vacuum outside the incoming packets and
+evolve longer after the collision, keeping their initial separation fixed.
 
 ### Signed energy and spin
 
@@ -313,10 +356,13 @@ Over the evolution to ``t=170``, the summed bond energy decreases by
 ``0.245\%``, ``0.0749\%``, and ``0.0284\%`` in (a), (b), and (c).
 The final squared norms are ``0.997625``, ``0.997274``, and ``0.999771``.
 The local expectation values already include division by the state's
-squared norm. Increasing the vacuum and evolution bond dimensions and
-reducing the time step would show how much the spatial profiles change
-with these numerical choices. The colour limits and these measured
-quantities are recorded in the
+squared norm. To check the effect of the MPS approximation, we can repeat
+a run with larger vacuum and evolution bond dimensions and compare the
+energy profiles at the same times. A separate repetition with a smaller
+time step checks the time evolution. Keeping the physical parameters
+fixed in these comparisons lets us see how much the central energy and
+outgoing overlaps change with each numerical choice. The colour limits
+and the recorded energy and norm changes are given in the
 [figure settings](../assets/ising-collision/longer-evolution/energy-comparison.json).
 
 ## Running the calculation
@@ -396,13 +442,13 @@ For the 320-site run with ``h_z=0.006``, the evolved squared norm changes
 from one to ``0.995674``, and the summed excess energy decreases by about
 ``0.262\%``. For ``h_z=0``,
 the summed excess energy decreases by about ``0.351\%``. Every overlap
-weight reported here is divided by the saved state's squared norm. That
-removes an overall normalization factor, but it cannot restore components
-lost during MPS truncation. The evolution reaches its bond-dimension limit of 24 on most
-bonds. Repeating the evolution at a larger bond dimension will show how
-much the overlaps change when more entanglement is retained.
-The time step and outgoing separation time also need to be varied before
-quoting final channel probabilities.
+weight reported here is divided by the saved state's squared norm. This
+accounts for the overall norm when evaluating a probability. Truncating
+the MPS can also change the relative amplitudes of outgoing states, which
+this division does not correct. The evolution reaches its bond-dimension
+limit of 24 on most bonds. We can check the effect on the overlaps by
+repeating the same collision at a larger bond dimension, then compare
+smaller time steps and later outgoing states separately.
 
 The figures and small numerical tables are included with the website;
 the full saved MPS files remain on the machines used for the calculations.
