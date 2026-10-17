@@ -20,6 +20,21 @@ The Schwinger program finds the ground state of a finite chain with a source
 on its central sites. It then changes the source strength and follows the
 field expectation value at each site.
 
+## Manuscript version
+
+The code accompanying the manuscript revised on 18 October 2026 is tagged
+[`book-2026-10-18`](https://github.com/ujjwalbasumatary/qftonqc/tree/book-2026-10-18).
+The [release notes](RELEASE_NOTES.md) list its contents, checks and the remaining
+numerical comparisons. Use this tag to obtain the version cited in the book.
+
+## Tutorials
+
+- [Julia tutorial](https://ujjwalbasumatary.github.io/qftonqc/): model programs,
+  MPSKit calculations, saved data and Julia function documentation.
+- [Python tutorial](https://ujjwalbasumatary.github.io/qftonqc/python/): Qiskit
+  demonstrations and NumPy MPS algorithms, with a reading order linked to the
+  lecture notes and downloadable notebooks.
+
 ## Files
 
 ```text
@@ -32,7 +47,8 @@ course/tutorials/        notebooks used in class
 course/examples/         longer numerical examples
 course/projects/         student reports, notebooks, and presentations
 results/                 data and figures from local runs
-docs/                    documentation website
+docs/                    Julia tutorial (Documenter.jl)
+python-docs/             Python tutorial pages and Sphinx/Furo configuration
 ```
 
 Each model directory contains its Julia programs together with related

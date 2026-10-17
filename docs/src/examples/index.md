@@ -1,5 +1,10 @@
 # Worked examples
 
+The [MPS walkthroughs in NumPy](mps-numpy.md) derive and implement Schmidt
+truncation, canonical forms, MPO contractions, DMRG, TEBD, TDVP, and VUMPS.
+Read them on the separate Python site, or download them to run the code
+and work through the exercises. The examples below use Julia and MPSKit.
+
 These examples use the same Hamiltonians, packet constructions, and overlap
 functions as the longer calculations. You can run them on a laptop. The
 Ising window has 64 sites, and the Schwinger chain has 12 sites. Each example

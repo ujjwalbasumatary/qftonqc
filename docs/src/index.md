@@ -1,5 +1,9 @@
 # QFT on a QC
 
+This is the Julia tutorial. The separate [Python tutorial](https://ujjwalbasumatary.github.io/qftonqc/python/)
+develops quantum circuits with Qiskit and MPS algorithms with NumPy, using
+downloadable notebooks.
+
 This repository grew out of HE381, *Quantum Field Theory on a Quantum
 Computer*, taught by Prof. Aninda Sinha at IISc in the fall of 2025, with
 me (Ujjwal Basumatary) as the teaching assistant responsible for implementing the algorithms.

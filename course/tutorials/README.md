@@ -9,7 +9,7 @@ The notebooks are arranged in their teaching order.
 | `03-qiskit-and-tfim/` | Qiskit and the transverse-field Ising model |
 | `04-qft-and-phase-estimation/` | quantum Fourier transform and phase estimation |
 | `05-state-preparation/` | oscillator discretization and adiabatic state preparation |
-| `06-matrix-product-states/` | matrix product states |
+| [`06-matrix-product-states/`](06-matrix-product-states/README.md) | four standalone NumPy notebooks on Schmidt and canonical forms, MPOs and DMRG, TEBD and TDVP, and uniform MPS with VUMPS |
 
 These notebooks run in Python or Qiskit environments, independently of the
 Julia package. Their first cells contain the required imports.

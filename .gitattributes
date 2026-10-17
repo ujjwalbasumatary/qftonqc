@@ -12,3 +12,7 @@
 *.pdf binary
 *.nb binary
 
+# Preserve the saved calibration inputs and their recorded SHA-256 hashes.
+/results/ift/2026-09-24-integrable-320/data/*.csv text eol=lf
+/results/ift/2026-09-24-integrable-320/plots/summary.json text eol=lf
+/results/ift/2026-09-24-integrable-320/run.log text eol=lf whitespace=-blank-at-eol

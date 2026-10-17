@@ -1,0 +1,38 @@
+{% extends "!page.html" %}
+
+{% block body %}
+<header class="qft-titlebar" aria-label="Site header">
+  <a class="qft-titlebar-brand" href="{{ pathto(master_doc) }}">QFT on a QC</a>
+  <nav class="qft-titlebar-links" aria-label="Tutorials and lecture notes">
+    <a href="{{ pathto(master_doc) }}" aria-label="Python tutorial">Python<span class="qft-wide-label"> tutorial</span></a>
+    <a href="https://ujjwalbasumatary.github.io/qftonqc/" aria-label="Julia tutorial">Julia<span class="qft-wide-label"> tutorial</span></a>
+    <a href="https://arxiv.org/abs/2512.02706" aria-label="Lecture notes on arXiv"><span class="qft-wide-label">Lecture </span>notes</a>
+  </nav>
+  <div class="qft-titlebar-controls">
+    <label class="qft-header-control qft-menu-control" for="__navigation" title="Open navigation and search" aria-label="Open navigation and search">
+      <svg aria-hidden="true"><use href="#svg-menu"></use></svg>
+    </label>
+    <div class="theme-toggle-container">
+      <button class="theme-toggle qft-header-control" aria-label="Toggle Light / Dark / Auto color theme" title="Change color theme">
+        <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+        <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+        <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+        <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+      </button>
+    </div>
+    {% if not furo_hide_toc %}
+    <label class="qft-header-control qft-toc-control" for="__toc" title="On this page" aria-label="Open page contents">
+      <svg aria-hidden="true"><use href="#svg-toc"></use></svg>
+    </label>
+    {% endif %}
+  </div>
+</header>
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+{% if sourcename and sourcename.endswith('.ipynb') %}
+<p class="qft-notebook-download"><a href="{{ pathto('_sources/' + sourcename, true) }}" download>Download notebook</a></p>
+{% endif %}
+{{ super() }}
+{% endblock %}

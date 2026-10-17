@@ -1,0 +1,76 @@
+{
+  "parameters": {
+    "kappa": 0.38,
+    "h_x": 1.06,
+    "h_z": 0.0,
+    "sigma": 20.0,
+    "length": 320,
+    "n_center": 80,
+    "total_time": 801,
+    "bond_dimension": 8,
+    "evolution_bond_dimension": 24,
+    "time_step": 0.1,
+    "random_seed": 20260924
+  },
+  "sources": {
+    "energy": {
+      "path": "results/ift/2026-09-24-integrable-320/data/energy_exp.csv",
+      "sha256": "bb29fb6262320383b37e41a2dcf82fc48118f2128c842175179eb917051c4a12"
+    },
+    "times": {
+      "path": "results/ift/2026-09-24-integrable-320/data/times.csv",
+      "sha256": "a88355862cb5b9bc7a38b767e0d3198f78d5ed8d2b4678d6b89315b9471ba04e"
+    },
+    "log": {
+      "path": "results/ift/2026-09-24-integrable-320/run.log",
+      "sha256": "623e78019c012f0a8ee3ba34c48d17c33d2f8ee3dca987c2e33e6f76073b6ef9"
+    },
+    "parameters": {
+      "path": "results/ift/2026-09-24-integrable-320/plots/summary.json",
+      "sha256": "b002c23c9c3d94092b38005b9bdb4833908096cd78d8526ef957109b354e9f33"
+    }
+  },
+  "omitted_column": "The verified zero column at one-based index 320",
+  "position": "Bond n is assigned x=n+1/2",
+  "weighting": "Signed vacuum-subtracted bond energy, without smoothing or clipping",
+  "fit_time_interval": [
+    0,
+    20
+  ],
+  "fit_samples": 201,
+  "fits": [
+    {
+      "first_bond": 1,
+      "last_bond": 159,
+      "velocity": 1.9930965616974272,
+      "intercept": 73.11515326457584,
+      "maximum_fit_residual": 0.027987583471585253
+    },
+    {
+      "first_bond": 160,
+      "last_bond": 319,
+      "velocity": -1.9944359701791035,
+      "intercept": 233.1559855586442,
+      "maximum_fit_residual": 0.020751792228992372
+    }
+  ],
+  "exact_energy": 0.786971340209536,
+  "excitation_energies": [
+    0.7869692656307111,
+    0.7869692656072529
+  ],
+  "absolute_energy_errors": [
+    -2.0745788248399677e-06,
+    -2.074602283075322e-06
+  ],
+  "relative_energy_errors": [
+    -2.6361554974639844e-06,
+    -2.636185305710048e-06
+  ],
+  "exact_central_velocity": 1.9984244787012255,
+  "relative_speed_errors": [
+    -0.0026660587180461492,
+    -0.0019958264946364768
+  ],
+  "interpretation": "Exact central group velocity compared with an energy-weighted finite-width packet speed. This is not a measurement of scattering delay."
+}

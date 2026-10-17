@@ -8,6 +8,11 @@ calculation. They run independently of the Julia package in `simulations/`.
 
 ## Teaching notebooks
 
+The [Python tutorial](https://ujjwalbasumatary.github.io/qftonqc/python/)
+organizes the Qiskit demonstrations and NumPy MPS algorithms into reading
+sequences linked to the lecture notes. The table below also lists the earlier
+course material.
+
 The numbered directories in
 [`course/tutorials/`](https://github.com/ujjwalbasumatary/qftonqc/tree/main/course/tutorials)
 follow the order in which the topics were taught.
@@ -16,10 +21,10 @@ follow the order in which the topics were taught.
 | --- | --- |
 | NumPy and differential equations | [`basicnumpy.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/01-numpy-and-odes/basicnumpy.ipynb) introduces vectors, matrices, and plotting. [`t1solvingdifferentialequations.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/01-numpy-and-odes/t1solvingdifferentialequations.ipynb) solves exponential decay with the forward Euler method. |
 | Numerical methods | [`t2.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/02-numerical-methods/t2.ipynb) develops predictor–corrector integration and oscillator time evolution. |
-| Qiskit and the Ising model | [`t3.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/03-qiskit-and-tfim/t3.ipynb) covers circuits, measurements, single-spin precession, and two-spin evolution. [`tfim.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/03-qiskit-and-tfim/tfim.ipynb) treats the transverse-field Ising Hamiltonian by exact diagonalization and a variational quantum eigensolver. |
+| Qiskit and the Ising model | [`t3.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/03-qiskit-and-tfim/t3.ipynb) covers circuits, measurements, single-spin precession, and two-spin evolution. [`tfim.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/03-qiskit-and-tfim/tfim.ipynb) compares transverse-field Ising dynamics with sparse-matrix evolution. Its later variational sections are unfinished drafts. |
 | Fourier transform and phase estimation | [`QFT.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/04-qft-and-phase-estimation/QFT.ipynb) and [`hatQFTetc.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/04-qft-and-phase-estimation/hatQFTetc.ipynb) construct Fourier-transform circuits, estimate phases, and calculate expectation values with the Hadamard test. |
 | State preparation | [`tutorial.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/05-state-preparation/state_prep/tutorial.ipynb) discretizes oscillator position and momentum and prepares the harmonic ground state by changing the Hamiltonian. [`sho_adiabatic_state_prep.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/05-state-preparation/state_prep/sho_adiabatic_state_prep.ipynb) introduces a quartic coupling in a truncated oscillator basis. |
-| Matrix product states | [`mps_demo.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/06-matrix-product-states/mps_demo.ipynb) and [`MPS_demo_fin.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/06-matrix-product-states/MPS_demo_fin.ipynb) write spin states as products of tensors and examine their bond dimensions and entanglement. |
+| Matrix product states | The four [NumPy algorithm notebooks](examples/mps-numpy.md) work through Schmidt and canonical forms, MPOs and two-site DMRG, TEBD and one-site TDVP, and uniform MPS with VUMPS. The [directory README](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/tutorials/06-matrix-product-states/README.md) gives installation instructions and links the earlier classroom demonstrations. |
 
 The supplementary notebooks include
 [differential-equation examples](https://github.com/ujjwalbasumatary/qftonqc/tree/main/course/tutorials/01-numpy-and-odes/supplementary)
@@ -32,8 +37,9 @@ and [statevector estimator](https://github.com/ujjwalbasumatary/qftonqc/blob/mai
 [`noisy_spectrum_qiskit.ipynb`](https://github.com/ujjwalbasumatary/qftonqc/blob/main/course/examples/anharmonic-oscillator-spectrum/noisy_spectrum_qiskit.ipynb)
 in `course/examples/anharmonic-oscillator-spectrum/` represents an anharmonic
 oscillator in a truncated number basis. It uses split time-evolution circuits
-and Hadamard tests to extract spectral information, including simulations
-with circuit noise. The figures are kept beside the notebook.
+and Hadamard tests to extract spectral information. A noiseless spectrum is
+saved in the notebook. The later comparison with circuit noise was interrupted
+and remains unfinished. The figures are kept beside the notebook.
 
 The Mathematica notebooks are in
 [`course/mathematica/`](https://github.com/ujjwalbasumatary/qftonqc/tree/main/course/mathematica).

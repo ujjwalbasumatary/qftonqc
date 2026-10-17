@@ -1,0 +1,1287 @@
+Launching the integrable Ising collision at 2026-09-24T10:34:13+05:30
+hx = 1.06, hz = 0. Final lattice time: 80. MPS saving interval: 5.
+Closing a separate log viewer does not stop this calculation.
+Julia 1.12.6; integrable collision process started 2026-09-24T10:34:15.032
+320 sites; lattice time t = 0 to 80; dt = 0.1; hx = 1.06, hz = 0
+Full MPS saved at t = 0, 5, 10, ..., 80
+Random seed: 20260924
+Preparing a new vacuum and new incoming packets for hz = 0.
+First-call compilation is included. No previous collision is resumed.
+Precompiling packages...
+    410.3 ms  ✓ ExprTools
+    314.7 ms  ✓ UUIDs
+    886.9 ms  ✓ FillArrays
+    484.5 ms  ✓ DocStringExtensions
+    417.7 ms  ✓ StaticArraysCore
+   1478.5 ms  ✓ KrylovKit
+   1847.8 ms  ✓ OptimKit
+    441.9 ms  ✓ LoggingExtras
+   1196.1 ms  ✓ RecipesBase
+   1288.4 ms  ✓ TensorKitManifolds
+   1417.7 ms  ✓ Compat
+   3092.6 ms  ✓ TimerOutputs
+    349.4 ms  ✓ Compat → CompatLinearAlgebraExt
+   8294.8 ms  ✓ StaticArrays
+    471.6 ms  ✓ VectorInterface → VectorInterfaceStaticArraysExt
+    492.9 ms  ✓ ConstructionBase → ConstructionBaseStaticArraysExt
+    472.6 ms  ✓ Adapt → AdaptStaticArraysExt
+    529.8 ms  ✓ Accessors → StaticArraysExt
+    541.0 ms  ✓ BangBang → BangBangStaticArraysExt
+    533.2 ms  ✓ FillArrays → FillArraysStaticArraysExt
+  10535.4 ms  ✓ ArrayLayouts
+   1824.3 ms  ✓ BlockArrays
+    963.6 ms  ✓ BlockArrays → BlockArraysAdaptExt
+   3251.2 ms  ✓ BlockTensorKit
+   1791.6 ms  ✓ BlockTensorKit → BlockTensorKitAdaptExt
+  14389.5 ms  ✓ MPSKit
+   1912.4 ms  ✓ MPSKit → MPSKitAdaptExt
+  27 dependencies successfully precompiled in 51 seconds. 47 already precompiled.
+Precompiling packages...
+    358.9 ms  ✓ OpenSSL_jll
+    408.7 ms  ✓ NetworkOptions
+    360.2 ms  ✓ LaTeXStrings
+    390.8 ms  ✓ TensorCore
+    362.9 ms  ✓ StatsAPI
+    390.8 ms  ✓ Contour
+    341.4 ms  ✓ OpenLibm_jll
+    403.5 ms  ✓ Measures
+   1118.3 ms  ✓ Format
+    486.3 ms  ✓ Statistics
+    399.0 ms  ✓ CompilerSupportLibraries_jll
+   1475.1 ms  ✓ ArgTools
+    340.7 ms  ✓ MozillaCACerts_jll
+    360.2 ms  ✓ nghttp2_jll
+    425.5 ms  ✓ SuiteSparse_jll
+   1441.7 ms  ✓ OrderedCollections
+   1681.7 ms  ✓ Grisu
+    624.6 ms  ✓ Requires
+    386.1 ms  ✓ StableRNGs
+   1419.9 ms  ✓ Unzip
+    325.0 ms  ✓ Reexport
+    345.1 ms  ✓ Zlib_jll
+   2007.9 ms  ✓ IrrationalConstants
+    403.6 ms  ✓ Mmap
+    375.4 ms  ✓ PCRE2_jll
+    411.8 ms  ✓ AliasTables
+    472.0 ms  ✓ Base64
+    602.3 ms  ✓ DataAPI
+   7734.6 ms  ✓ StyledStrings
+    378.5 ms  ✓ Scratch
+    456.4 ms  ✓ JLLWrappers
+   1747.4 ms  ✓ StructUtils
+    364.4 ms  ✓ LibSSH2_jll
+   1356.9 ms  ✓ NaNMath
+   2554.2 ms  ✓ FixedPointNumbers
+    416.4 ms  ✓ p7zip_jll
+    635.0 ms  ✓ Tar
+   6419.0 ms  ✓ Parsers
+   1552.4 ms  ✓ DataStructures
+    348.5 ms  ✓ Showoff
+    518.3 ms  ✓ LogExpFunctions
+    405.9 ms  ✓ DelimitedFiles
+   4615.6 ms  ✓ SparseArrays
+   1324.2 ms  ✓ Missings
+    419.3 ms  ✓ RelocatableFolders
+    546.0 ms  ✓ Graphite2_jll
+    576.4 ms  ✓ Libmount_jll
+   1912.0 ms  ✓ JuliaSyntaxHighlighting
+    465.1 ms  ✓ EpollShim_jll
+    578.0 ms  ✓ LLVMOpenMP_jll
+    545.9 ms  ✓ Bzip2_jll
+    564.7 ms  ✓ Xorg_libpciaccess_jll
+    560.9 ms  ✓ Xorg_libICE_jll
+    550.8 ms  ✓ Xorg_libXau_jll
+    567.1 ms  ✓ libpng_jll
+    565.5 ms  ✓ libfdk_aac_jll
+    574.3 ms  ✓ LAME_jll
+    561.2 ms  ✓ LERC_jll
+    543.3 ms  ✓ fzf_jll
+    651.9 ms  ✓ JpegTurbo_jll
+    656.6 ms  ✓ XZ_jll
+    566.9 ms  ✓ Ogg_jll
+    561.7 ms  ✓ mtdev_jll
+    565.8 ms  ✓ Xorg_libXdmcp_jll
+    583.9 ms  ✓ x265_jll
+    582.8 ms  ✓ x264_jll
+    603.5 ms  ✓ libaom_jll
+    600.0 ms  ✓ Zstd_jll
+    580.8 ms  ✓ Expat_jll
+    569.2 ms  ✓ Opus_jll
+    536.1 ms  ✓ Xorg_xtrans_jll
+   2370.5 ms  ✓ libevdev_jll
+   2405.6 ms  ✓ Libiconv_jll
+    571.0 ms  ✓ Libffi_jll
+    601.2 ms  ✓ eudev_jll
+    578.0 ms  ✓ FriBidi_jll
+    368.6 ms  ✓ LibGit2_jll
+    563.1 ms  ✓ Libuuid_jll
+    359.8 ms  ✓ LibCURL_jll
+   2070.9 ms  ✓ ColorTypes
+    454.7 ms  ✓ SortingAlgorithms
+    498.6 ms  ✓ Statistics → SparseArraysExt
+   4841.2 ms  ✓ JSON
+    566.7 ms  ✓ Pixman_jll
+    590.5 ms  ✓ FreeType2_jll
+    570.1 ms  ✓ libdrm_jll
+   4539.5 ms  ✓ Markdown
+    760.5 ms  ✓ Xorg_libSM_jll
+    632.0 ms  ✓ libvorbis_jll
+   1147.0 ms  ✓ Ghostscript_jll
+    595.9 ms  ✓ Libtiff_jll
+   1523.8 ms  ✓ Xorg_libxcb_jll
+    579.2 ms  ✓ Dbus_jll
+    673.5 ms  ✓ GettextRuntime_jll
+    712.5 ms  ✓ Wayland_jll
+    577.2 ms  ✓ libinput_jll
+    550.5 ms  ✓ LibCURL
+   2822.4 ms  ✓ LibGit2
+    415.3 ms  ✓ ColorTypes → StyledStringsExt
+   2488.5 ms  ✓ ColorVectorSpace
+   2990.3 ms  ✓ StatsBase
+   4005.9 ms  ✓ Colors
+    872.1 ms  ✓ Fontconfig_jll
+    594.5 ms  ✓ Xorg_xcb_util_jll
+    616.7 ms  ✓ Xorg_libX11_jll
+   2128.2 ms  ✓ InteractiveUtils
+    855.1 ms  ✓ Glib_jll
+   3758.5 ms  ✓ Downloads
+   4243.5 ms  ✓ ColorSchemes
+    615.4 ms  ✓ Xorg_xcb_util_image_jll
+    607.8 ms  ✓ Xorg_xcb_util_keysyms_jll
+    597.5 ms  ✓ Xorg_xcb_util_renderutil_jll
+    591.9 ms  ✓ Xorg_libXrender_jll
+    621.8 ms  ✓ Xorg_xcb_util_wm_jll
+    587.2 ms  ✓ Xorg_libXext_jll
+    593.8 ms  ✓ Xorg_libXfixes_jll
+    620.4 ms  ✓ Xorg_libxkbfile_jll
+   3874.3 ms  ✓ Test
+   3762.6 ms  ✓ Latexify
+  37019.2 ms  ✓ REPL
+   7799.7 ms  ✓ PlotUtils
+    597.1 ms  ✓ Xorg_xcb_util_cursor_jll
+    732.5 ms  ✓ Xorg_libXinerama_jll
+    597.7 ms  ✓ Xorg_libXrandr_jll
+    892.2 ms  ✓ Libglvnd_jll
+    753.1 ms  ✓ Cairo_jll
+    698.3 ms  ✓ Xorg_libXcursor_jll
+    607.2 ms  ✓ Xorg_libXi_jll
+    672.7 ms  ✓ libva_jll
+    590.1 ms  ✓ Xorg_xkbcomp_jll
+    792.4 ms  ✓ Latexify → SparseArraysExt
+    528.4 ms  ✓ JLFzf
+   1191.9 ms  ✓ UnicodeFun
+   2693.9 ms  ✓ PlotThemes
+   6758.7 ms  ✓ RecipesPipeline
+   1337.9 ms  ✓ HarfBuzz_jll
+   1107.5 ms  ✓ Xorg_xkeyboard_config_jll
+   1233.4 ms  ✓ libass_jll
+   1324.9 ms  ✓ Pango_jll
+    763.6 ms  ✓ xkbcommon_jll
+   1028.5 ms  ✓ FFMPEG_jll
+  61945.1 ms  ✓ Pkg
+    617.9 ms  ✓ Vulkan_Loader_jll
+    466.9 ms  ✓ FFMPEG
+    659.3 ms  ✓ libdecor_jll
+   1170.8 ms  ✓ Qt6Base_jll
+    663.0 ms  ✓ GLFW_jll
+    656.2 ms  ✓ Qt6Svg_jll
+    624.0 ms  ✓ Qt6ShaderTools_jll
+    967.9 ms  ✓ GR_jll
+   4642.9 ms  ✓ Pkg → REPLExt
+   2488.7 ms  ✓ Qt6Declarative_jll
+    612.9 ms  ✓ Qt6Wayland_jll
+   3981.1 ms  ✓ GR
+  43453.5 ms  ✓ Plots
+  155 dependencies successfully precompiled in 188 seconds. 13 already precompiled.
+Precompiling packages...
+    379.2 ms  ✓ FillArrays → FillArraysStatisticsExt
+  1 dependency successfully precompiled in 0 seconds. 2 already precompiled.
+Precompiling packages...
+    471.7 ms  ✓ StaticArrays → StaticArraysStatisticsExt
+  1 dependency successfully precompiled in 0 seconds. 9 already precompiled.
+Precompiling packages...
+    478.9 ms  ✓ Adapt → AdaptSparseArraysExt
+  1 dependency successfully precompiled in 1 seconds. 4 already precompiled.
+Precompiling packages...
+    554.6 ms  ✓ FillArrays → FillArraysSparseArraysExt
+  1 dependency successfully precompiled in 1 seconds. 4 already precompiled.
+Precompiling packages...
+   1054.0 ms  ✓ ArrayLayouts → ArrayLayoutsSparseArraysExt
+  1 dependency successfully precompiled in 1 seconds. 15 already precompiled.
+Precompiling packages...
+    460.9 ms  ✓ OhMyThreads → MarkdownExt
+  1 dependency successfully precompiled in 1 seconds. 25 already precompiled.
+Precompiling packages...
+    334.2 ms  ✓ LogExpFunctions → LogExpFunctionsInverseFunctionsExt
+  1 dependency successfully precompiled in 0 seconds. 4 already precompiled.
+Precompiling packages...
+    348.3 ms  ✓ StructUtils → StructUtilsStaticArraysCoreExt
+  1 dependency successfully precompiled in 0 seconds. 6 already precompiled.
+Precompiling packages...
+    435.6 ms  ✓ ChunkCodecCore
+    503.7 ms  ✓ ChunkCodecLibZstd
+    439.0 ms  ✓ ChunkCodecLibZlib
+   2856.6 ms  ✓ FileIO
+  20425.3 ms  ✓ JLD2
+  5 dependencies successfully precompiled in 23 seconds. 36 already precompiled.
+Precompiling packages...
+   2875.6 ms  ✓ Plots → FileIOExt
+  1 dependency successfully precompiled in 3 seconds. 169 already precompiled.
+Precompiling packages...
+    428.9 ms  ✓ TextWrap
+    948.7 ms  ✓ ArgParse
+  2 dependencies successfully precompiled in 1 seconds. 1 already precompiled.
+Precompiling packages...
+    398.3 ms  ✓ Future
+    645.4 ms  ✓ VersionParsing
+    478.4 ms  ✓ SuiteSparse
+    482.7 ms  ✓ CommonSubexpressions
+   2740.8 ms  ✓ Distributed
+   1709.5 ms  ✓ ArrayInterface
+    395.1 ms  ✓ DiffResults
+    910.7 ms  ✓ Gamma
+    538.3 ms  ✓ InverseFunctions → InverseFunctionsTestExt
+    546.2 ms  ✓ Accessors → TestExt
+   1716.6 ms  ✓ QuadGK
+    589.9 ms  ✓ libsodium_jll
+    576.5 ms  ✓ Rmath_jll
+    588.6 ms  ✓ OpenSpecFun_jll
+    429.8 ms  ✓ CommonSolve
+    811.4 ms  ✓ ADTypes
+    753.7 ms  ✓ Conda
+    962.8 ms  ✓ Setfield
+    499.2 ms  ✓ ArrayInterface → ArrayInterfaceSparseArraysExt
+    787.5 ms  ✓ PDMats
+    390.3 ms  ✓ ArrayInterface → ArrayInterfaceFillArraysExt
+    359.3 ms  ✓ ArrayInterface → ArrayInterfaceStaticArraysCoreExt
+    611.7 ms  ✓ ZeroMQ_jll
+   1136.4 ms  ✓ HypergeometricFunctions
+    671.5 ms  ✓ Rmath
+   2635.9 ms  ✓ SpecialFunctions
+   3622.1 ms  ✓ Roots
+    420.6 ms  ✓ ADTypes → ADTypesConstructionBaseExt
+   2105.4 ms  ✓ DifferentiationInterface
+    604.1 ms  ✓ PDMats → StatsBaseExt
+    567.5 ms  ✓ FillArrays → FillArraysPDMatsExt
+    642.6 ms  ✓ FiniteDiff
+    601.5 ms  ✓ DiffRules
+    480.7 ms  ✓ ColorVectorSpace → SpecialFunctionsExt
+   3180.4 ms  ✓ ZMQ
+   2121.5 ms  ✓ StatsFuns
+    571.1 ms  ✓ DifferentiationInterface → DifferentiationInterfaceStaticArraysExt
+    591.4 ms  ✓ DifferentiationInterface → DifferentiationInterfaceSparseArraysExt
+    517.2 ms  ✓ FiniteDiff → FiniteDiffSparseArraysExt
+    508.0 ms  ✓ FiniteDiff → FiniteDiffStaticArraysExt
+    499.6 ms  ✓ DifferentiationInterface → DifferentiationInterfaceFiniteDiffExt
+   4531.7 ms  ✓ ForwardDiff
+    432.1 ms  ✓ StatsFuns → StatsFunsInverseFunctionsExt
+    599.3 ms  ✓ ForwardDiff → ForwardDiffStaticArraysExt
+    457.8 ms  ✓ Roots → RootsForwardDiffExt
+   1494.4 ms  ✓ DifferentiationInterface → DifferentiationInterfaceForwardDiffExt
+   9611.1 ms  ✓ IJulia
+    756.8 ms  ✓ NLSolversBase
+    747.4 ms  ✓ GR → IJuliaExt
+   4731.5 ms  ✓ Distributions
+   2147.6 ms  ✓ Plots → IJuliaExt
+   2150.8 ms  ✓ LsqFit
+   1093.9 ms  ✓ Distributions → DistributionsTestExt
+    457.3 ms  ✓ QFTSimulations
+  54 dependencies successfully precompiled in 35 seconds. 245 already precompiled.
+Simulation code loaded at 2026-09-24T10:39:26.340. Beginning vacuum and packet preparation.
+Exact free-fermion gap: 0.1200000000000001
+Exact single-particle energy at central momentum: 0.786971340209536
+Exact group speed at central momentum: 1.9984244787012255
+Expected crossing time from the packet centres: 40.03153526821886
+The expected final state has two outgoing particles and no newly produced particles.
+Running simulation for the following set of parameters: 
+h_x = 1.06
+output_dir = /home/ujjwal/files/qft-on-qc-github/qftonqc/results/ift/2026-09-24-integrable-320
+bond_dimension = 8
+length = 320
+sigma = 20.0
+n_center = 80
+kappa = 0.38
+h_z = 0.0
+evolution_bond_dimension = 24
+save_every = 50
+total_time = 801
+time_step = 0.1
+effective evolution_bond_dimension = 24
+MPS states will be saved in /home/ujjwal/files/qft-on-qc-github/qftonqc/results/ift/2026-09-24-integrable-320/states/scattering_infinite_mom_0p38_hx_1p06_hz_0p0_sigma_20p0_L_320_n_80_T_801_D_8_Dmax_24_dt_0p1_F5vuSZ
+[ Info: VUMPS init:	obj = -1.073238588047e+00	err = 3.6436e-01
+[ Info: VUMPS   1:	obj = -1.312197543230e+00	err = 1.6147506642e-02	time = 4.29 sec
+[ Info: VUMPS   2:	obj = -1.313197937654e+00	err = 5.2951910935e-03	time = 0.26 sec
+[ Info: VUMPS   3:	obj = -1.313687448135e+00	err = 2.8498529578e-03	time = 0.00 sec
+[ Info: VUMPS   4:	obj = -1.313866915998e+00	err = 1.2145533258e-03	time = 0.00 sec
+[ Info: VUMPS   5:	obj = -1.313894877807e+00	err = 5.5888020468e-04	time = 0.00 sec
+[ Info: VUMPS   6:	obj = -1.313896845674e+00	err = 3.9016026840e-04	time = 0.00 sec
+[ Info: VUMPS   7:	obj = -1.313897105124e+00	err = 1.9641763737e-04	time = 0.00 sec
+[ Info: VUMPS   8:	obj = -1.313897165890e+00	err = 1.0367494789e-04	time = 0.00 sec
+[ Info: VUMPS   9:	obj = -1.313897182402e+00	err = 5.1384006204e-05	time = 0.00 sec
+[ Info: VUMPS  10:	obj = -1.313897186357e+00	err = 2.8888157138e-05	time = 0.00 sec
+[ Info: VUMPS  11:	obj = -1.313897187405e+00	err = 1.7419453571e-05	time = 0.00 sec
+[ Info: VUMPS  12:	obj = -1.313897187761e+00	err = 1.1793415306e-05	time = 0.00 sec
+[ Info: VUMPS  13:	obj = -1.313897187914e+00	err = 8.3846845613e-06	time = 0.00 sec
+[ Info: VUMPS  14:	obj = -1.313897187995e+00	err = 6.3360764035e-06	time = 0.00 sec
+[ Info: VUMPS  15:	obj = -1.313897188042e+00	err = 4.8588942432e-06	time = 0.00 sec
+[ Info: VUMPS  16:	obj = -1.313897188071e+00	err = 3.8258649820e-06	time = 0.00 sec
+[ Info: VUMPS  17:	obj = -1.313897188090e+00	err = 3.0335635970e-06	time = 0.00 sec
+[ Info: VUMPS  18:	obj = -1.313897188102e+00	err = 2.4411246327e-06	time = 0.00 sec
+[ Info: VUMPS  19:	obj = -1.313897188110e+00	err = 1.9777632324e-06	time = 0.00 sec
+[ Info: VUMPS  20:	obj = -1.313897188115e+00	err = 1.6190122686e-06	time = 0.00 sec
+[ Info: VUMPS  21:	obj = -1.313897188119e+00	err = 1.3343211230e-06	time = 0.00 sec
+[ Info: VUMPS  22:	obj = -1.313897188121e+00	err = 1.1082886790e-06	time = 0.00 sec
+[ Info: VUMPS  23:	obj = -1.313897188123e+00	err = 9.2598714078e-07	time = 0.00 sec
+[ Info: VUMPS  24:	obj = -1.313897188125e+00	err = 7.7810787861e-07	time = 0.00 sec
+[ Info: VUMPS  25:	obj = -1.313897188125e+00	err = 6.5682618254e-07	time = 0.00 sec
+[ Info: VUMPS  26:	obj = -1.313897188126e+00	err = 5.5668791637e-07	time = 0.00 sec
+[ Info: VUMPS  27:	obj = -1.313897188127e+00	err = 4.7333572011e-07	time = 0.00 sec
+[ Info: VUMPS  28:	obj = -1.313897188127e+00	err = 4.0355128120e-07	time = 0.00 sec
+[ Info: VUMPS  29:	obj = -1.313897188127e+00	err = 3.4479769162e-07	time = 0.00 sec
+[ Info: VUMPS  30:	obj = -1.313897188127e+00	err = 2.9510942027e-07	time = 0.00 sec
+[ Info: VUMPS  31:	obj = -1.313897188127e+00	err = 2.5293047704e-07	time = 0.00 sec
+[ Info: VUMPS  32:	obj = -1.313897188128e+00	err = 2.1701897851e-07	time = 0.00 sec
+[ Info: VUMPS  33:	obj = -1.313897188128e+00	err = 1.8636713892e-07	time = 0.00 sec
+[ Info: VUMPS  34:	obj = -1.313897188128e+00	err = 1.6015350742e-07	time = 0.00 sec
+[ Info: VUMPS  35:	obj = -1.313897188128e+00	err = 1.3770078165e-07	time = 0.00 sec
+[ Info: VUMPS  36:	obj = -1.313897188128e+00	err = 1.1844538859e-07	time = 0.00 sec
+[ Info: VUMPS  37:	obj = -1.313897188128e+00	err = 1.0191602512e-07	time = 0.00 sec
+[ Info: VUMPS  38:	obj = -1.313897188128e+00	err = 8.7715814544e-08	time = 0.00 sec
+[ Info: VUMPS  39:	obj = -1.313897188128e+00	err = 7.5509150530e-08	time = 0.00 sec
+[ Info: VUMPS  40:	obj = -1.313897188128e+00	err = 6.5011413485e-08	time = 0.00 sec
+[ Info: VUMPS  41:	obj = -1.313897188128e+00	err = 5.5979973011e-08	time = 0.00 sec
+[ Info: VUMPS  42:	obj = -1.313897188128e+00	err = 4.8207732137e-08	time = 0.00 sec
+[ Info: VUMPS  43:	obj = -1.313897188128e+00	err = 4.1517659416e-08	time = 0.00 sec
+[ Info: VUMPS  44:	obj = -1.313897188128e+00	err = 3.5758057622e-08	time = 0.00 sec
+[ Info: VUMPS  45:	obj = -1.313897188128e+00	err = 3.0798846234e-08	time = 0.00 sec
+[ Info: VUMPS  46:	obj = -1.313897188128e+00	err = 2.6528340576e-08	time = 0.00 sec
+[ Info: VUMPS  47:	obj = -1.313897188128e+00	err = 2.2850593684e-08	time = 0.00 sec
+[ Info: VUMPS  48:	obj = -1.313897188128e+00	err = 1.9683124091e-08	time = 0.00 sec
+[ Info: VUMPS  49:	obj = -1.313897188128e+00	err = 1.6955000214e-08	time = 0.00 sec
+[ Info: VUMPS  50:	obj = -1.313897188128e+00	err = 1.4605181068e-08	time = 0.00 sec
+[ Info: VUMPS  51:	obj = -1.313897188128e+00	err = 1.2581148292e-08	time = 0.00 sec
+[ Info: VUMPS  52:	obj = -1.313897188128e+00	err = 1.0837699332e-08	time = 0.00 sec
+[ Info: VUMPS  53:	obj = -1.313897188128e+00	err = 9.3359059479e-09	time = 0.00 sec
+[ Info: VUMPS  54:	obj = -1.313897188128e+00	err = 8.0422567300e-09	time = 0.05 sec
+[ Info: VUMPS  55:	obj = -1.313897188128e+00	err = 6.9278895168e-09	time = 0.00 sec
+[ Info: VUMPS  56:	obj = -1.313897188128e+00	err = 5.9679518557e-09	time = 0.00 sec
+[ Info: VUMPS  57:	obj = -1.313897188128e+00	err = 5.1410344467e-09	time = 0.00 sec
+[ Info: VUMPS  58:	obj = -1.313897188128e+00	err = 4.4287024608e-09	time = 0.00 sec
+[ Info: VUMPS  59:	obj = -1.313897188128e+00	err = 3.8150746286e-09	time = 0.00 sec
+[ Info: VUMPS  60:	obj = -1.313897188128e+00	err = 3.2864727184e-09	time = 0.00 sec
+[ Info: VUMPS  61:	obj = -1.313897188128e+00	err = 2.8311143129e-09	time = 0.00 sec
+[ Info: VUMPS  62:	obj = -1.313897188128e+00	err = 2.4388495481e-09	time = 0.00 sec
+[ Info: VUMPS  63:	obj = -1.313897188128e+00	err = 2.1009358699e-09	time = 0.00 sec
+[ Info: VUMPS  64:	obj = -1.313897188128e+00	err = 1.8098424481e-09	time = 0.00 sec
+[ Info: VUMPS  65:	obj = -1.313897188128e+00	err = 1.5590816595e-09	time = 0.00 sec
+[ Info: VUMPS  66:	obj = -1.313897188128e+00	err = 1.3430650617e-09	time = 0.00 sec
+[ Info: VUMPS  67:	obj = -1.313897188128e+00	err = 1.1569785564e-09	time = 0.00 sec
+[ Info: VUMPS  68:	obj = -1.313897188128e+00	err = 9.9667512937e-10	time = 0.00 sec
+[ Info: VUMPS  69:	obj = -1.313897188128e+00	err = 8.5858243280e-10	time = 0.00 sec
+[ Info: VUMPS  70:	obj = -1.313897188128e+00	err = 7.3962291698e-10	time = 0.00 sec
+[ Info: VUMPS  71:	obj = -1.313897188128e+00	err = 6.3714574134e-10	time = 0.00 sec
+[ Info: VUMPS  72:	obj = -1.313897188128e+00	err = 5.4886716374e-10	time = 0.00 sec
+[ Info: VUMPS  73:	obj = -1.313897188128e+00	err = 4.7281983974e-10	time = 0.00 sec
+[ Info: VUMPS  74:	obj = -1.313897188128e+00	err = 4.0730913500e-10	time = 0.00 sec
+[ Info: VUMPS  75:	obj = -1.313897188128e+00	err = 3.5087511998e-10	time = 0.00 sec
+[ Info: VUMPS  76:	obj = -1.313897188128e+00	err = 3.0226033328e-10	time = 0.00 sec
+[ Info: VUMPS  77:	obj = -1.313897188128e+00	err = 2.6038119108e-10	time = 0.00 sec
+[ Info: VUMPS  78:	obj = -1.313897188128e+00	err = 2.2430457797e-10	time = 0.00 sec
+[ Info: VUMPS  79:	obj = -1.313897188128e+00	err = 1.9322647751e-10	time = 0.00 sec
+[ Info: VUMPS  80:	obj = -1.313897188128e+00	err = 1.6645427753e-10	time = 0.00 sec
+[ Info: VUMPS  81:	obj = -1.313897188128e+00	err = 1.4339150676e-10	time = 0.00 sec
+[ Info: VUMPS  82:	obj = -1.313897188128e+00	err = 1.2352416053e-10	time = 0.00 sec
+[ Info: VUMPS  83:	obj = -1.313897188128e+00	err = 1.0640943616e-10	time = 0.00 sec
+[ Info: VUMPS conv 84:	obj = -1.313897188128e+00	err = 9.1666122035e-11	time = 4.83 sec
+Correlation length: 12.952191565638271
+Ground state energy: -1.3138971881278776 + 6.220639010740897e-17im
+[ Info: Found excitations for momentum = 0.38
+[ Info: Found excitations for momentum = -0.38
+Incoming excitation energies at k = ±0.38: [0.7869692656307111; 0.7869692656072529;;]
+Exact free-fermion energy at these momenta: 0.786971340209536
+Excitation-energy differences from the exact value: [-2.0745788248399677e-6; -2.074602283075322e-6;;]
+Vacuum longitudinal magnetization: 6.820378289917865e-11
+Saved initial MPS at t = 0
+Completed step 1/800, t = 0.1, elapsed = 38.35 s
+Completed step 2/800, t = 0.2, elapsed = 47.44 s
+Completed step 3/800, t = 0.30000000000000004, elapsed = 56.33 s
+Completed step 4/800, t = 0.4, elapsed = 64.9 s
+Completed step 5/800, t = 0.5, elapsed = 73.27 s
+Completed step 6/800, t = 0.6000000000000001, elapsed = 82.14 s
+Completed step 7/800, t = 0.7000000000000001, elapsed = 90.49 s
+Completed step 8/800, t = 0.8, elapsed = 99.63 s
+Completed step 9/800, t = 0.9, elapsed = 108.7 s
+Completed step 10/800, t = 1.0, elapsed = 116.93 s
+Completed step 11/800, t = 1.1, elapsed = 125.89 s
+Completed step 12/800, t = 1.2000000000000002, elapsed = 134.27 s
+Completed step 13/800, t = 1.3, elapsed = 143.18 s
+Completed step 14/800, t = 1.4000000000000001, elapsed = 151.64 s
+Completed step 15/800, t = 1.5, elapsed = 159.9 s
+Completed step 16/800, t = 1.6, elapsed = 168.79 s
+Completed step 17/800, t = 1.7000000000000002, elapsed = 177.21 s
+Completed step 18/800, t = 1.8, elapsed = 186.08 s
+Completed step 19/800, t = 1.9000000000000001, elapsed = 194.47 s
+Completed step 20/800, t = 2.0, elapsed = 202.86 s
+Completed step 21/800, t = 2.1, elapsed = 211.8 s
+Completed step 22/800, t = 2.2, elapsed = 220.18 s
+Completed step 23/800, t = 2.3000000000000003, elapsed = 229.01 s
+Completed step 24/800, t = 2.4000000000000004, elapsed = 237.78 s
+Completed step 25/800, t = 2.5, elapsed = 246.12 s
+Completed step 26/800, t = 2.6, elapsed = 255.04 s
+Completed step 27/800, t = 2.7, elapsed = 263.45 s
+Completed step 28/800, t = 2.8000000000000003, elapsed = 272.23 s
+Completed step 29/800, t = 2.9000000000000004, elapsed = 280.7 s
+Completed step 30/800, t = 3.0, elapsed = 289.06 s
+Completed step 31/800, t = 3.1, elapsed = 298.0 s
+Completed step 32/800, t = 3.2, elapsed = 306.41 s
+Completed step 33/800, t = 3.3000000000000003, elapsed = 317.52 s
+Completed step 34/800, t = 3.4000000000000004, elapsed = 329.15 s
+Completed step 35/800, t = 3.5, elapsed = 337.56 s
+Completed step 36/800, t = 3.6, elapsed = 346.43 s
+Completed step 37/800, t = 3.7, elapsed = 354.94 s
+Completed step 38/800, t = 3.8000000000000003, elapsed = 364.0 s
+Completed step 39/800, t = 3.9000000000000004, elapsed = 372.78 s
+Completed step 40/800, t = 4.0, elapsed = 381.36 s
+Completed step 41/800, t = 4.1000000000000005, elapsed = 390.37 s
+Completed step 42/800, t = 4.2, elapsed = 398.95 s
+Completed step 43/800, t = 4.3, elapsed = 407.86 s
+Completed step 44/800, t = 4.4, elapsed = 416.37 s
+Completed step 45/800, t = 4.5, elapsed = 424.92 s
+Completed step 46/800, t = 4.6000000000000005, elapsed = 434.41 s
+Completed step 47/800, t = 4.7, elapsed = 443.41 s
+Completed step 48/800, t = 4.800000000000001, elapsed = 452.81 s
+Completed step 49/800, t = 4.9, elapsed = 461.83 s
+Completed step 50/800, t = 5.0, elapsed = 472.17 s
+Completed step 51/800, t = 5.1000000000000005, elapsed = 481.99 s
+Completed step 52/800, t = 5.2, elapsed = 491.24 s
+Completed step 53/800, t = 5.300000000000001, elapsed = 500.64 s
+Completed step 54/800, t = 5.4, elapsed = 509.46 s
+Completed step 55/800, t = 5.5, elapsed = 518.76 s
+Completed step 56/800, t = 5.6000000000000005, elapsed = 527.68 s
+Completed step 57/800, t = 5.7, elapsed = 536.64 s
+Completed step 58/800, t = 5.800000000000001, elapsed = 546.56 s
+Completed step 59/800, t = 5.9, elapsed = 556.24 s
+Completed step 60/800, t = 6.0, elapsed = 565.89 s
+Completed step 61/800, t = 6.1000000000000005, elapsed = 575.47 s
+Completed step 62/800, t = 6.2, elapsed = 584.99 s
+Completed step 63/800, t = 6.300000000000001, elapsed = 594.79 s
+Completed step 64/800, t = 6.4, elapsed = 604.13 s
+Completed step 65/800, t = 6.5, elapsed = 614.21 s
+Completed step 66/800, t = 6.6000000000000005, elapsed = 623.81 s
+Completed step 67/800, t = 6.7, elapsed = 633.25 s
+Completed step 68/800, t = 6.800000000000001, elapsed = 643.64 s
+Completed step 69/800, t = 6.9, elapsed = 653.17 s
+Completed step 70/800, t = 7.0, elapsed = 663.36 s
+Completed step 71/800, t = 7.1000000000000005, elapsed = 672.9 s
+Completed step 72/800, t = 7.2, elapsed = 682.17 s
+Completed step 73/800, t = 7.300000000000001, elapsed = 692.11 s
+Completed step 74/800, t = 7.4, elapsed = 701.55 s
+Completed step 75/800, t = 7.5, elapsed = 712.37 s
+Completed step 76/800, t = 7.6000000000000005, elapsed = 722.42 s
+Completed step 77/800, t = 7.7, elapsed = 731.92 s
+Completed step 78/800, t = 7.800000000000001, elapsed = 742.07 s
+Completed step 79/800, t = 7.9, elapsed = 751.62 s
+Completed step 80/800, t = 8.0, elapsed = 761.69 s
+Completed step 81/800, t = 8.1, elapsed = 771.38 s
+Completed step 82/800, t = 8.200000000000001, elapsed = 780.61 s
+Completed step 83/800, t = 8.3, elapsed = 790.64 s
+Completed step 84/800, t = 8.4, elapsed = 800.27 s
+Completed step 85/800, t = 8.5, elapsed = 810.18 s
+Completed step 86/800, t = 8.6, elapsed = 819.59 s
+Completed step 87/800, t = 8.700000000000001, elapsed = 828.95 s
+Completed step 88/800, t = 8.8, elapsed = 839.03 s
+Completed step 89/800, t = 8.9, elapsed = 848.95 s
+Completed step 90/800, t = 9.0, elapsed = 859.42 s
+Completed step 91/800, t = 9.1, elapsed = 869.08 s
+Completed step 92/800, t = 9.200000000000001, elapsed = 878.5 s
+Completed step 93/800, t = 9.3, elapsed = 888.27 s
+Completed step 94/800, t = 9.4, elapsed = 897.45 s
+Completed step 95/800, t = 9.5, elapsed = 907.13 s
+Completed step 96/800, t = 9.600000000000001, elapsed = 916.16 s
+Completed step 97/800, t = 9.700000000000001, elapsed = 925.54 s
+Completed step 98/800, t = 9.8, elapsed = 934.92 s
+Completed step 99/800, t = 9.9, elapsed = 944.06 s
+Completed step 100/800, t = 10.0, elapsed = 956.93 s
+Completed step 101/800, t = 10.100000000000001, elapsed = 965.89 s
+Completed step 102/800, t = 10.200000000000001, elapsed = 975.12 s
+Completed step 103/800, t = 10.3, elapsed = 984.09 s
+Completed step 104/800, t = 10.4, elapsed = 992.95 s
+Completed step 105/800, t = 10.5, elapsed = 1002.51 s
+Completed step 106/800, t = 10.600000000000001, elapsed = 1012.37 s
+Completed step 107/800, t = 10.700000000000001, elapsed = 1022.83 s
+Completed step 108/800, t = 10.8, elapsed = 1032.83 s
+Completed step 109/800, t = 10.9, elapsed = 1042.29 s
+Completed step 110/800, t = 11.0, elapsed = 1052.33 s
+Completed step 111/800, t = 11.100000000000001, elapsed = 1061.91 s
+Completed step 112/800, t = 11.200000000000001, elapsed = 1074.03 s
+Completed step 113/800, t = 11.3, elapsed = 1086.54 s
+Completed step 114/800, t = 11.4, elapsed = 1096.12 s
+Completed step 115/800, t = 11.5, elapsed = 1106.7 s
+Completed step 116/800, t = 11.600000000000001, elapsed = 1117.17 s
+Completed step 117/800, t = 11.700000000000001, elapsed = 1127.14 s
+Completed step 118/800, t = 11.8, elapsed = 1136.35 s
+Completed step 119/800, t = 11.9, elapsed = 1145.53 s
+Completed step 120/800, t = 12.0, elapsed = 1155.54 s
+Completed step 121/800, t = 12.100000000000001, elapsed = 1165.03 s
+Completed step 122/800, t = 12.200000000000001, elapsed = 1175.7 s
+Completed step 123/800, t = 12.3, elapsed = 1186.21 s
+Completed step 124/800, t = 12.4, elapsed = 1196.33 s
+Completed step 125/800, t = 12.5, elapsed = 1209.58 s
+Completed step 126/800, t = 12.600000000000001, elapsed = 1220.4 s
+Completed step 127/800, t = 12.700000000000001, elapsed = 1231.35 s
+Completed step 128/800, t = 12.8, elapsed = 1242.22 s
+Completed step 129/800, t = 12.9, elapsed = 1252.88 s
+Completed step 130/800, t = 13.0, elapsed = 1263.99 s
+Completed step 131/800, t = 13.100000000000001, elapsed = 1275.71 s
+Completed step 132/800, t = 13.200000000000001, elapsed = 1287.55 s
+Completed step 133/800, t = 13.3, elapsed = 1297.19 s
+Completed step 134/800, t = 13.4, elapsed = 1306.94 s
+Completed step 135/800, t = 13.5, elapsed = 1316.86 s
+Completed step 136/800, t = 13.600000000000001, elapsed = 1326.23 s
+Completed step 137/800, t = 13.700000000000001, elapsed = 1336.37 s
+Completed step 138/800, t = 13.8, elapsed = 1345.33 s
+Completed step 139/800, t = 13.9, elapsed = 1354.29 s
+Completed step 140/800, t = 14.0, elapsed = 1364.19 s
+Completed step 141/800, t = 14.100000000000001, elapsed = 1374.12 s
+Completed step 142/800, t = 14.200000000000001, elapsed = 1386.01 s
+Completed step 143/800, t = 14.3, elapsed = 1396.11 s
+Completed step 144/800, t = 14.4, elapsed = 1405.56 s
+Completed step 145/800, t = 14.5, elapsed = 1416.11 s
+Completed step 146/800, t = 14.600000000000001, elapsed = 1425.23 s
+Completed step 147/800, t = 14.700000000000001, elapsed = 1434.67 s
+Completed step 148/800, t = 14.8, elapsed = 1443.7 s
+Completed step 149/800, t = 14.9, elapsed = 1453.21 s
+Completed step 150/800, t = 15.0, elapsed = 1465.16 s
+Completed step 151/800, t = 15.100000000000001, elapsed = 1475.83 s
+Completed step 152/800, t = 15.200000000000001, elapsed = 1486.14 s
+Completed step 153/800, t = 15.3, elapsed = 1495.62 s
+Completed step 154/800, t = 15.4, elapsed = 1504.93 s
+Completed step 155/800, t = 15.5, elapsed = 1514.79 s
+Completed step 156/800, t = 15.600000000000001, elapsed = 1523.63 s
+Completed step 157/800, t = 15.700000000000001, elapsed = 1532.83 s
+Completed step 158/800, t = 15.8, elapsed = 1541.85 s
+Completed step 159/800, t = 15.9, elapsed = 1550.64 s
+Completed step 160/800, t = 16.0, elapsed = 1559.67 s
+Completed step 161/800, t = 16.1, elapsed = 1568.71 s
+Completed step 162/800, t = 16.2, elapsed = 1578.81 s
+Completed step 163/800, t = 16.3, elapsed = 1589.03 s
+Completed step 164/800, t = 16.400000000000002, elapsed = 1598.71 s
+Completed step 165/800, t = 16.5, elapsed = 1608.93 s
+Completed step 166/800, t = 16.6, elapsed = 1618.11 s
+Completed step 167/800, t = 16.7, elapsed = 1627.62 s
+Completed step 168/800, t = 16.8, elapsed = 1636.63 s
+Completed step 169/800, t = 16.900000000000002, elapsed = 1645.57 s
+Completed step 170/800, t = 17.0, elapsed = 1655.09 s
+Completed step 171/800, t = 17.1, elapsed = 1664.08 s
+Completed step 172/800, t = 17.2, elapsed = 1673.3 s
+Completed step 173/800, t = 17.3, elapsed = 1682.07 s
+Completed step 174/800, t = 17.400000000000002, elapsed = 1690.82 s
+Completed step 175/800, t = 17.5, elapsed = 1700.06 s
+Completed step 176/800, t = 17.6, elapsed = 1708.81 s
+Completed step 177/800, t = 17.7, elapsed = 1718.05 s
+Completed step 178/800, t = 17.8, elapsed = 1726.82 s
+Completed step 179/800, t = 17.900000000000002, elapsed = 1735.55 s
+Completed step 180/800, t = 18.0, elapsed = 1744.82 s
+Completed step 181/800, t = 18.1, elapsed = 1753.61 s
+Completed step 182/800, t = 18.2, elapsed = 1762.8 s
+Completed step 183/800, t = 18.3, elapsed = 1771.65 s
+Completed step 184/800, t = 18.400000000000002, elapsed = 1780.35 s
+Completed step 185/800, t = 18.5, elapsed = 1789.55 s
+Completed step 186/800, t = 18.6, elapsed = 1798.23 s
+Completed step 187/800, t = 18.7, elapsed = 1807.36 s
+Completed step 188/800, t = 18.8, elapsed = 1816.06 s
+Completed step 189/800, t = 18.900000000000002, elapsed = 1824.89 s
+Completed step 190/800, t = 19.0, elapsed = 1833.89 s
+Completed step 191/800, t = 19.1, elapsed = 1842.55 s
+Completed step 192/800, t = 19.200000000000003, elapsed = 1851.73 s
+Completed step 193/800, t = 19.3, elapsed = 1860.46 s
+Completed step 194/800, t = 19.400000000000002, elapsed = 1869.62 s
+Completed step 195/800, t = 19.5, elapsed = 1878.4 s
+Completed step 196/800, t = 19.6, elapsed = 1887.06 s
+Completed step 197/800, t = 19.700000000000003, elapsed = 1896.2 s
+Completed step 198/800, t = 19.8, elapsed = 1904.9 s
+Completed step 199/800, t = 19.900000000000002, elapsed = 1914.03 s
+Completed step 200/800, t = 20.0, elapsed = 1925.97 s
+Completed step 201/800, t = 20.1, elapsed = 1934.53 s
+Completed step 202/800, t = 20.200000000000003, elapsed = 1943.67 s
+Completed step 203/800, t = 20.3, elapsed = 1952.34 s
+Completed step 204/800, t = 20.400000000000002, elapsed = 1961.48 s
+Completed step 205/800, t = 20.5, elapsed = 1970.06 s
+Completed step 206/800, t = 20.6, elapsed = 1978.47 s
+Completed step 207/800, t = 20.700000000000003, elapsed = 1987.41 s
+Completed step 208/800, t = 20.8, elapsed = 1995.9 s
+Completed step 209/800, t = 20.900000000000002, elapsed = 2004.87 s
+Completed step 210/800, t = 21.0, elapsed = 2013.33 s
+Completed step 211/800, t = 21.1, elapsed = 2021.73 s
+Completed step 212/800, t = 21.200000000000003, elapsed = 2030.69 s
+Completed step 213/800, t = 21.3, elapsed = 2039.16 s
+Completed step 214/800, t = 21.400000000000002, elapsed = 2048.06 s
+Completed step 215/800, t = 21.5, elapsed = 2056.53 s
+Completed step 216/800, t = 21.6, elapsed = 2064.93 s
+Completed step 217/800, t = 21.700000000000003, elapsed = 2073.84 s
+Completed step 218/800, t = 21.8, elapsed = 2082.3 s
+Completed step 219/800, t = 21.900000000000002, elapsed = 2091.19 s
+Completed step 220/800, t = 22.0, elapsed = 2099.69 s
+Completed step 221/800, t = 22.1, elapsed = 2108.06 s
+Completed step 222/800, t = 22.200000000000003, elapsed = 2117.01 s
+Completed step 223/800, t = 22.3, elapsed = 2125.46 s
+Completed step 224/800, t = 22.400000000000002, elapsed = 2134.34 s
+Completed step 225/800, t = 22.5, elapsed = 2142.81 s
+Completed step 226/800, t = 22.6, elapsed = 2151.18 s
+Completed step 227/800, t = 22.700000000000003, elapsed = 2160.07 s
+Completed step 228/800, t = 22.8, elapsed = 2168.52 s
+Completed step 229/800, t = 22.900000000000002, elapsed = 2177.39 s
+Completed step 230/800, t = 23.0, elapsed = 2185.88 s
+Completed step 231/800, t = 23.1, elapsed = 2194.26 s
+Completed step 232/800, t = 23.200000000000003, elapsed = 2203.15 s
+Completed step 233/800, t = 23.3, elapsed = 2211.6 s
+Completed step 234/800, t = 23.400000000000002, elapsed = 2220.48 s
+Completed step 235/800, t = 23.5, elapsed = 2228.93 s
+Completed step 236/800, t = 23.6, elapsed = 2237.29 s
+Completed step 237/800, t = 23.700000000000003, elapsed = 2246.2 s
+Completed step 238/800, t = 23.8, elapsed = 2254.63 s
+Completed step 239/800, t = 23.900000000000002, elapsed = 2263.52 s
+Completed step 240/800, t = 24.0, elapsed = 2271.98 s
+Completed step 241/800, t = 24.1, elapsed = 2280.36 s
+Completed step 242/800, t = 24.200000000000003, elapsed = 2289.59 s
+Completed step 243/800, t = 24.3, elapsed = 2298.54 s
+Completed step 244/800, t = 24.400000000000002, elapsed = 2307.69 s
+Completed step 245/800, t = 24.5, elapsed = 2316.37 s
+Completed step 246/800, t = 24.6, elapsed = 2324.95 s
+Completed step 247/800, t = 24.700000000000003, elapsed = 2334.31 s
+Completed step 248/800, t = 24.8, elapsed = 2343.11 s
+Completed step 249/800, t = 24.900000000000002, elapsed = 2352.3 s
+Completed step 250/800, t = 25.0, elapsed = 2361.66 s
+Completed step 251/800, t = 25.1, elapsed = 2370.31 s
+Completed step 252/800, t = 25.200000000000003, elapsed = 2379.75 s
+Completed step 253/800, t = 25.3, elapsed = 2388.61 s
+Completed step 254/800, t = 25.400000000000002, elapsed = 2397.87 s
+Completed step 255/800, t = 25.5, elapsed = 2406.73 s
+Completed step 256/800, t = 25.6, elapsed = 2415.56 s
+Completed step 257/800, t = 25.700000000000003, elapsed = 2424.8 s
+Completed step 258/800, t = 25.8, elapsed = 2433.51 s
+Completed step 259/800, t = 25.900000000000002, elapsed = 2442.69 s
+Completed step 260/800, t = 26.0, elapsed = 2451.45 s
+Completed step 261/800, t = 26.1, elapsed = 2460.14 s
+Completed step 262/800, t = 26.200000000000003, elapsed = 2469.39 s
+Completed step 263/800, t = 26.3, elapsed = 2478.18 s
+Completed step 264/800, t = 26.400000000000002, elapsed = 2487.68 s
+Completed step 265/800, t = 26.5, elapsed = 2496.66 s
+Completed step 266/800, t = 26.6, elapsed = 2505.55 s
+Completed step 267/800, t = 26.700000000000003, elapsed = 2514.8 s
+Completed step 268/800, t = 26.8, elapsed = 2524.11 s
+Completed step 269/800, t = 26.900000000000002, elapsed = 2533.34 s
+Completed step 270/800, t = 27.0, elapsed = 2542.39 s
+Completed step 271/800, t = 27.1, elapsed = 2551.16 s
+Completed step 272/800, t = 27.200000000000003, elapsed = 2560.57 s
+Completed step 273/800, t = 27.3, elapsed = 2569.96 s
+Completed step 274/800, t = 27.400000000000002, elapsed = 2579.84 s
+Completed step 275/800, t = 27.5, elapsed = 2589.02 s
+Completed step 276/800, t = 27.6, elapsed = 2598.05 s
+Completed step 277/800, t = 27.700000000000003, elapsed = 2607.92 s
+Completed step 278/800, t = 27.8, elapsed = 2617.14 s
+Completed step 279/800, t = 27.900000000000002, elapsed = 2626.75 s
+Completed step 280/800, t = 28.0, elapsed = 2635.93 s
+Completed step 281/800, t = 28.1, elapsed = 2645.0 s
+Completed step 282/800, t = 28.200000000000003, elapsed = 2654.69 s
+Completed step 283/800, t = 28.3, elapsed = 2663.95 s
+Completed step 284/800, t = 28.400000000000002, elapsed = 2673.6 s
+Completed step 285/800, t = 28.5, elapsed = 2682.72 s
+Completed step 286/800, t = 28.6, elapsed = 2691.73 s
+Completed step 287/800, t = 28.700000000000003, elapsed = 2701.38 s
+Completed step 288/800, t = 28.8, elapsed = 2710.56 s
+Completed step 289/800, t = 28.900000000000002, elapsed = 2720.19 s
+Completed step 290/800, t = 29.0, elapsed = 2729.34 s
+Completed step 291/800, t = 29.1, elapsed = 2738.33 s
+Completed step 292/800, t = 29.200000000000003, elapsed = 2747.89 s
+Completed step 293/800, t = 29.3, elapsed = 2756.94 s
+Completed step 294/800, t = 29.400000000000002, elapsed = 2766.44 s
+Completed step 295/800, t = 29.5, elapsed = 2775.5 s
+Completed step 296/800, t = 29.6, elapsed = 2784.46 s
+Completed step 297/800, t = 29.700000000000003, elapsed = 2794.0 s
+Completed step 298/800, t = 29.8, elapsed = 2802.98 s
+Completed step 299/800, t = 29.900000000000002, elapsed = 2812.2 s
+Completed step 300/800, t = 30.0, elapsed = 2824.53 s
+Completed step 301/800, t = 30.1, elapsed = 2833.19 s
+Completed step 302/800, t = 30.200000000000003, elapsed = 2842.41 s
+Completed step 303/800, t = 30.3, elapsed = 2851.15 s
+Completed step 304/800, t = 30.400000000000002, elapsed = 2860.33 s
+Completed step 305/800, t = 30.5, elapsed = 2869.1 s
+Completed step 306/800, t = 30.6, elapsed = 2877.8 s
+Completed step 307/800, t = 30.700000000000003, elapsed = 2886.94 s
+Completed step 308/800, t = 30.8, elapsed = 2895.5 s
+Completed step 309/800, t = 30.900000000000002, elapsed = 2904.46 s
+Completed step 310/800, t = 31.0, elapsed = 2912.97 s
+Completed step 311/800, t = 31.1, elapsed = 2921.36 s
+Completed step 312/800, t = 31.200000000000003, elapsed = 2930.28 s
+Completed step 313/800, t = 31.3, elapsed = 2938.74 s
+Completed step 314/800, t = 31.400000000000002, elapsed = 2947.62 s
+Completed step 315/800, t = 31.5, elapsed = 2956.27 s
+Completed step 316/800, t = 31.6, elapsed = 2965.49 s
+Completed step 317/800, t = 31.700000000000003, elapsed = 2976.38 s
+Completed step 318/800, t = 31.8, elapsed = 2986.4 s
+Completed step 319/800, t = 31.900000000000002, elapsed = 2996.54 s
+Completed step 320/800, t = 32.0, elapsed = 3005.68 s
+Completed step 321/800, t = 32.1, elapsed = 3014.68 s
+Completed step 322/800, t = 32.2, elapsed = 3024.27 s
+Completed step 323/800, t = 32.300000000000004, elapsed = 3033.29 s
+Completed step 324/800, t = 32.4, elapsed = 3042.73 s
+Completed step 325/800, t = 32.5, elapsed = 3051.71 s
+Completed step 326/800, t = 32.6, elapsed = 3060.53 s
+Completed step 327/800, t = 32.7, elapsed = 3069.92 s
+Completed step 328/800, t = 32.800000000000004, elapsed = 3078.9 s
+Completed step 329/800, t = 32.9, elapsed = 3088.4 s
+Completed step 330/800, t = 33.0, elapsed = 3097.38 s
+Completed step 331/800, t = 33.1, elapsed = 3106.65 s
+Completed step 332/800, t = 33.2, elapsed = 3115.73 s
+Completed step 333/800, t = 33.300000000000004, elapsed = 3124.73 s
+Completed step 334/800, t = 33.4, elapsed = 3133.95 s
+Completed step 335/800, t = 33.5, elapsed = 3142.68 s
+Completed step 336/800, t = 33.6, elapsed = 3151.88 s
+Completed step 337/800, t = 33.7, elapsed = 3160.61 s
+Completed step 338/800, t = 33.800000000000004, elapsed = 3169.23 s
+Completed step 339/800, t = 33.9, elapsed = 3178.41 s
+Completed step 340/800, t = 34.0, elapsed = 3187.13 s
+Completed step 341/800, t = 34.1, elapsed = 3196.34 s
+Completed step 342/800, t = 34.2, elapsed = 3205.11 s
+Completed step 343/800, t = 34.300000000000004, elapsed = 3213.74 s
+Completed step 344/800, t = 34.4, elapsed = 3222.98 s
+Completed step 345/800, t = 34.5, elapsed = 3231.63 s
+Completed step 346/800, t = 34.6, elapsed = 3240.71 s
+Completed step 347/800, t = 34.7, elapsed = 3249.39 s
+Completed step 348/800, t = 34.800000000000004, elapsed = 3257.97 s
+Completed step 349/800, t = 34.9, elapsed = 3267.16 s
+Completed step 350/800, t = 35.0, elapsed = 3276.46 s
+Completed step 351/800, t = 35.1, elapsed = 3285.66 s
+Completed step 352/800, t = 35.2, elapsed = 3294.41 s
+Completed step 353/800, t = 35.300000000000004, elapsed = 3303.06 s
+Completed step 354/800, t = 35.4, elapsed = 3313.31 s
+Completed step 355/800, t = 35.5, elapsed = 3321.99 s
+Completed step 356/800, t = 35.6, elapsed = 3330.79 s
+Completed step 357/800, t = 35.7, elapsed = 3339.09 s
+Completed step 358/800, t = 35.800000000000004, elapsed = 3347.31 s
+Completed step 359/800, t = 35.9, elapsed = 3356.08 s
+Completed step 360/800, t = 36.0, elapsed = 3367.04 s
+Completed step 361/800, t = 36.1, elapsed = 3375.78 s
+Completed step 362/800, t = 36.2, elapsed = 3384.14 s
+Completed step 363/800, t = 36.300000000000004, elapsed = 3392.37 s
+Completed step 364/800, t = 36.4, elapsed = 3401.12 s
+Completed step 365/800, t = 36.5, elapsed = 3409.4 s
+Completed step 366/800, t = 36.6, elapsed = 3418.12 s
+Completed step 367/800, t = 36.7, elapsed = 3426.43 s
+Completed step 368/800, t = 36.800000000000004, elapsed = 3438.14 s
+Completed step 369/800, t = 36.9, elapsed = 3446.86 s
+Completed step 370/800, t = 37.0, elapsed = 3455.12 s
+Completed step 371/800, t = 37.1, elapsed = 3463.85 s
+Completed step 372/800, t = 37.2, elapsed = 3472.11 s
+Completed step 373/800, t = 37.300000000000004, elapsed = 3480.22 s
+Completed step 374/800, t = 37.4, elapsed = 3492.63 s
+Completed step 375/800, t = 37.5, elapsed = 3500.82 s
+Completed step 376/800, t = 37.6, elapsed = 3509.51 s
+Completed step 377/800, t = 37.7, elapsed = 3517.96 s
+Completed step 378/800, t = 37.800000000000004, elapsed = 3530.37 s
+Completed step 379/800, t = 37.9, elapsed = 3539.65 s
+Completed step 380/800, t = 38.0, elapsed = 3548.56 s
+Completed step 381/800, t = 38.1, elapsed = 3557.76 s
+Completed step 382/800, t = 38.2, elapsed = 3566.97 s
+Completed step 383/800, t = 38.300000000000004, elapsed = 3576.46 s
+Completed step 384/800, t = 38.400000000000006, elapsed = 3586.54 s
+Completed step 385/800, t = 38.5, elapsed = 3595.07 s
+Completed step 386/800, t = 38.6, elapsed = 3604.23 s
+Completed step 387/800, t = 38.7, elapsed = 3612.86 s
+Completed step 388/800, t = 38.800000000000004, elapsed = 3621.28 s
+Completed step 389/800, t = 38.900000000000006, elapsed = 3630.22 s
+Completed step 390/800, t = 39.0, elapsed = 3638.38 s
+Completed step 391/800, t = 39.1, elapsed = 3647.01 s
+Completed step 392/800, t = 39.2, elapsed = 3655.18 s
+Completed step 393/800, t = 39.300000000000004, elapsed = 3663.27 s
+Completed step 394/800, t = 39.400000000000006, elapsed = 3671.9 s
+Completed step 395/800, t = 39.5, elapsed = 3680.09 s
+Completed step 396/800, t = 39.6, elapsed = 3688.74 s
+Completed step 397/800, t = 39.7, elapsed = 3696.94 s
+Completed step 398/800, t = 39.800000000000004, elapsed = 3705.03 s
+Completed step 399/800, t = 39.900000000000006, elapsed = 3713.67 s
+Completed step 400/800, t = 40.0, elapsed = 3725.1 s
+Completed step 401/800, t = 40.1, elapsed = 3733.7 s
+Completed step 402/800, t = 40.2, elapsed = 3741.85 s
+Completed step 403/800, t = 40.300000000000004, elapsed = 3749.91 s
+Completed step 404/800, t = 40.400000000000006, elapsed = 3758.56 s
+Completed step 405/800, t = 40.5, elapsed = 3766.69 s
+Completed step 406/800, t = 40.6, elapsed = 3775.32 s
+Completed step 407/800, t = 40.7, elapsed = 3783.52 s
+Completed step 408/800, t = 40.800000000000004, elapsed = 3791.62 s
+Completed step 409/800, t = 40.900000000000006, elapsed = 3800.28 s
+Completed step 410/800, t = 41.0, elapsed = 3808.44 s
+Completed step 411/800, t = 41.1, elapsed = 3817.04 s
+Completed step 412/800, t = 41.2, elapsed = 3825.2 s
+Completed step 413/800, t = 41.300000000000004, elapsed = 3833.29 s
+Completed step 414/800, t = 41.400000000000006, elapsed = 3841.95 s
+Completed step 415/800, t = 41.5, elapsed = 3850.1 s
+Completed step 416/800, t = 41.6, elapsed = 3858.7 s
+Completed step 417/800, t = 41.7, elapsed = 3866.86 s
+Completed step 418/800, t = 41.800000000000004, elapsed = 3874.91 s
+Completed step 419/800, t = 41.900000000000006, elapsed = 3883.49 s
+Completed step 420/800, t = 42.0, elapsed = 3891.66 s
+Completed step 421/800, t = 42.1, elapsed = 3900.3 s
+Completed step 422/800, t = 42.2, elapsed = 3908.52 s
+Completed step 423/800, t = 42.300000000000004, elapsed = 3916.63 s
+Completed step 424/800, t = 42.400000000000006, elapsed = 3925.27 s
+Completed step 425/800, t = 42.5, elapsed = 3933.43 s
+Completed step 426/800, t = 42.6, elapsed = 3942.04 s
+Completed step 427/800, t = 42.7, elapsed = 3950.23 s
+Completed step 428/800, t = 42.800000000000004, elapsed = 3958.33 s
+Completed step 429/800, t = 42.900000000000006, elapsed = 3966.98 s
+Completed step 430/800, t = 43.0, elapsed = 3975.15 s
+Completed step 431/800, t = 43.1, elapsed = 3983.77 s
+Completed step 432/800, t = 43.2, elapsed = 3991.95 s
+Completed step 433/800, t = 43.300000000000004, elapsed = 4000.02 s
+Completed step 434/800, t = 43.400000000000006, elapsed = 4008.64 s
+Completed step 435/800, t = 43.5, elapsed = 4016.8 s
+Completed step 436/800, t = 43.6, elapsed = 4025.38 s
+Completed step 437/800, t = 43.7, elapsed = 4033.58 s
+Completed step 438/800, t = 43.800000000000004, elapsed = 4041.66 s
+Completed step 439/800, t = 43.900000000000006, elapsed = 4050.3 s
+Completed step 440/800, t = 44.0, elapsed = 4058.47 s
+Completed step 441/800, t = 44.1, elapsed = 4067.07 s
+Completed step 442/800, t = 44.2, elapsed = 4075.27 s
+Completed step 443/800, t = 44.300000000000004, elapsed = 4083.35 s
+Completed step 444/800, t = 44.400000000000006, elapsed = 4091.99 s
+Completed step 445/800, t = 44.5, elapsed = 4100.18 s
+Completed step 446/800, t = 44.6, elapsed = 4108.79 s
+Completed step 447/800, t = 44.7, elapsed = 4116.95 s
+Completed step 448/800, t = 44.800000000000004, elapsed = 4125.04 s
+Completed step 449/800, t = 44.900000000000006, elapsed = 4133.68 s
+Completed step 450/800, t = 45.0, elapsed = 4142.56 s
+Completed step 451/800, t = 45.1, elapsed = 4151.16 s
+Completed step 452/800, t = 45.2, elapsed = 4159.38 s
+Completed step 453/800, t = 45.300000000000004, elapsed = 4167.47 s
+Completed step 454/800, t = 45.400000000000006, elapsed = 4176.09 s
+Completed step 455/800, t = 45.5, elapsed = 4184.33 s
+Completed step 456/800, t = 45.6, elapsed = 4192.92 s
+Completed step 457/800, t = 45.7, elapsed = 4201.1 s
+Completed step 458/800, t = 45.800000000000004, elapsed = 4209.6 s
+Completed step 459/800, t = 45.900000000000006, elapsed = 4217.77 s
+Completed step 460/800, t = 46.0, elapsed = 4225.91 s
+Completed step 461/800, t = 46.1, elapsed = 4234.52 s
+Completed step 462/800, t = 46.2, elapsed = 4242.65 s
+Completed step 463/800, t = 46.300000000000004, elapsed = 4251.13 s
+Completed step 464/800, t = 46.400000000000006, elapsed = 4259.35 s
+Completed step 465/800, t = 46.5, elapsed = 4267.47 s
+Completed step 466/800, t = 46.6, elapsed = 4276.06 s
+Completed step 467/800, t = 46.7, elapsed = 4284.24 s
+Completed step 468/800, t = 46.800000000000004, elapsed = 4292.79 s
+Completed step 469/800, t = 46.900000000000006, elapsed = 4300.96 s
+Completed step 470/800, t = 47.0, elapsed = 4309.02 s
+Completed step 471/800, t = 47.1, elapsed = 4317.63 s
+Completed step 472/800, t = 47.2, elapsed = 4325.77 s
+Completed step 473/800, t = 47.300000000000004, elapsed = 4334.38 s
+Completed step 474/800, t = 47.400000000000006, elapsed = 4342.56 s
+Completed step 475/800, t = 47.5, elapsed = 4350.65 s
+Completed step 476/800, t = 47.6, elapsed = 4359.28 s
+Completed step 477/800, t = 47.7, elapsed = 4367.43 s
+Completed step 478/800, t = 47.800000000000004, elapsed = 4376.02 s
+Completed step 479/800, t = 47.900000000000006, elapsed = 4384.24 s
+Completed step 480/800, t = 48.0, elapsed = 4392.31 s
+Completed step 481/800, t = 48.1, elapsed = 4400.99 s
+Completed step 482/800, t = 48.2, elapsed = 4409.15 s
+Completed step 483/800, t = 48.300000000000004, elapsed = 4417.78 s
+Completed step 484/800, t = 48.400000000000006, elapsed = 4425.94 s
+Completed step 485/800, t = 48.5, elapsed = 4434.02 s
+Completed step 486/800, t = 48.6, elapsed = 4442.68 s
+Completed step 487/800, t = 48.7, elapsed = 4450.82 s
+Completed step 488/800, t = 48.800000000000004, elapsed = 4459.38 s
+Completed step 489/800, t = 48.900000000000006, elapsed = 4467.57 s
+Completed step 490/800, t = 49.0, elapsed = 4475.63 s
+Completed step 491/800, t = 49.1, elapsed = 4484.37 s
+Completed step 492/800, t = 49.2, elapsed = 4492.59 s
+Completed step 493/800, t = 49.300000000000004, elapsed = 4501.22 s
+Completed step 494/800, t = 49.400000000000006, elapsed = 4509.4 s
+Completed step 495/800, t = 49.5, elapsed = 4517.87 s
+Completed step 496/800, t = 49.6, elapsed = 4526.14 s
+Completed step 497/800, t = 49.7, elapsed = 4534.31 s
+Completed step 498/800, t = 49.800000000000004, elapsed = 4542.93 s
+Completed step 499/800, t = 49.900000000000006, elapsed = 4551.12 s
+Completed step 500/800, t = 50.0, elapsed = 4562.69 s
+Completed step 501/800, t = 50.1, elapsed = 4570.91 s
+Completed step 502/800, t = 50.2, elapsed = 4579.02 s
+Completed step 503/800, t = 50.300000000000004, elapsed = 4587.68 s
+Completed step 504/800, t = 50.400000000000006, elapsed = 4595.83 s
+Completed step 505/800, t = 50.5, elapsed = 4604.42 s
+Completed step 506/800, t = 50.6, elapsed = 4612.59 s
+Completed step 507/800, t = 50.7, elapsed = 4620.7 s
+Completed step 508/800, t = 50.800000000000004, elapsed = 4629.36 s
+Completed step 509/800, t = 50.900000000000006, elapsed = 4637.55 s
+Completed step 510/800, t = 51.0, elapsed = 4646.19 s
+Completed step 511/800, t = 51.1, elapsed = 4654.35 s
+Completed step 512/800, t = 51.2, elapsed = 4662.47 s
+Completed step 513/800, t = 51.300000000000004, elapsed = 4671.12 s
+Completed step 514/800, t = 51.400000000000006, elapsed = 4679.32 s
+Completed step 515/800, t = 51.5, elapsed = 4687.95 s
+Completed step 516/800, t = 51.6, elapsed = 4696.15 s
+Completed step 517/800, t = 51.7, elapsed = 4704.27 s
+Completed step 518/800, t = 51.800000000000004, elapsed = 4712.93 s
+Completed step 519/800, t = 51.900000000000006, elapsed = 4721.15 s
+Completed step 520/800, t = 52.0, elapsed = 4729.7 s
+Completed step 521/800, t = 52.1, elapsed = 4737.88 s
+Completed step 522/800, t = 52.2, elapsed = 4745.97 s
+Completed step 523/800, t = 52.300000000000004, elapsed = 4754.62 s
+Completed step 524/800, t = 52.400000000000006, elapsed = 4762.83 s
+Completed step 525/800, t = 52.5, elapsed = 4771.47 s
+Completed step 526/800, t = 52.6, elapsed = 4779.69 s
+Completed step 527/800, t = 52.7, elapsed = 4787.83 s
+Completed step 528/800, t = 52.800000000000004, elapsed = 4796.5 s
+Completed step 529/800, t = 52.900000000000006, elapsed = 4804.7 s
+Completed step 530/800, t = 53.0, elapsed = 4813.3 s
+Completed step 531/800, t = 53.1, elapsed = 4821.5 s
+Completed step 532/800, t = 53.2, elapsed = 4829.62 s
+Completed step 533/800, t = 53.300000000000004, elapsed = 4838.25 s
+Completed step 534/800, t = 53.400000000000006, elapsed = 4846.42 s
+Completed step 535/800, t = 53.5, elapsed = 4855.02 s
+Completed step 536/800, t = 53.6, elapsed = 4863.22 s
+Completed step 537/800, t = 53.7, elapsed = 4871.34 s
+Completed step 538/800, t = 53.800000000000004, elapsed = 4879.98 s
+Completed step 539/800, t = 53.900000000000006, elapsed = 4888.19 s
+Completed step 540/800, t = 54.0, elapsed = 4896.8 s
+Completed step 541/800, t = 54.1, elapsed = 4904.97 s
+Completed step 542/800, t = 54.2, elapsed = 4913.06 s
+Completed step 543/800, t = 54.300000000000004, elapsed = 4921.71 s
+Completed step 544/800, t = 54.400000000000006, elapsed = 4929.89 s
+Completed step 545/800, t = 54.5, elapsed = 4938.48 s
+Completed step 546/800, t = 54.6, elapsed = 4946.71 s
+Completed step 547/800, t = 54.7, elapsed = 4954.86 s
+Completed step 548/800, t = 54.800000000000004, elapsed = 4963.51 s
+Completed step 549/800, t = 54.900000000000006, elapsed = 4971.68 s
+Completed step 550/800, t = 55.0, elapsed = 4981.05 s
+Completed step 551/800, t = 55.1, elapsed = 4989.26 s
+Completed step 552/800, t = 55.2, elapsed = 4997.39 s
+Completed step 553/800, t = 55.300000000000004, elapsed = 5006.02 s
+Completed step 554/800, t = 55.400000000000006, elapsed = 5014.2 s
+Completed step 555/800, t = 55.5, elapsed = 5022.78 s
+Completed step 556/800, t = 55.6, elapsed = 5031.0 s
+Completed step 557/800, t = 55.7, elapsed = 5039.12 s
+Completed step 558/800, t = 55.800000000000004, elapsed = 5048.25 s
+Completed step 559/800, t = 55.900000000000006, elapsed = 5058.07 s
+Completed step 560/800, t = 56.0, elapsed = 5068.41 s
+Completed step 561/800, t = 56.1, elapsed = 5077.35 s
+Completed step 562/800, t = 56.2, elapsed = 5086.0 s
+Completed step 563/800, t = 56.300000000000004, elapsed = 5095.32 s
+Completed step 564/800, t = 56.400000000000006, elapsed = 5104.25 s
+Completed step 565/800, t = 56.5, elapsed = 5113.79 s
+Completed step 566/800, t = 56.6, elapsed = 5122.49 s
+Completed step 567/800, t = 56.7, elapsed = 5131.14 s
+Completed step 568/800, t = 56.800000000000004, elapsed = 5140.29 s
+Completed step 569/800, t = 56.900000000000006, elapsed = 5149.04 s
+Completed step 570/800, t = 57.0, elapsed = 5158.17 s
+Completed step 571/800, t = 57.1, elapsed = 5166.88 s
+Completed step 572/800, t = 57.2, elapsed = 5175.53 s
+Completed step 573/800, t = 57.300000000000004, elapsed = 5184.82 s
+Completed step 574/800, t = 57.400000000000006, elapsed = 5193.68 s
+Completed step 575/800, t = 57.5, elapsed = 5203.23 s
+Completed step 576/800, t = 57.6, elapsed = 5212.58 s
+Completed step 577/800, t = 57.7, elapsed = 5221.94 s
+Completed step 578/800, t = 57.800000000000004, elapsed = 5231.89 s
+Completed step 579/800, t = 57.900000000000006, elapsed = 5241.57 s
+Completed step 580/800, t = 58.0, elapsed = 5251.68 s
+Completed step 581/800, t = 58.1, elapsed = 5261.19 s
+Completed step 582/800, t = 58.2, elapsed = 5270.41 s
+Completed step 583/800, t = 58.300000000000004, elapsed = 5280.09 s
+Completed step 584/800, t = 58.400000000000006, elapsed = 5289.87 s
+Completed step 585/800, t = 58.5, elapsed = 5300.21 s
+Completed step 586/800, t = 58.6, elapsed = 5309.09 s
+Completed step 587/800, t = 58.7, elapsed = 5317.5 s
+Completed step 588/800, t = 58.800000000000004, elapsed = 5326.83 s
+Completed step 589/800, t = 58.900000000000006, elapsed = 5336.01 s
+Completed step 590/800, t = 59.0, elapsed = 5345.6 s
+Completed step 591/800, t = 59.1, elapsed = 5354.53 s
+Completed step 592/800, t = 59.2, elapsed = 5363.56 s
+Completed step 593/800, t = 59.300000000000004, elapsed = 5373.08 s
+Completed step 594/800, t = 59.400000000000006, elapsed = 5381.72 s
+Completed step 595/800, t = 59.5, elapsed = 5390.56 s
+Completed step 596/800, t = 59.6, elapsed = 5398.9 s
+Completed step 597/800, t = 59.7, elapsed = 5407.15 s
+Completed step 598/800, t = 59.800000000000004, elapsed = 5415.92 s
+Completed step 599/800, t = 59.900000000000006, elapsed = 5424.24 s
+Completed step 600/800, t = 60.0, elapsed = 5433.49 s
+Completed step 601/800, t = 60.1, elapsed = 5441.68 s
+Completed step 602/800, t = 60.2, elapsed = 5449.84 s
+Completed step 603/800, t = 60.300000000000004, elapsed = 5458.5 s
+Completed step 604/800, t = 60.400000000000006, elapsed = 5466.81 s
+Completed step 605/800, t = 60.5, elapsed = 5475.43 s
+Completed step 606/800, t = 60.6, elapsed = 5483.66 s
+Completed step 607/800, t = 60.7, elapsed = 5491.87 s
+Completed step 608/800, t = 60.800000000000004, elapsed = 5500.58 s
+Completed step 609/800, t = 60.900000000000006, elapsed = 5508.84 s
+Completed step 610/800, t = 61.0, elapsed = 5517.51 s
+Completed step 611/800, t = 61.1, elapsed = 5525.78 s
+Completed step 612/800, t = 61.2, elapsed = 5533.95 s
+Completed step 613/800, t = 61.300000000000004, elapsed = 5542.6 s
+Completed step 614/800, t = 61.400000000000006, elapsed = 5550.86 s
+Completed step 615/800, t = 61.5, elapsed = 5559.49 s
+Completed step 616/800, t = 61.6, elapsed = 5567.73 s
+Completed step 617/800, t = 61.7, elapsed = 5575.92 s
+Completed step 618/800, t = 61.800000000000004, elapsed = 5584.57 s
+Completed step 619/800, t = 61.900000000000006, elapsed = 5592.77 s
+Completed step 620/800, t = 62.0, elapsed = 5601.39 s
+Completed step 621/800, t = 62.1, elapsed = 5609.62 s
+Completed step 622/800, t = 62.2, elapsed = 5617.79 s
+Completed step 623/800, t = 62.300000000000004, elapsed = 5626.48 s
+Completed step 624/800, t = 62.400000000000006, elapsed = 5634.71 s
+Completed step 625/800, t = 62.5, elapsed = 5643.39 s
+Completed step 626/800, t = 62.6, elapsed = 5651.68 s
+Completed step 627/800, t = 62.7, elapsed = 5659.86 s
+Completed step 628/800, t = 62.800000000000004, elapsed = 5668.54 s
+Completed step 629/800, t = 62.900000000000006, elapsed = 5676.87 s
+Completed step 630/800, t = 63.0, elapsed = 5685.59 s
+Completed step 631/800, t = 63.1, elapsed = 5693.81 s
+Completed step 632/800, t = 63.2, elapsed = 5702.12 s
+Completed step 633/800, t = 63.300000000000004, elapsed = 5710.63 s
+Completed step 634/800, t = 63.400000000000006, elapsed = 5718.86 s
+Completed step 635/800, t = 63.5, elapsed = 5727.55 s
+Completed step 636/800, t = 63.6, elapsed = 5735.8 s
+Completed step 637/800, t = 63.7, elapsed = 5744.42 s
+Completed step 638/800, t = 63.800000000000004, elapsed = 5752.75 s
+Completed step 639/800, t = 63.900000000000006, elapsed = 5760.92 s
+Completed step 640/800, t = 64.0, elapsed = 5769.62 s
+Completed step 641/800, t = 64.10000000000001, elapsed = 5777.87 s
+Completed step 642/800, t = 64.2, elapsed = 5786.58 s
+Completed step 643/800, t = 64.3, elapsed = 5794.82 s
+Completed step 644/800, t = 64.4, elapsed = 5803.02 s
+Completed step 645/800, t = 64.5, elapsed = 5811.72 s
+Completed step 646/800, t = 64.60000000000001, elapsed = 5819.94 s
+Completed step 647/800, t = 64.7, elapsed = 5828.61 s
+Completed step 648/800, t = 64.8, elapsed = 5836.87 s
+Completed step 649/800, t = 64.9, elapsed = 5845.17 s
+Completed step 650/800, t = 65.0, elapsed = 5858.5 s
+Completed step 651/800, t = 65.10000000000001, elapsed = 5867.97 s
+Completed step 652/800, t = 65.2, elapsed = 5877.55 s
+Completed step 653/800, t = 65.3, elapsed = 5886.49 s
+Completed step 654/800, t = 65.4, elapsed = 5895.1 s
+Completed step 655/800, t = 65.5, elapsed = 5904.38 s
+Completed step 656/800, t = 65.60000000000001, elapsed = 5913.75 s
+Completed step 657/800, t = 65.7, elapsed = 5923.49 s
+Completed step 658/800, t = 65.8, elapsed = 5932.54 s
+Completed step 659/800, t = 65.9, elapsed = 5941.12 s
+Completed step 660/800, t = 66.0, elapsed = 5950.34 s
+Completed step 661/800, t = 66.10000000000001, elapsed = 5959.48 s
+Completed step 662/800, t = 66.2, elapsed = 5968.73 s
+Completed step 663/800, t = 66.3, elapsed = 5977.37 s
+Completed step 664/800, t = 66.4, elapsed = 5986.34 s
+Completed step 665/800, t = 66.5, elapsed = 5995.67 s
+Completed step 666/800, t = 66.60000000000001, elapsed = 6004.4 s
+Completed step 667/800, t = 66.7, elapsed = 6013.7 s
+Completed step 668/800, t = 66.8, elapsed = 6022.11 s
+Completed step 669/800, t = 66.9, elapsed = 6030.42 s
+Completed step 670/800, t = 67.0, elapsed = 6039.38 s
+Completed step 671/800, t = 67.10000000000001, elapsed = 6047.69 s
+Completed step 672/800, t = 67.2, elapsed = 6056.48 s
+Completed step 673/800, t = 67.3, elapsed = 6064.97 s
+Completed step 674/800, t = 67.4, elapsed = 6073.91 s
+Completed step 675/800, t = 67.5, elapsed = 6082.73 s
+Completed step 676/800, t = 67.60000000000001, elapsed = 6091.44 s
+Completed step 677/800, t = 67.7, elapsed = 6100.44 s
+Completed step 678/800, t = 67.8, elapsed = 6109.05 s
+Completed step 679/800, t = 67.9, elapsed = 6117.44 s
+Completed step 680/800, t = 68.0, elapsed = 6126.39 s
+Completed step 681/800, t = 68.10000000000001, elapsed = 6134.82 s
+Completed step 682/800, t = 68.2, elapsed = 6143.85 s
+Completed step 683/800, t = 68.3, elapsed = 6153.46 s
+Completed step 684/800, t = 68.4, elapsed = 6162.54 s
+Completed step 685/800, t = 68.5, elapsed = 6172.33 s
+Completed step 686/800, t = 68.60000000000001, elapsed = 6181.31 s
+Completed step 687/800, t = 68.7, elapsed = 6190.88 s
+Completed step 688/800, t = 68.8, elapsed = 6199.98 s
+Completed step 689/800, t = 68.9, elapsed = 6208.94 s
+Completed step 690/800, t = 69.0, elapsed = 6218.47 s
+Completed step 691/800, t = 69.10000000000001, elapsed = 6227.6 s
+Completed step 692/800, t = 69.2, elapsed = 6237.42 s
+Completed step 693/800, t = 69.3, elapsed = 6246.36 s
+Completed step 694/800, t = 69.4, elapsed = 6255.47 s
+Completed step 695/800, t = 69.5, elapsed = 6265.23 s
+Completed step 696/800, t = 69.60000000000001, elapsed = 6274.03 s
+Completed step 697/800, t = 69.7, elapsed = 6283.99 s
+Completed step 698/800, t = 69.8, elapsed = 6293.88 s
+Completed step 699/800, t = 69.9, elapsed = 6303.57 s
+Completed step 700/800, t = 70.0, elapsed = 6315.77 s
+Completed step 701/800, t = 70.10000000000001, elapsed = 6324.53 s
+Completed step 702/800, t = 70.2, elapsed = 6333.45 s
+Completed step 703/800, t = 70.3, elapsed = 6341.9 s
+Completed step 704/800, t = 70.4, elapsed = 6350.5 s
+Completed step 705/800, t = 70.5, elapsed = 6360.15 s
+Completed step 706/800, t = 70.60000000000001, elapsed = 6368.69 s
+Completed step 707/800, t = 70.7, elapsed = 6377.53 s
+Completed step 708/800, t = 70.8, elapsed = 6385.84 s
+Completed step 709/800, t = 70.9, elapsed = 6394.08 s
+Completed step 710/800, t = 71.0, elapsed = 6402.82 s
+Completed step 711/800, t = 71.10000000000001, elapsed = 6411.07 s
+Completed step 712/800, t = 71.2, elapsed = 6419.86 s
+Completed step 713/800, t = 71.3, elapsed = 6428.1 s
+Completed step 714/800, t = 71.4, elapsed = 6436.25 s
+Completed step 715/800, t = 71.5, elapsed = 6444.95 s
+Completed step 716/800, t = 71.60000000000001, elapsed = 6453.23 s
+Completed step 717/800, t = 71.7, elapsed = 6461.91 s
+Completed step 718/800, t = 71.8, elapsed = 6470.11 s
+Completed step 719/800, t = 71.9, elapsed = 6478.24 s
+Completed step 720/800, t = 72.0, elapsed = 6486.92 s
+Completed step 721/800, t = 72.10000000000001, elapsed = 6495.12 s
+Completed step 722/800, t = 72.2, elapsed = 6503.74 s
+Completed step 723/800, t = 72.3, elapsed = 6511.99 s
+Completed step 724/800, t = 72.4, elapsed = 6520.13 s
+Completed step 725/800, t = 72.5, elapsed = 6528.84 s
+Completed step 726/800, t = 72.60000000000001, elapsed = 6537.04 s
+Completed step 727/800, t = 72.7, elapsed = 6545.72 s
+Completed step 728/800, t = 72.8, elapsed = 6553.94 s
+Completed step 729/800, t = 72.9, elapsed = 6562.04 s
+Completed step 730/800, t = 73.0, elapsed = 6570.73 s
+Completed step 731/800, t = 73.10000000000001, elapsed = 6578.98 s
+Completed step 732/800, t = 73.2, elapsed = 6587.62 s
+Completed step 733/800, t = 73.3, elapsed = 6595.81 s
+Completed step 734/800, t = 73.4, elapsed = 6603.96 s
+Completed step 735/800, t = 73.5, elapsed = 6612.6 s
+Completed step 736/800, t = 73.60000000000001, elapsed = 6620.79 s
+Completed step 737/800, t = 73.7, elapsed = 6629.45 s
+Completed step 738/800, t = 73.8, elapsed = 6637.65 s
+Completed step 739/800, t = 73.9, elapsed = 6645.73 s
+Completed step 740/800, t = 74.0, elapsed = 6654.4 s
+Completed step 741/800, t = 74.10000000000001, elapsed = 6662.63 s
+Completed step 742/800, t = 74.2, elapsed = 6671.3 s
+Completed step 743/800, t = 74.3, elapsed = 6679.53 s
+Completed step 744/800, t = 74.4, elapsed = 6687.77 s
+Completed step 745/800, t = 74.5, elapsed = 6696.44 s
+Completed step 746/800, t = 74.60000000000001, elapsed = 6704.61 s
+Completed step 747/800, t = 74.7, elapsed = 6713.22 s
+Completed step 748/800, t = 74.8, elapsed = 6721.42 s
+Completed step 749/800, t = 74.9, elapsed = 6729.52 s
+Completed step 750/800, t = 75.0, elapsed = 6739.19 s
+Completed step 751/800, t = 75.10000000000001, elapsed = 6747.36 s
+Completed step 752/800, t = 75.2, elapsed = 6755.97 s
+Completed step 753/800, t = 75.3, elapsed = 6764.17 s
+Completed step 754/800, t = 75.4, elapsed = 6772.28 s
+Completed step 755/800, t = 75.5, elapsed = 6780.91 s
+Completed step 756/800, t = 75.60000000000001, elapsed = 6789.14 s
+Completed step 757/800, t = 75.7, elapsed = 6797.83 s
+Completed step 758/800, t = 75.8, elapsed = 6806.01 s
+Completed step 759/800, t = 75.9, elapsed = 6814.67 s
+Completed step 760/800, t = 76.0, elapsed = 6822.86 s
+Completed step 761/800, t = 76.10000000000001, elapsed = 6831.05 s
+Completed step 762/800, t = 76.2, elapsed = 6839.67 s
+Completed step 763/800, t = 76.3, elapsed = 6847.89 s
+Completed step 764/800, t = 76.4, elapsed = 6856.38 s
+Completed step 765/800, t = 76.5, elapsed = 6864.68 s
+Completed step 766/800, t = 76.60000000000001, elapsed = 6872.86 s
+Completed step 767/800, t = 76.7, elapsed = 6881.56 s
+Completed step 768/800, t = 76.80000000000001, elapsed = 6889.75 s
+Completed step 769/800, t = 76.9, elapsed = 6898.39 s
+Completed step 770/800, t = 77.0, elapsed = 6906.61 s
+Completed step 771/800, t = 77.10000000000001, elapsed = 6914.68 s
+Completed step 772/800, t = 77.2, elapsed = 6923.37 s
+Completed step 773/800, t = 77.30000000000001, elapsed = 6931.58 s
+Completed step 774/800, t = 77.4, elapsed = 6940.2 s
+Completed step 775/800, t = 77.5, elapsed = 6948.37 s
+Completed step 776/800, t = 77.60000000000001, elapsed = 6956.45 s
+Completed step 777/800, t = 77.7, elapsed = 6965.09 s
+Completed step 778/800, t = 77.80000000000001, elapsed = 6973.31 s
+Completed step 779/800, t = 77.9, elapsed = 6981.97 s
+Completed step 780/800, t = 78.0, elapsed = 6990.28 s
+Completed step 781/800, t = 78.10000000000001, elapsed = 6998.43 s
+Completed step 782/800, t = 78.2, elapsed = 7007.08 s
+Completed step 783/800, t = 78.30000000000001, elapsed = 7015.28 s
+Completed step 784/800, t = 78.4, elapsed = 7023.91 s
+Completed step 785/800, t = 78.5, elapsed = 7032.1 s
+Completed step 786/800, t = 78.60000000000001, elapsed = 7040.25 s
+Completed step 787/800, t = 78.7, elapsed = 7048.94 s
+Completed step 788/800, t = 78.80000000000001, elapsed = 7057.2 s
+Completed step 789/800, t = 78.9, elapsed = 7065.82 s
+Completed step 790/800, t = 79.0, elapsed = 7074.03 s
+Completed step 791/800, t = 79.10000000000001, elapsed = 7082.18 s
+Completed step 792/800, t = 79.2, elapsed = 7090.85 s
+Completed step 793/800, t = 79.30000000000001, elapsed = 7099.05 s
+Completed step 794/800, t = 79.4, elapsed = 7107.64 s
+Completed step 795/800, t = 79.5, elapsed = 7115.86 s
+Completed step 796/800, t = 79.60000000000001, elapsed = 7123.97 s
+Completed step 797/800, t = 79.7, elapsed = 7132.63 s
+Completed step 798/800, t = 79.80000000000001, elapsed = 7140.82 s
+Completed step 799/800, t = 79.9, elapsed = 7149.44 s
+Completed step 800/800, t = 80.0, elapsed = 7160.61 s
+Plot saved.
+Data saved.
+7379.390614 seconds (8.62 G allocations: 8.487 TiB, 18.67% gc time, 3.75% compilation time: 1% of which was recompilation)
+Collision completed through lattice time t = 80 at 2026-09-24T12:42:26.006
+Saved MPS directory: /home/ujjwal/files/qft-on-qc-github/qftonqc/results/ift/2026-09-24-integrable-320/states/scattering_infinite_mom_0p38_hx_1p06_hz_0p0_sigma_20p0_L_320_n_80_T_801_D_8_Dmax_24_dt_0p1_F5vuSZ
+Exported arrays without rounding or smoothing to /home/ujjwal/files/qft-on-qc-github/qftonqc/results/ift/2026-09-24-integrable-320/data
+Saved energy and spin histories as JLD2 and CSV.
+{
+  "parameters": {
+    "kappa": 0.38,
+    "h_x": 1.06,
+    "h_z": 0.0,
+    "sigma": 20.0,
+    "length": 320,
+    "n_center": 80,
+    "total_time": 801,
+    "bond_dimension": 8,
+    "evolution_bond_dimension": 24,
+    "time_step": 0.1,
+    "random_seed": 20260924
+  },
+  "source_files": [
+    "/home/ujjwal/files/qft-on-qc-github/qftonqc/results/ift/2026-09-24-integrable-320/data/energy_exp.csv",
+    "/home/ujjwal/files/qft-on-qc-github/qftonqc/results/ift/2026-09-24-integrable-320/data/s_z_exp.csv",
+    "/home/ujjwal/files/qft-on-qc-github/qftonqc/results/ift/2026-09-24-integrable-320/data/times.csv"
+  ],
+  "orientation": "CSV rows are times; columns are sites.",
+  "energy_shape_after_omitting_unused_column": [
+    801,
+    319
+  ],
+  "spin_shape": [
+    801,
+    320
+  ],
+  "initial_time": 0.0,
+  "final_time": 80.0,
+  "sample_spacing_min": 0.09999999999999432,
+  "sample_spacing_max": 0.10000000000000853,
+  "energy_density_min": -0.0001190035851508231,
+  "energy_density_max": 0.062366494787873705,
+  "spin_difference_min": -0.00046253861760500877,
+  "spin_difference_max": 0.0004874202542686712,
+  "initial_internal_bond_energy": 1.579517250741074,
+  "final_internal_bond_energy": 1.5739781961913222,
+  "max_absolute_internal_bond_energy_change": 0.005651975136133469,
+  "max_relative_internal_bond_energy_change": 0.0035782927558921495,
+  "edge_region_width_in_bonds": 6,
+  "initial_edge_absolute_energy_fraction": 1.598103077835257e-08,
+  "final_edge_absolute_energy_fraction": 9.658243845234675e-05,
+  "max_edge_absolute_energy_fraction": 0.0003397396689381309,
+  "text_rendering": "LaTeX",
+  "interpretation": "These are unsmoothed local expectation values, not outgoing particle probabilities. Energy sums include internal bonds only and omit bonds crossing the window boundary. Their change is an approximate energy-drift diagnostic while energy remains in the interior. The edge fraction uses absolute excess energy and is not a probability."
+}
+Wrote figures and diagnostics to /home/ujjwal/files/qft-on-qc-github/qftonqc/results/ift/2026-09-24-integrable-320/plots
+{
+  "parameters": {
+    "kappa": 0.38,
+    "h_x": 1.06,
+    "h_z": 0.0,
+    "sigma": 20.0,
+    "length": 320,
+    "n_center": 80,
+    "total_time": 801,
+    "bond_dimension": 8,
+    "evolution_bond_dimension": 24,
+    "time_step": 0.1,
+    "random_seed": 20260924
+  },
+  "colour_threshold": 0.0001,
+  "positive_colormap": "inferno",
+  "positive_low_background": "black",
+  "positive_panel": "Logarithmic; all values below threshold black, including nonpositive values.",
+  "energy_min": -0.0001190035851508231,
+  "energy_max": 0.062366494787873705,
+  "nonpositive_sample_count": 62692,
+  "positive_samples_below_threshold": 94552,
+  "note": "The colour threshold is a display choice, not an error estimate. No smoothing or absolute values applied.",
+  "signed_diagnostic": "The signed panel is available in collision_energy_log.png.",
+  "panels": "Standalone positive excess energy."
+}
+Wrote logarithmic energy figures to /home/ujjwal/files/qft-on-qc-github/qftonqc/results/ift/2026-09-24-integrable-320/plots
+Launcher finished at 2026-09-24T12:42:41+05:30; exit status 0

@@ -36,6 +36,14 @@ function parse_cmdline()
         help = "Bare lattice coupling squared"
         arg_type = Float64
         default = -0.07
+        "--gs_tol"
+        help = "Ground-state variational residual tolerance"
+        arg_type = Float64
+        default = 1e-7
+        "--gs_maxiter"
+        help = "Maximum number of ground-state iterations"
+        arg_type = Int
+        default = 100
         "--total_time", "-T"
         help = "Maximum time step for the evolution"
         arg_type = Int
@@ -116,16 +124,22 @@ function get_ham(d, L, μ0_sq, λ0)
     return ham
 end
 
-function prep_gs(d, L, D, ham)
-    """
-    rand: random matrices
-    ComplexF64: dataype of the matrices. Here we have complex numbers with 64-bit floats
-    ℂ^d: local Hilbert space dimension
-    ℂ^D: bond dimension
-    Returns the converged ground state of the uMPS
-    """
+"""
+    prep_gs(d, L, D, ham; tol=1e-7, maxiter=100)
+
+Return the variational ground-state candidate only when the final DMRG
+residual meets `tol`. This checks the optimization at the specified local and
+bond dimensions. It does not establish convergence as those dimensions grow.
+"""
+function prep_gs(d, L, D, ham; tol=1e-7, maxiter=100)
+    isfinite(tol) && tol > 0 || throw(ArgumentError("tol must be finite and positive"))
+    maxiter > 0 || throw(ArgumentError("maxiter must be positive"))
     ψ0 = FiniteMPS(rand, ComplexF64, L, ℂ^d, ℂ^D)
-    ψ, _, _ = find_groundstate(ψ0, ham, DMRG(; tol=1e-7, maxiter=5))
+    ψ, envs, residual = find_groundstate(
+        ψ0, ham, DMRG(; tol, maxiter))
+    converged = isfinite(residual) && residual <= tol
+    @info "DMRG ground-state status" residual tol maxiter converged
+    converged || error("DMRG stopped above tolerance: residual=$(residual), tol=$(tol)")
     return ψ
 end
 
@@ -148,7 +162,8 @@ function main()
 
     ham = get_ham(d, L, μ0_sq, λ0)
 
-    ψ = prep_gs(d, L, D, ham)
+    ψ = prep_gs(d, L, D, ham;
+        tol=parsed_args["gs_tol"], maxiter=parsed_args["gs_maxiter"])
 
     ϕ, ϕ2, π2, ϕ4 = matrix_elems(d)
 
@@ -176,7 +191,7 @@ function main()
 
     for t_step in 1:T-1
         println("Currently at step $t_step")
-        ψ, _ = timestep(ψ, ham, t_step - 1, dt, TDVP())
+        ψ, _ = timestep(ψ, ham, (t_step - 1)*dt, dt, TDVP())
         for i in 1:L
             field_exp[t_step+1, i] = real(expectation_value(ψ, i => ϕ))
         end
@@ -197,4 +212,6 @@ function main()
     println("Data saved.")
 end
 
-main()
+if abspath(PROGRAM_FILE) == @__FILE__
+    main()
+end

@@ -10,6 +10,8 @@ Thumbs.db
 
 # Documentation builds and local Wiki drafts
 /docs/build/
+/_build/
+/_site/
 /docs/Manifest.toml
 /docs/wiki/
 

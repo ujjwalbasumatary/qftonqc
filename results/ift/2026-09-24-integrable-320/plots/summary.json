@@ -1,0 +1,47 @@
+{
+  "parameters": {
+    "kappa": 0.38,
+    "h_x": 1.06,
+    "h_z": 0.0,
+    "sigma": 20.0,
+    "length": 320,
+    "n_center": 80,
+    "total_time": 801,
+    "bond_dimension": 8,
+    "evolution_bond_dimension": 24,
+    "time_step": 0.1,
+    "random_seed": 20260924
+  },
+  "source_files": [
+    "/home/ujjwal/files/qft-on-qc-github/qftonqc/results/ift/2026-09-24-integrable-320/data/energy_exp.csv",
+    "/home/ujjwal/files/qft-on-qc-github/qftonqc/results/ift/2026-09-24-integrable-320/data/s_z_exp.csv",
+    "/home/ujjwal/files/qft-on-qc-github/qftonqc/results/ift/2026-09-24-integrable-320/data/times.csv"
+  ],
+  "orientation": "CSV rows are times; columns are sites.",
+  "energy_shape_after_omitting_unused_column": [
+    801,
+    319
+  ],
+  "spin_shape": [
+    801,
+    320
+  ],
+  "initial_time": 0.0,
+  "final_time": 80.0,
+  "sample_spacing_min": 0.09999999999999432,
+  "sample_spacing_max": 0.10000000000000853,
+  "energy_density_min": -0.0001190035851508231,
+  "energy_density_max": 0.062366494787873705,
+  "spin_difference_min": -0.00046253861760500877,
+  "spin_difference_max": 0.0004874202542686712,
+  "initial_internal_bond_energy": 1.579517250741074,
+  "final_internal_bond_energy": 1.5739781961913222,
+  "max_absolute_internal_bond_energy_change": 0.005651975136133469,
+  "max_relative_internal_bond_energy_change": 0.0035782927558921495,
+  "edge_region_width_in_bonds": 6,
+  "initial_edge_absolute_energy_fraction": 1.598103077835257e-08,
+  "final_edge_absolute_energy_fraction": 9.658243845234675e-05,
+  "max_edge_absolute_energy_fraction": 0.0003397396689381309,
+  "text_rendering": "LaTeX",
+  "interpretation": "These are unsmoothed local expectation values, not outgoing particle probabilities. Energy sums include internal bonds only and omit bonds crossing the window boundary. Their change is an approximate energy-drift diagnostic while energy remains in the interior. The edge fraction uses absolute excess energy and is not a probability."
+}

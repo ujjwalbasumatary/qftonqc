@@ -6,7 +6,7 @@ include(joinpath(@__DIR__, "..", "simulations", "src", "QFTSimulations.jl"))
 using .QFTSimulations
 
 makedocs(
-    sitename = "QFT on a QC",
+    sitename = "QFT on a QC — Julia tutorial",
     authors = "Ujjwal Basumatary and contributors",
     modules = [QFTSimulations],
     checkdocs = :all,
@@ -18,6 +18,7 @@ makedocs(
     ),
     pages = [
         "Introduction" => "index.md",
+        "Python tutorial" => "examples/mps-numpy.md",
         "Repository" => "repository.md",
         "Running the calculations" => "running.md",
         "Worked examples" => [
