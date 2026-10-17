@@ -1,10 +1,12 @@
 # Companion code for the manuscript revised on 18 October 2026
 
-Tag: [`book-2026-10-18`](https://github.com/ujjwalbasumatary/qftonqc/tree/book-2026-10-18).
+Tag: [`book-2026-10-18.1`](https://github.com/ujjwalbasumatary/qftonqc/tree/book-2026-10-18.1).
 
 This snapshot accompanies *Lectures on Quantum Field Theory on a Quantum Computer*.
 The public paper is [arXiv:2512.02706](https://arxiv.org/abs/2512.02706).
 The tag fixes the source version cited in the revised manuscript.
+This corrected tag adds the notebook syntax-highlighting dependency required
+by a fresh documentation environment. The numerical examples are unchanged.
 
 ## Contents
 
@@ -23,7 +25,7 @@ The tag fixes the source version cited in the revised manuscript.
 ## Use this version
 
 ```sh
-git clone --branch book-2026-10-18 https://github.com/ujjwalbasumatary/qftonqc.git
+git clone --branch book-2026-10-18.1 https://github.com/ujjwalbasumatary/qftonqc.git
 cd qftonqc
 julia --startup-file=no --project=simulations -e 'using Pkg; Pkg.instantiate()'
 ```

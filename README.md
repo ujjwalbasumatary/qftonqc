@@ -23,7 +23,7 @@ field expectation value at each site.
 ## Manuscript version
 
 The code accompanying the manuscript revised on 18 October 2026 is tagged
-[`book-2026-10-18`](https://github.com/ujjwalbasumatary/qftonqc/tree/book-2026-10-18).
+[`book-2026-10-18.1`](https://github.com/ujjwalbasumatary/qftonqc/tree/book-2026-10-18.1).
 The [release notes](RELEASE_NOTES.md) list its contents, checks and the remaining
 numerical comparisons. Use this tag to obtain the version cited in the book.
 
